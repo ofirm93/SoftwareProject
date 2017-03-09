@@ -60,6 +60,38 @@ void spPrintUndefienedValueError(const char *filename, int lineNum, const char *
     printf("Message: Parameter %s is not set\"\n", paramName);
 }
 
+/**
+ * assert str doesn't start with ' ' (space).
+ * This method checks whether str represent one word (no spaces in the middle)
+ * If so it returns true and removes any extra spaces from the string.
+ * Else it returns false
+ *
+ * @param str the string to check
+ * @assert strlen(str) > 0 && str[0] != ' '
+ * @return  true if str is one word, otherwise false
+ */
+bool spTurnIntoWord(char* str){
+    size_t length = strlen(str);
+    size_t n = 0;
+    size_t i = 0;
+    while (i < length && str[i] != ' '){	// determining the first word's size
+        n++;
+        i++;
+    }
+    if (i >= length){	// if string ended than it's correct and we're done
+        strncpy(str, str, n);	// copy the first word
+        return true;
+    }
+    while (i < length && str[i] == ' '){	// pass any spaces
+        i++;
+    }
+    if (i >= length){	// if string ended than it's correct and we're done
+        strncpy(str, str, n);	// copy the first word
+        return true;
+    }
+    return false;	// if string didn't end than it's incorrect
+}
+
 bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondArg[1024], bool *isDirectoryMissing,
 							  bool *isPrefixMissing, bool *isSuffixMissing, bool *isImageNumMissing, SP_CONFIG_MSG *msg,
 							  const char *filename, int lineNum) {
@@ -68,6 +100,11 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 		return false;
 	}
 	if(strcmp(firstArg, "spImagesDirectory") == 0){
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_STRING;
+            return false;
+        }
 		config->imagesDirectory = malloc(strlen(secondArg) * sizeof(char));
 		if(!(config->imagesDirectory)){
 			*msg = SP_CONFIG_ALLOC_FAIL;
@@ -77,6 +114,11 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 		*isDirectoryMissing = false;
 	}
 	else if(strcmp(firstArg, "spImagesPrefix") == 0){
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_STRING;
+            return false;
+        }
 		config->imagesPrefix = malloc(strlen(secondArg) * sizeof(char));
 		if(!(config->imagesPrefix)){
 			*msg = SP_CONFIG_ALLOC_FAIL;
@@ -86,6 +128,11 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 		*isPrefixMissing = false;
 	}
 	else if(strcmp(firstArg, "spImagesSuffix") == 0){
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_STRING;
+            return false;
+        }
 		if((strcmp(firstArg, ".jpg") == 0) || (strcmp(firstArg, ".png") == 0) ||
 		   (strcmp(firstArg, ".bmp") == 0) || (strcmp(firstArg, ".gif") == 0)){
 			config->imagesSuffix = malloc(strlen(secondArg) * sizeof(char));
@@ -103,6 +150,11 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 		}
 	}
 	else if(strcmp(firstArg, "spNumOfImages") == 0){
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_INTEGER;
+            return false;
+        }
 		int num = atoi(secondArg);
 		if(num > 0){
 			config->numOfImages = num;
@@ -115,6 +167,11 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 		}
 	}
 	else if(strcmp(firstArg, "spPCADimension") == 0){
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_INTEGER;
+            return false;
+        }
 		int num = atoi(secondArg);
 		if(num >= 10 && num <= 28){
 			config->PCADimension = num;
@@ -126,6 +183,11 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 		}
 	}
 	else if(strcmp(firstArg, "spPCAFilename") == 0){
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_STRING;
+            return false;
+        }
 		config->PCAFilename = malloc(strlen(secondArg) * sizeof(char));
 		if(!(config->PCAFilename)){
 			*msg = SP_CONFIG_ALLOC_FAIL;
@@ -134,6 +196,11 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 		strncpy(config->PCAFilename, secondArg, strlen(secondArg));
 	}
 	else if(strcmp(firstArg, "spNumOfFeatures") == 0){
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_INTEGER;
+            return false;
+        }
 		int num = atoi(secondArg);
 		if(num > 0){
 			config->numOfFeatures = num;
@@ -145,6 +212,11 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 		}
 	}
 	else if(strcmp(firstArg, "spExtractionMode") == 0){
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_STRING;
+            return false;
+        }
 		if(strcmp(secondArg, "true") == 0){
 			config->extractionMode = true;
 		}
@@ -158,6 +230,11 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 		}
 	}
 	else if(strcmp(firstArg, "spNumOfSimilarImages") == 0){
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_INTEGER;
+            return false;
+        }
 		int num = atoi(secondArg);
 		if(num > 0){
 			config->numOfSimilarImages = num;
@@ -169,6 +246,11 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 		}
 	}
 	else if(strcmp(firstArg, "spKDTreeSplitMethod") == 0){
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_STRING;
+            return false;
+        }
 		if(strcmp(secondArg, "RANDOM") == 0){
 			config->KDTreeSplitMethod = RANDOM;
 		}
@@ -185,6 +267,11 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 		}
 	}
 	else if(strcmp(firstArg, "spKNN") == 0){
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_INTEGER;
+            return false;
+        }
 		int num = atoi(secondArg);
 		if(num > 0){
 			config->KNN = num;
@@ -196,6 +283,11 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 		}
 	}
 	else if(strcmp(firstArg, "spMinimalGUI") == 0){
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_STRING;
+            return false;
+        }
 		if(strcmp(secondArg, "true") == 0){
 			config->minimalGUI = true;
 		}
@@ -209,6 +301,11 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 		}
 	}
 	else if(strcmp(firstArg, "spLoggerLevel") == 0){
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_INTEGER;
+            return false;
+        }
 		int num = atoi(secondArg);
 		if(num >= 1 && num <= 4){
 			config->PCADimension = num;
@@ -220,6 +317,11 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 		}
 	}
 	else if(strcmp(firstArg, "spLoggerFilename") == 0){
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_STRING;
+            return false;
+        }
 		config->loggerFilename = malloc(strlen(secondArg) * sizeof(char));
 		if(!(config->loggerFilename)){
 			*msg = SP_CONFIG_ALLOC_FAIL;
@@ -235,12 +337,12 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 	return true;
 }
 
-bool spIsLineParsable(char line[], char firstStr[], char secondStr[]){
-	if (line || firstStr || secondStr){		// if any of the strings NULL then line is incorrect
+bool spIsLineParsable(char* line, char* firstStr, char* secondStr){
+	if (!line || !firstStr || !secondStr){		// if any of the strings NULL then line is incorrect
 		return false;
 	}
-	int length = strlen(line);
-	int i;
+	size_t length = strlen(line);
+	size_t i = 0;
 	while (i < length && line[i] == ' '){	// pass any spaces
 		i++;
 	}
@@ -253,7 +355,7 @@ bool spIsLineParsable(char line[], char firstStr[], char secondStr[]){
 		return true;
 	}
 	int index = i;	// this line must be a configuration for a property and follow its order
-	int n = 0;
+	size_t n = 0;
 	while (i < length && line[i] != ' ' && line[i] != '='){	// determining the first word's size
 		n++;
 		i++;
@@ -280,23 +382,26 @@ bool spIsLineParsable(char line[], char firstStr[], char secondStr[]){
 	if (i >= length){ // if line ended than it's incorrect
 		return false;
 	}
-	index = i;
-	n = 0;
-	while (i < length && line[i] != ' '){	// determining the second word's size
-		n++;
-		i++;
-	}
-	strncpy(secondStr, line + index, n);	// copy the second word
-	if (i >= length){	// if line ended than it's correct and we're done
-		return true;
-	}
-	while (i < length && line[i] == ' '){	// pass any spaces
-		i++;
-	}
-	if (i >= length){	// if line ended than it's correct and we're done
-		return true;
-	}
-	return false;	// if line didn't end than it's incorrect
+    strncpy(secondStr, line + i, length - i - 1);	// copy the second word. assert length > i
+    return true;
+//
+//	index = i;
+//	n = 0;
+//	while (i < length && line[i] != ' '){	// determining the second word's size
+//		n++;
+//		i++;
+//	}
+//	strncpy(secondStr, line + index, n);	// copy the second word
+//	if (i >= length){	// if line ended than it's correct and we're done
+//		return true;
+//	}
+//	while (i < length && line[i] == ' '){	// pass any spaces
+//		i++;
+//	}
+//	if (i >= length){	// if line ended than it's correct and we're done
+//		return true;
+//	}
+//	return false;	// if line didn't end than it's incorrect
 }
 
 /**

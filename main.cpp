@@ -9,12 +9,14 @@
 #include <iostream>
 #include <cstdio>
 #include <cstring>
+#include <cstdlib>
 
 using namespace std;
 
 int main() {
-	char firstArg[1024];
-	strcpy(firstArg, "");
-	cout << strlen(firstArg) << endl;
+	char firstArg[] = "34 56";
+    int x = atoi(firstArg);
+	sprintf(firstArg, "%d", x);
+	cout << firstArg << endl;
 	return 0;
 }
