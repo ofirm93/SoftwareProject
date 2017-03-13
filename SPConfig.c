@@ -25,7 +25,7 @@ struct sp_config_t{
 };
 
 SPConfig spDefaultConfigConstructor(){
-	SPConfig config = malloc(sizeof(SPConfig));
+	SPConfig config = malloc(sizeof(struct sp_config_t));
 	if(!config){
 		return NULL;
 	}
@@ -43,6 +43,85 @@ SPConfig spDefaultConfigConstructor(){
 }
 
 
+// TODO Delete the next method - its for testing only
+SPConfig spConfigConstructor(char *imagesDirectory,
+                       char *imagesPrefix,
+                       char *imagesSuffix,
+                       int numOfImages,
+                       int PCADimension,
+                       char *PCAFilename,
+                       int numOfFeatures,
+                       bool extractionMode,
+                       int numOfSimilarImages,
+                       SP_KD_SPLIT_MODE KDTreeSplitMethod,
+                       int KNN,
+                       bool minimalGUI,
+                       int loggerLevel,
+                       char *loggerFilename) {
+    SPConfig config = spDefaultConfigConstructor();
+    if(!config){
+        printf("[Ofir_Test] Allocation error in spBuildConfig()");
+        return NULL;
+    }
+    config->imagesDirectory = imagesDirectory;
+    config->imagesPrefix = imagesPrefix;
+    config->imagesSuffix = imagesSuffix;
+    config->numOfImages = numOfImages;
+    config->PCADimension = PCADimension;
+    config->PCAFilename = PCAFilename;
+    config->numOfFeatures = numOfFeatures;
+    config->extractionMode = extractionMode;
+    config->numOfSimilarImages = numOfSimilarImages;
+    config->KDTreeSplitMethod = KDTreeSplitMethod;
+    config->KNN = KNN;
+    config->minimalGUI = minimalGUI;
+    config->loggerLevel = loggerLevel;
+    config->loggerFilename = loggerFilename;
+}
+
+// TODO Delete the next method - its for testing only
+bool spIsStringsEqual(char *paramName, char *str, char *strExp){
+    if(strcmp(str,strExp) != 0){
+        printf("[Ofir_Test] The parameter %s in the created config is %s while the expected is %s", paramName,str, strExp);
+        return false;
+    }
+    return true;
+}
+
+// TODO Delete the next method - its for testing only
+bool spIsNumbersEqual(char *paramName, int num, int numExp){
+    if(num != numExp){
+        printf("[Ofir_Test] The parameter %s in the created config is %d while the expected is %d", paramName,num, numExp);
+        return false;
+    }
+    return true;
+}
+
+// TODO Delete the next method - its for testing only
+bool spIsConfigEqual(SPConfig config, SPConfig configExp) {
+    if(!config || !configExp){
+        printf("[Ofir_Test] Null pointer error in  spIsConfigEqual()");
+        return false;
+    }
+    if((!spIsStringsEqual("imagesDirectory", config->imagesDirectory, configExp->imagesDirectory)) ||
+       (!spIsStringsEqual("imagesPrefix", config->imagesPrefix, configExp->imagesPrefix)) ||
+       (!spIsStringsEqual("imagesSuffix", config->imagesSuffix, configExp->imagesSuffix)) ||
+       (!spIsNumbersEqual("numOfImages", config->numOfImages, configExp->numOfImages)) ||
+       (!spIsNumbersEqual("PCADimension", config->PCADimension, configExp->PCADimension)) ||
+       (!spIsStringsEqual("PCAFilename", config->PCAFilename, configExp->PCAFilename)) ||
+       (!spIsNumbersEqual("numOfFeatures", config->numOfFeatures, configExp->numOfFeatures)) ||
+       (!spIsNumbersEqual("extractionMode", config->extractionMode, configExp->extractionMode)) ||
+       (!spIsNumbersEqual("numOfSimilarImages", config->numOfSimilarImages, configExp->numOfSimilarImages)) ||
+       (!spIsNumbersEqual("KDTreeSplitMethod", config->KDTreeSplitMethod, configExp->KDTreeSplitMethod)) ||
+       (!spIsNumbersEqual("KNN", config->KNN, configExp->KNN)) ||
+       (!spIsNumbersEqual("minimalGUI", config->minimalGUI, configExp->minimalGUI)) ||
+       (!spIsNumbersEqual("loggerLevel", config->loggerLevel, configExp->loggerLevel)) ||
+       (!spIsStringsEqual("loggerFilename", config->loggerFilename, configExp->loggerFilename))
+            ){
+        return false;
+    }
+    return true;
+}
 void spPrintInvalidLineError(const char *filename, int lineNum) {
     printf("\"File: %s\n",filename);
     printf("Line: %d\n",lineNum);
@@ -54,7 +133,7 @@ void spPrintInvalidValueError(const char *filename, int lineNum) {
     printf("Line: %d\n",lineNum);
     printf("Message: Invalid value - constraint not met\"\n");
 }
-void spPrintUndefienedValueError(const char *filename, int lineNum, const char *paramName) {
+void spPrintUndefinedValueError(const char *filename, int lineNum, const char *paramName) {
     printf("\"File: %s\n",filename);
     printf("Line: %d\n",lineNum);
     printf("Message: Parameter %s is not set\"\n", paramName);
@@ -74,19 +153,22 @@ bool spTurnIntoWord(char* str){
     size_t length = strlen(str);
     size_t n = 0;
     size_t i = 0;
-    while (i < length && str[i] != ' '){	// determining the first word's size
+    while (i < length && str[i] != ' ' && str[i] != '\n'){	// determining the first word's size
         n++;
         i++;
     }
     if (i >= length){	// if string ended than it's correct and we're done
-        strncpy(str, str, n);	// copy the first word
+        snprintf(str, n + 1, "%s", str); // copy the first word
+
+//        strncpy(str, str, n);	// copy the first word TODO delete if works
         return true;
     }
-    while (i < length && str[i] == ' '){	// pass any spaces
+    while (i < length && (str[i] == ' ' || str[i] == '\n')){	// pass any spaces
         i++;
     }
     if (i >= length){	// if string ended than it's correct and we're done
-        strncpy(str, str, n);	// copy the first word
+        snprintf(str, n + 1, "%s", str); // copy the first word
+//        strncpy(str, str, n);	// copy the first word TODO delete if works
         return true;
     }
     return false;	// if string didn't end than it's incorrect
@@ -105,12 +187,14 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
             *msg = SP_CONFIG_INVALID_STRING;
             return false;
         }
-		config->imagesDirectory = malloc(strlen(secondArg) * sizeof(char));
+		config->imagesDirectory = malloc((strlen(secondArg) +1) * sizeof(char));
 		if(!(config->imagesDirectory)){
 			*msg = SP_CONFIG_ALLOC_FAIL;
 			return false;
 		}
-		strncpy(config->imagesDirectory, secondArg, strlen(secondArg));
+        snprintf(config->imagesDirectory, strlen(secondArg) + 1, "%s", secondArg);
+
+//        strncpy(config->imagesDirectory, secondArg, strlen(secondArg)); TODO delete if works
 		*isDirectoryMissing = false;
 	}
 	else if(strcmp(firstArg, "spImagesPrefix") == 0){
@@ -119,12 +203,13 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
             *msg = SP_CONFIG_INVALID_STRING;
             return false;
         }
-		config->imagesPrefix = malloc(strlen(secondArg) * sizeof(char));
+		config->imagesPrefix = malloc((strlen(secondArg) +1) * sizeof(char));
 		if(!(config->imagesPrefix)){
 			*msg = SP_CONFIG_ALLOC_FAIL;
 			return false;
 		}
-		strncpy(config->imagesPrefix, secondArg, strlen(secondArg));
+        snprintf(config->imagesPrefix, strlen(secondArg) + 1, "%s", secondArg);
+//        strncpy(config->imagesPrefix, secondArg, strlen(secondArg)); TODO delete if works
 		*isPrefixMissing = false;
 	}
 	else if(strcmp(firstArg, "spImagesSuffix") == 0){
@@ -133,14 +218,15 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
             *msg = SP_CONFIG_INVALID_STRING;
             return false;
         }
-		if((strcmp(firstArg, ".jpg") == 0) || (strcmp(firstArg, ".png") == 0) ||
-		   (strcmp(firstArg, ".bmp") == 0) || (strcmp(firstArg, ".gif") == 0)){
-			config->imagesSuffix = malloc(strlen(secondArg) * sizeof(char));
+		if((strcmp(secondArg, ".jpg") == 0) || (strcmp(secondArg, ".png") == 0) ||
+		   (strcmp(secondArg, ".bmp") == 0) || (strcmp(secondArg, ".gif") == 0)){
+			config->imagesSuffix = malloc((strlen(secondArg) + 1) * sizeof(char));
 			if(!(config->imagesSuffix)){
 				*msg = SP_CONFIG_ALLOC_FAIL;
 				return false;
 			}
-			strncpy(config->imagesSuffix, secondArg, strlen(secondArg));
+            snprintf(config->imagesSuffix, strlen(secondArg) + 1, "%s", secondArg);
+//            strncpy(config->imagesSuffix, secondArg, strlen(secondArg)); TODO delete if works
 			*isSuffixMissing = false;
 		}
 		else{
@@ -188,12 +274,14 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
             *msg = SP_CONFIG_INVALID_STRING;
             return false;
         }
-		config->PCAFilename = malloc(strlen(secondArg) * sizeof(char));
+		config->PCAFilename = malloc((strlen(secondArg) +1) * sizeof(char));
 		if(!(config->PCAFilename)){
 			*msg = SP_CONFIG_ALLOC_FAIL;
 			return false;
 		}
-		strncpy(config->PCAFilename, secondArg, strlen(secondArg));
+        snprintf(config->PCAFilename, strlen(secondArg) + 1, "%s", secondArg);
+
+//        strncpy(config->PCAFilename, secondArg, strlen(secondArg)); TODO delete if works
 	}
 	else if(strcmp(firstArg, "spNumOfFeatures") == 0){
         if(!spTurnIntoWord(secondArg)){
@@ -322,12 +410,14 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
             *msg = SP_CONFIG_INVALID_STRING;
             return false;
         }
-		config->loggerFilename = malloc(strlen(secondArg) * sizeof(char));
+		config->loggerFilename = malloc((strlen(secondArg) +1) * sizeof(char));
 		if(!(config->loggerFilename)){
 			*msg = SP_CONFIG_ALLOC_FAIL;
 			return false;
 		}
-		strncpy(config->loggerFilename, secondArg, strlen(secondArg));
+        snprintf(config->loggerFilename, strlen(secondArg) + 1, "%s", secondArg);
+
+//        strncpy(config->loggerFilename, secondArg, strlen(secondArg)); TODO delete if works
 	}
 	else{
 		*msg = SP_CONFIG_INVALID_STRING;
@@ -347,11 +437,13 @@ bool spIsLineParsable(char* line, char* firstStr, char* secondStr){
 		i++;
 	}
 	if (i >= length){	// if line ended than it's empty and correct
-		strncpy(firstStr, "", 1);
+        snprintf(firstStr, 1, "");
+//		strncpy(firstStr, "", 1); TODO delete if works
 		return true;
 	}
 	if (line[i] == '#'){	// if the first actual character is '#' than this line is comment and ignore it
-		strncpy(firstStr, "", 1);
+        snprintf(firstStr, 1, "");
+//		strncpy(firstStr, "", 1); TODO delete if works
 		return true;
 	}
 	int index = i;	// this line must be a configuration for a property and follow its order
@@ -363,7 +455,8 @@ bool spIsLineParsable(char* line, char* firstStr, char* secondStr){
 	if (i >= length){	// if line ended than it's incorrect
 		return false;
 	}
-	strncpy(firstStr, line + index, n);	// copy first word
+    snprintf(firstStr, n + 1, "%s", line + index);  // copy first word
+//	strncpy(firstStr, line + index, n);	// copy first word TODO delete if works
 	if (line[i] == ' '){	// if there are spaces right after the first word
 		while (i < length && line[i] == ' '){	// pass any spaces
 			i++;
@@ -382,26 +475,10 @@ bool spIsLineParsable(char* line, char* firstStr, char* secondStr){
 	if (i >= length){ // if line ended than it's incorrect
 		return false;
 	}
-    strncpy(secondStr, line + i, length - i - 1);	// copy the second word. assert length > i
+    snprintf(secondStr, length - i + 1, "%s", line + i);  // // copy the second word. assert length > i
+//    strncpy(secondStr, line + i, length - i - 1);	// copy the second word. assert length > i TODO delete if works
     return true;
-//
-//	index = i;
-//	n = 0;
-//	while (i < length && line[i] != ' '){	// determining the second word's size
-//		n++;
-//		i++;
-//	}
-//	strncpy(secondStr, line + index, n);	// copy the second word
-//	if (i >= length){	// if line ended than it's correct and we're done
-//		return true;
-//	}
-//	while (i < length && line[i] == ' '){	// pass any spaces
-//		i++;
-//	}
-//	if (i >= length){	// if line ended than it's correct and we're done
-//		return true;
-//	}
-//	return false;	// if line didn't end than it's incorrect
+
 }
 
 /**
@@ -434,7 +511,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 		return NULL;
 	}
 	SPConfig config = spDefaultConfigConstructor();
-	if (config) {
+	if (!config) {
 		*msg = SP_CONFIG_ALLOC_FAIL;
 		return NULL;
 	}
@@ -447,7 +524,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 	bool isDirectoryMissing = true, isPrefixMissing = true, isSuffixMissing = true, isImageNumMissing = true;
 	char line[MAX_LINE_LENGTH];
 	int lineNum = 0;
-	while (!fgets(line, MAX_LINE_LENGTH, inputFile)) {
+	while (fgets(line, MAX_LINE_LENGTH, inputFile)) {
 		lineNum++;
 		char firstArg[MAX_LINE_LENGTH];
 		char secondArg[MAX_LINE_LENGTH];
@@ -472,22 +549,22 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 
 	if (isDirectoryMissing) {
 		*msg = SP_CONFIG_MISSING_DIR;
-		spPrintUndefienedValueError(filename, lineNum, "spImagesDirectory");
+        spPrintUndefinedValueError(filename, lineNum, "spImagesDirectory");
 		return NULL;
 	}
 	if (isPrefixMissing) {
 		*msg = SP_CONFIG_MISSING_PREFIX;
-		spPrintUndefienedValueError(filename, lineNum, "spImagesPrefix");
+        spPrintUndefinedValueError(filename, lineNum, "spImagesPrefix");
 		return NULL;
 	}
 	if (isSuffixMissing) {
 		*msg = SP_CONFIG_MISSING_SUFFIX;
-		spPrintUndefienedValueError(filename, lineNum, "spImagesSuffix");
+        spPrintUndefinedValueError(filename, lineNum, "spImagesSuffix");
 		return NULL;
 	}
 	if (isImageNumMissing) {
 		*msg = SP_CONFIG_MISSING_NUM_IMAGES;
-		spPrintUndefienedValueError(filename, lineNum, "spNumOfImages");
+        spPrintUndefinedValueError(filename, lineNum, "spNumOfImages");
 		return NULL;
 	}
 	*msg = SP_CONFIG_SUCCESS;

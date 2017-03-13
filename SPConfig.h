@@ -31,6 +31,25 @@ typedef enum sp_kdtree_split_mode_t {
 
 typedef struct sp_config_t* SPConfig;
 
+SPConfig spDefaultConfigConstructor(); // TODO Delete this line - its for testing only
+
+SPConfig spConfigConstructor(char *imagesDirectory, // TODO Delete this method - its for testing only
+                             char *imagesPrefix,
+                             char *imagesSuffix,
+                             int numOfImages,
+                             int PCADimension,
+                             char *PCAFilename,
+                             int numOfFeatures,
+                             bool extractionMode,
+                             int numOfSimilarImages,
+                             SP_KD_SPLIT_MODE KDTreeSplitMethod,
+                             int KNN,
+                             bool minimalGUI,
+                             int loggerLevel,
+                             char *loggerFilename);
+
+bool spIsConfigEqual(SPConfig config, SPConfig configExp); // TODO Delete this line - its for testing only
+
 /**
  * Creates a new system configuration struct. The configuration struct
  * is initialized based on the configuration file given by 'filename'.
