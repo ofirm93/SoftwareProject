@@ -100,7 +100,7 @@ bool spTestFile(char* filename, SPConfig expectedConfig, SP_CONFIG_MSG expectedM
 
 
 int main(){
-    char filename[] = "C:\\Users\\Ofir\\CLionProjects\\SoftwareProject\\unit_tests\\fail_test4.config";
+    char filename[] = "C:\\Users\\Ofir\\CLionProjects\\SoftwareProject\\unit_tests\\config_files\\fail_test5.config";
     SPConfig expConfig = spConfigConstructor("./images/", "img", ".png", 17, 20, "pca.yml", 100, true, 5, MAX_SPREAD, 1, false, 3, "stdout");
     spTestFile(filename, expConfig, SP_CONFIG_SUCCESS);
     return 0;
