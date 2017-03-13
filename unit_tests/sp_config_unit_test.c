@@ -98,7 +98,12 @@ bool spTestFile(char* filename, SPConfig expectedConfig, SP_CONFIG_MSG expectedM
 //    config->loggerFilename = loggerFilename;
 //}
 
-
+/**
+ * The way to use the test is to change the number in the first line to the correct test,
+ * change the second line to the correct configuration that expected (only if the configuration file is correct),
+ * change the third line SP_CONFIG_MSG to the expected message.
+ * @return
+ */
 int main(){
     char filename[] = "C:\\Users\\Ofir\\CLionProjects\\SoftwareProject\\unit_tests\\config_files\\fail_test18.config";
     SPConfig expConfig = spConfigConstructor("./images/", "img", ".png", 17, 20, "pca.yml", 100, true, 5, MAX_SPREAD, 1, false, 3, "stdout");
