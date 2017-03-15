@@ -105,7 +105,7 @@ bool spTestFile(char* filename, SPConfig expectedConfig, SP_CONFIG_MSG expectedM
  * @return
  */
 int main(){
-    char filename[] = "C:\\Users\\Ofir\\CLionProjects\\SoftwareProject\\unit_tests\\config_files\\fail_test18.config";
+    char filename[] = "C:\\Users\\Ofir\\CLionProjects\\SoftwareProject\\unit_tests\\config_files\\fail_test22.config";
     SPConfig expConfig = spConfigConstructor("./images/", "img", ".png", 17, 20, "pca.yml", 100, true, 5, MAX_SPREAD, 1, false, 3, "stdout");
     printf("Is the messages the same ? (0 - No, 1 - Yes) : %d", spTestFile(filename, expConfig, SP_CONFIG_SUCCESS));
     return 0;

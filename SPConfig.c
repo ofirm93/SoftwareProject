@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "SPConfig.h"
 
 #define READ_MODE "r"
@@ -77,6 +78,7 @@ SPConfig spConfigConstructor(char *imagesDirectory,
     config->minimalGUI = minimalGUI;
     config->loggerLevel = loggerLevel;
     config->loggerFilename = loggerFilename;
+    return config;
 }
 
 // TODO Delete the next method - its for testing only
@@ -174,6 +176,18 @@ bool spTurnIntoWord(char* str){
     return false;	// if string didn't end than it's incorrect
 }
 
+bool spIsNonNegativeInteger(char *str){
+    if(!str){
+        return false;
+    }
+    for(int i = 0; i < strlen(str); i++){
+        if(!isdigit(str[i])){
+            return false;
+        }
+    }
+    return true;
+}
+
 bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondArg[1024], bool *isDirectoryMissing,
 							  bool *isPrefixMissing, bool *isSuffixMissing, bool *isImageNumMissing, SP_CONFIG_MSG *msg,
 							  const char *filename, int lineNum) {
@@ -241,6 +255,11 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
             *msg = SP_CONFIG_INVALID_INTEGER;
             return false;
         }
+        if(!spIsNonNegativeInteger(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_INTEGER;
+            return false;
+        }
 		int num = atoi(secondArg);
 		if(num > 0){
 			config->numOfImages = num;
@@ -258,7 +277,13 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
             *msg = SP_CONFIG_INVALID_INTEGER;
             return false;
         }
-		int num = atoi(secondArg);
+        if(!spIsNonNegativeInteger(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_INTEGER;
+            return false;
+        }
+
+        int num = atoi(secondArg);
 		if(num >= 10 && num <= 28){
 			config->PCADimension = num;
 		}
@@ -289,7 +314,12 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
             *msg = SP_CONFIG_INVALID_INTEGER;
             return false;
         }
-		int num = atoi(secondArg);
+        if(!spIsNonNegativeInteger(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_INTEGER;
+            return false;
+        }
+        int num = atoi(secondArg);
 		if(num > 0){
 			config->numOfFeatures = num;
 		}
@@ -323,7 +353,12 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
             *msg = SP_CONFIG_INVALID_INTEGER;
             return false;
         }
-		int num = atoi(secondArg);
+        if(!spIsNonNegativeInteger(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_INTEGER;
+            return false;
+        }
+        int num = atoi(secondArg);
 		if(num > 0){
 			config->numOfSimilarImages = num;
 		}
@@ -360,7 +395,12 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
             *msg = SP_CONFIG_INVALID_INTEGER;
             return false;
         }
-		int num = atoi(secondArg);
+        if(!spIsNonNegativeInteger(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_INTEGER;
+            return false;
+        }
+        int num = atoi(secondArg);
 		if(num > 0){
 			config->KNN = num;
 		}
@@ -394,9 +434,14 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
             *msg = SP_CONFIG_INVALID_INTEGER;
             return false;
         }
-		int num = atoi(secondArg);
+        if(!spIsNonNegativeInteger(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_INTEGER;
+            return false;
+        }
+        int num = atoi(secondArg);
 		if(num >= 1 && num <= 4){
-			config->PCADimension = num;
+			config->loggerLevel = num;
 		}
 		else{
 			*msg = SP_CONFIG_INVALID_INTEGER;
