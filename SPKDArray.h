@@ -9,8 +9,8 @@
 
 typedef struct sp_kd_array_t* SPKDArray;
 
-SPKDArray spInitSPKDArray(SPPoint** arr, int size);
+SPKDArray spInitSPKDArray(SPPoint** pointsArr, int arrSize);
 
-SPKDArray* spSplitSPKDArray(SPKDArray kdArr, int coor);
+bool spSplitSPKDArray(SPKDArray kdArr, int coor, SPKDArray* kdLeft, SPKDArray* kdRight);
 
 #endif //SOFTWAREPROJECT_SPKDARRAY_H

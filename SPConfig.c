@@ -155,7 +155,7 @@ bool spTurnIntoWord(char* str){
     size_t length = strlen(str);
     size_t n = 0;
     size_t i = 0;
-    while (i < length && str[i] != ' ' && str[i] != '\n'){	// determining the first word's size
+    while (i < length && str[i] != ' ' && str[i] != '\n'){	// determining the first word's numOfPoints
         n++;
         i++;
     }
@@ -409,7 +409,7 @@ bool spIsLineParsable(char* line, char* firstStr, char* secondStr){
 	}
 	int index = i;	// this line must be a configuration for a property and follow its order
 	size_t n = 0;
-	while (i < length && line[i] != ' ' && line[i] != '='){	// determining the first word's size
+	while (i < length && line[i] != ' ' && line[i] != '='){	// determining the first word's numOfPoints
 		n++;
 		i++;
 	}
