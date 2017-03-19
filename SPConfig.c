@@ -2,7 +2,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include "SPConfig.h"
 
 #define READ_MODE "r"
@@ -78,7 +77,6 @@ SPConfig spConfigConstructor(char *imagesDirectory,
     config->minimalGUI = minimalGUI;
     config->loggerLevel = loggerLevel;
     config->loggerFilename = loggerFilename;
-    return config;
 }
 
 // TODO Delete the next method - its for testing only
@@ -176,162 +174,6 @@ bool spTurnIntoWord(char* str){
     return false;	// if string didn't end than it's incorrect
 }
 
-bool spIsNonNegativeInteger(char *str){
-    if(!str){
-        return false;
-    }
-    for(int i = 0; i < strlen(str); i++){
-        if(!isdigit(str[i])){
-            return false;
-        }
-    }
-    return true;
-}
-
-/**
- * @assert strlen(value) > 0 && value[0] != ' '
- */
-bool spHandleStringProperty(char** property, bool* propertyCheck, char* value, SP_CONFIG_MSG* msg,
-							const char *filename, int lineNum){
-	if(!property || !propertyCheck || !msg || !filename){
-		return false;
-	}
-	if(!spTurnIntoWord(value)){
-		spPrintInvalidValueError(filename, lineNum);
-		*msg = SP_CONFIG_INVALID_STRING;
-		return false;
-	}
-	*property = malloc((strlen(value) + 1) * sizeof(char));
-	if(!(*property)){
-		*msg = SP_CONFIG_ALLOC_FAIL;
-		return false;
-	}
-	snprintf(*property, strlen(value) + 1, "%s", value);
-	if(propertyCheck){
-		*propertyCheck = false;
-	}
-	return true;
-}
-
-/**
- * @assert strlen(value) > 0 && value[0] != ' '
- */
-bool spHandleIntegerProperty(int* property, bool* propertyCheck, char* value, SP_CONFIG_MSG* msg,
-							const char *filename, int lineNum, int lowerBound, int upperBound, bool isThereUpperBound){
-	if(!property || !propertyCheck || !msg || !filename){
-		return false;
-	}
-	if(!spTurnIntoWord(value)){
-		spPrintInvalidValueError(filename, lineNum);
-		*msg = SP_CONFIG_INVALID_INTEGER;
-		return false;
-	}
-	if(!spIsNonNegativeInteger(value)){
-		spPrintInvalidValueError(filename, lineNum);
-		*msg = SP_CONFIG_INVALID_INTEGER;
-		return false;
-	}
-	int num = atoi(value);
-	if(num >= lowerBound && (!isThereUpperBound || num <= upperBound)){
-		*property = num;
-		if(propertyCheck){
-			*propertyCheck = false;
-		}
-	}
-	else{
-		*msg = SP_CONFIG_INVALID_INTEGER;
-		spPrintInvalidValueError(filename, lineNum);
-		return false;
-	}
-	return true;
-}
-
-/**
- * @assert strlen(value) > 0 && value[0] != ' '
- */
-bool spHandleBooleanProperty(bool* property, char* value, SP_CONFIG_MSG* msg, const char *filename,
-							 int lineNum){
-	if(!property || !msg || !filename){
-		return false;
-	}
-	if(!spTurnIntoWord(value)){
-		spPrintInvalidValueError(filename, lineNum);
-		*msg = SP_CONFIG_INVALID_STRING;
-		return false;
-	}
-	if(strcmp(value, "true") == 0){
-		*property = true;
-	}
-	else if(strcmp(value, "false") == 0){
-		*property = false;
-	}
-	else{
-		*msg = SP_CONFIG_INVALID_STRING;
-		spPrintInvalidValueError(filename, lineNum);
-		return false;
-	}
-	return true;
-}
-
-/**
- * @assert strlen(value) > 0 && value[0] != ' '
- */
-bool spHandleSuffixProperty(char** property, bool* propertyCheck, char* value, SP_CONFIG_MSG* msg, const char *filename,
-							 int lineNum){
-	if(!property || !propertyCheck || !msg || !filename){
-		return false;
-	}
-	if(!spTurnIntoWord(value)){
-		spPrintInvalidValueError(filename, lineNum);
-		*msg = SP_CONFIG_INVALID_STRING;
-		return false;
-	}
-	if((strcmp(value, ".jpg") == 0) || (strcmp(value, ".png") == 0) ||
-	   (strcmp(value, ".bmp") == 0) || (strcmp(value, ".gif") == 0)){
-		*property = malloc((strlen(value) + 1) * sizeof(char));
-		if(!(*property)){
-			*msg = SP_CONFIG_ALLOC_FAIL;
-			return false;
-		}
-		snprintf(*property, strlen(value) + 1, "%s", value);
-		*propertyCheck = false;
-		return true;
-	}
-	*msg = SP_CONFIG_INVALID_STRING;
-	spPrintInvalidValueError(filename, lineNum);
-	return false;
-}
-
-/**
- * @assert strlen(value) > 0 && value[0] != ' '
- */
-bool spHandleSplitMethodProperty(SP_KD_SPLIT_MODE* property, char* value, SP_CONFIG_MSG* msg, const char *filename,
-							 int lineNum){
-	if(!property || !msg || !filename){
-		return false;
-	}
-	if(!spTurnIntoWord(value)){
-		spPrintInvalidValueError(filename, lineNum);
-		*msg = SP_CONFIG_INVALID_STRING;
-		return false;
-	}
-	if(strcmp(value, "RANDOM") == 0){
-		*property = RANDOM;
-	}
-	else if(strcmp(value, "MAX_SPREAD") == 0){
-		*property = MAX_SPREAD;
-	}
-	else if(strcmp(value, "INCREMENTAL") == 0){
-		*property = INCREMENTAL;
-	}
-	else{
-		*msg = SP_CONFIG_INVALID_STRING;
-		spPrintInvalidValueError(filename, lineNum);
-		return false;
-	}
-	return true;
-}
-
 bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondArg[1024], bool *isDirectoryMissing,
 							  bool *isPrefixMissing, bool *isSuffixMissing, bool *isImageNumMissing, SP_CONFIG_MSG *msg,
 							  const char *filename, int lineNum) {
@@ -340,52 +182,249 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 		return false;
 	}
 	if(strcmp(firstArg, "spImagesDirectory") == 0){
-		return spHandleStringProperty(&(config->imagesDirectory),isDirectoryMissing, secondArg, msg, filename, lineNum);
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_STRING;
+            return false;
+        }
+		config->imagesDirectory = malloc((strlen(secondArg) +1) * sizeof(char));
+		if(!(config->imagesDirectory)){
+			*msg = SP_CONFIG_ALLOC_FAIL;
+			return false;
+		}
+        snprintf(config->imagesDirectory, strlen(secondArg) + 1, "%s", secondArg);
+
+//        strncpy(config->imagesDirectory, secondArg, strlen(secondArg)); TODO delete if works
+		*isDirectoryMissing = false;
 	}
 	else if(strcmp(firstArg, "spImagesPrefix") == 0){
-		return spHandleStringProperty(&(config->imagesPrefix), isPrefixMissing, secondArg, msg, filename, lineNum);
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_STRING;
+            return false;
+        }
+		config->imagesPrefix = malloc((strlen(secondArg) +1) * sizeof(char));
+		if(!(config->imagesPrefix)){
+			*msg = SP_CONFIG_ALLOC_FAIL;
+			return false;
+		}
+        snprintf(config->imagesPrefix, strlen(secondArg) + 1, "%s", secondArg);
+//        strncpy(config->imagesPrefix, secondArg, strlen(secondArg)); TODO delete if works
+		*isPrefixMissing = false;
 	}
 	else if(strcmp(firstArg, "spImagesSuffix") == 0){
-		return spHandleSuffixProperty(&(config->imagesSuffix), isSuffixMissing,secondArg,msg,filename,lineNum);
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_STRING;
+            return false;
+        }
+		if((strcmp(secondArg, ".jpg") == 0) || (strcmp(secondArg, ".png") == 0) ||
+		   (strcmp(secondArg, ".bmp") == 0) || (strcmp(secondArg, ".gif") == 0)){
+			config->imagesSuffix = malloc((strlen(secondArg) + 1) * sizeof(char));
+			if(!(config->imagesSuffix)){
+				*msg = SP_CONFIG_ALLOC_FAIL;
+				return false;
+			}
+            snprintf(config->imagesSuffix, strlen(secondArg) + 1, "%s", secondArg);
+//            strncpy(config->imagesSuffix, secondArg, strlen(secondArg)); TODO delete if works
+			*isSuffixMissing = false;
+		}
+		else{
+			*msg = SP_CONFIG_INVALID_STRING;
+			spPrintInvalidValueError(filename, lineNum);
+			return false;
+		}
 	}
 	else if(strcmp(firstArg, "spNumOfImages") == 0){
-		return spHandleIntegerProperty(&(config->numOfImages), isImageNumMissing, secondArg, msg, filename, lineNum,
-									   1, 0, false);
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_INTEGER;
+            return false;
+        }
+		int num = atoi(secondArg);
+		if(num > 0){
+			config->numOfImages = num;
+			*isImageNumMissing = false;
+		}
+		else{
+			*msg = SP_CONFIG_INVALID_INTEGER;
+			spPrintInvalidValueError(filename, lineNum);
+			return false;
+		}
 	}
 	else if(strcmp(firstArg, "spPCADimension") == 0){
-		return spHandleIntegerProperty(&(config->PCADimension), NULL, secondArg, msg, filename, lineNum, 10, 28, true);
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_INTEGER;
+            return false;
+        }
+		int num = atoi(secondArg);
+		if(num >= 10 && num <= 28){
+			config->PCADimension = num;
+		}
+		else{
+			*msg = SP_CONFIG_INVALID_INTEGER;
+			spPrintInvalidValueError(filename, lineNum);
+			return false;
+		}
 	}
 	else if(strcmp(firstArg, "spPCAFilename") == 0){
-		return spHandleStringProperty(&(config->PCAFilename), NULL, secondArg, msg, filename, lineNum);
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_STRING;
+            return false;
+        }
+		config->PCAFilename = malloc((strlen(secondArg) +1) * sizeof(char));
+		if(!(config->PCAFilename)){
+			*msg = SP_CONFIG_ALLOC_FAIL;
+			return false;
+		}
+        snprintf(config->PCAFilename, strlen(secondArg) + 1, "%s", secondArg);
+
+//        strncpy(config->PCAFilename, secondArg, strlen(secondArg)); TODO delete if works
 	}
 	else if(strcmp(firstArg, "spNumOfFeatures") == 0){
-		return spHandleIntegerProperty(&(config->numOfFeatures), NULL, secondArg, msg, filename, lineNum, 1, 0, false);
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_INTEGER;
+            return false;
+        }
+		int num = atoi(secondArg);
+		if(num > 0){
+			config->numOfFeatures = num;
+		}
+		else{
+			*msg = SP_CONFIG_INVALID_INTEGER;
+			spPrintInvalidValueError(filename, lineNum);
+			return false;
+		}
 	}
 	else if(strcmp(firstArg, "spExtractionMode") == 0){
-		return spHandleBooleanProperty(&(config->extractionMode), secondArg, msg, filename, lineNum);
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_STRING;
+            return false;
+        }
+		if(strcmp(secondArg, "true") == 0){
+			config->extractionMode = true;
+		}
+		else if(strcmp(secondArg, "false") == 0){
+			config->extractionMode = false;
+		}
+		else{
+			*msg = SP_CONFIG_INVALID_STRING;
+			spPrintInvalidValueError(filename, lineNum);
+			return false;
+		}
 	}
 	else if(strcmp(firstArg, "spNumOfSimilarImages") == 0){
-		return spHandleIntegerProperty(&(config->numOfSimilarImages), NULL, secondArg, msg, filename, lineNum,
-									   1, 0, false);
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_INTEGER;
+            return false;
+        }
+		int num = atoi(secondArg);
+		if(num > 0){
+			config->numOfSimilarImages = num;
+		}
+		else{
+			*msg = SP_CONFIG_INVALID_INTEGER;
+			spPrintInvalidValueError(filename, lineNum);
+			return false;
+		}
 	}
 	else if(strcmp(firstArg, "spKDTreeSplitMethod") == 0){
-		return spHandleSplitMethodProperty(&(config->KDTreeSplitMethod), secondArg, msg, filename, lineNum);
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_STRING;
+            return false;
+        }
+		if(strcmp(secondArg, "RANDOM") == 0){
+			config->KDTreeSplitMethod = RANDOM;
+		}
+		else if(strcmp(secondArg, "MAX_SPREAD") == 0){
+			config->KDTreeSplitMethod = MAX_SPREAD;
+		}
+		else if(strcmp(secondArg, "INCREMENTAL") == 0){
+			config->KDTreeSplitMethod = INCREMENTAL;
+		}
+		else{
+			*msg = SP_CONFIG_INVALID_STRING;
+			spPrintInvalidValueError(filename, lineNum);
+			return false;
+		}
 	}
 	else if(strcmp(firstArg, "spKNN") == 0){
-		return spHandleIntegerProperty(&(config->KNN), NULL, secondArg, msg, filename, lineNum, 1, 0, false);
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_INTEGER;
+            return false;
+        }
+		int num = atoi(secondArg);
+		if(num > 0){
+			config->KNN = num;
+		}
+		else{
+			*msg = SP_CONFIG_INVALID_INTEGER;
+			spPrintInvalidValueError(filename, lineNum);
+			return false;
+		}
 	}
 	else if(strcmp(firstArg, "spMinimalGUI") == 0){
-		return spHandleBooleanProperty(&(config->minimalGUI), secondArg, msg, filename, lineNum);
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_STRING;
+            return false;
+        }
+		if(strcmp(secondArg, "true") == 0){
+			config->minimalGUI = true;
+		}
+		else if(strcmp(secondArg, "false") == 0){
+			config->minimalGUI = false;
+		}
+		else{
+			*msg = SP_CONFIG_INVALID_STRING;
+			spPrintInvalidValueError(filename, lineNum);
+			return false;
+		}
 	}
 	else if(strcmp(firstArg, "spLoggerLevel") == 0){
-		return spHandleIntegerProperty(&(config->loggerLevel), NULL, secondArg, msg, filename, lineNum, 1, 4, true);
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_INTEGER;
+            return false;
+        }
+		int num = atoi(secondArg);
+		if(num >= 1 && num <= 4){
+			config->PCADimension = num;
+		}
+		else{
+			*msg = SP_CONFIG_INVALID_INTEGER;
+			spPrintInvalidValueError(filename, lineNum);
+			return false;
+		}
 	}
 	else if(strcmp(firstArg, "spLoggerFilename") == 0){
-		return spHandleStringProperty(&(config->loggerFilename), NULL, secondArg, msg, filename, lineNum);
+        if(!spTurnIntoWord(secondArg)){
+            spPrintInvalidValueError(filename, lineNum);
+            *msg = SP_CONFIG_INVALID_STRING;
+            return false;
+        }
+		config->loggerFilename = malloc((strlen(secondArg) +1) * sizeof(char));
+		if(!(config->loggerFilename)){
+			*msg = SP_CONFIG_ALLOC_FAIL;
+			return false;
+		}
+        snprintf(config->loggerFilename, strlen(secondArg) + 1, "%s", secondArg);
+
+//        strncpy(config->loggerFilename, secondArg, strlen(secondArg)); TODO delete if works
 	}
-	*msg = SP_CONFIG_INVALID_STRING;
-	spPrintInvalidLineError(filename, lineNum);
-	return false;
+	else{
+		*msg = SP_CONFIG_INVALID_STRING;
+		spPrintInvalidLineError(filename, lineNum);
+		return false;
+	}
+	return true;
 }
 
 bool spIsLineParsable(char* line, char* firstStr, char* secondStr){
