@@ -190,6 +190,12 @@ SP_CONFIG_MSG spConfigGetImagePath(char* imagePath, const SPConfig config,
 SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
 
 /**
+ * TODO documentation
+ *  Basically returns KDTreeSplitMethod in pointer on success
+ */
+SP_CONFIG_MSG spConfigGetKDTreeSplitMethod(const SPConfig config, SP_KD_SPLIT_MODE* splitMethod);
+
+/**
  * Frees all memory resources associate with config. 
  * If config == NULL nothig is done.
  */
