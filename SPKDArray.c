@@ -17,7 +17,7 @@ struct sp_kd_array_t{
 
 void spDestroyKDArray(SPKDArray arr, int i) {
     for (int j = 0; j < i; j++) {
-        free(arr->array[j]);
+        free(arr->array[j]); //TODO leftovers from last file, change name of array
     }
     free(arr);
 }
@@ -80,12 +80,12 @@ SPKDArray spInitSPKDArray(SPPoint** pointsArr, int arrSize){
         return NULL;
     }
     for (int i = 0; i < arrSize; ++i) {
-        array->pointsArray[i] = pointsArr[i];
+        array->pointsArray[i] = pointsArr[i]; // TODO Create new point with spPointCreate(pointsArr[j]->dim ...)
     }
     // TODO start editing from here
     for (int i = 0; i < pointDim; ++i) {
         for (int j = 0; j < arrSize; ++j) {
-            array->array[i][j] = pointsArr[j];
+            array->array[i][j] = pointsArr[j]; //TODO If you change the above change here to point to the new point
         }
         coordinate = i;
         qsort(array->array[i], (size_t) arrSize, sizeof(SPPoint*), comparator);
