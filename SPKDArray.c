@@ -6,13 +6,16 @@
 #include <stdbool.h>
 #include "SPKDArray.h"
 
+int coordinate = 0;
+
 struct sp_kd_array_t{
-    SPPoint*** array;
+    SPPoint** pointsArray;
+    int** sortArray;
     int dimension;
-    int size;
+    int numOfPoints;
 };
 
-void spDestroyKDArray(const struct sp_kd_array_t *arr, int i) {
+void spDestroyKDArray(SPKDArray arr, int i) {
     for (int j = 0; j < i; j++) {
         free(arr->array[j]);
     }
@@ -28,52 +31,69 @@ SPKDArray spkdArrayConstructor(int dimension, int size){
         return NULL;
     }
     arr->dimension = dimension;
-    arr->size = size;
-    arr->array = malloc(dimension * sizeof(SPPoint**));
-    if(!(arr->array)){
+    arr->numOfPoints = size;
+    arr->pointsArray = malloc(size * sizeof(SPPoint*));
+    if(!(arr->pointsArray)){
         free(arr);
         return NULL;
     }
-    for(int i = 0; i < dimension; i++){
-        arr->array[i] = malloc(size * sizeof(SPPoint*));
-        if(!(arr->array[i])){
-            spDestroyKDArray(arr, i);
+    arr->sortArray = malloc(dimension * sizeof(int*));
+    if(!arr->sortArray){
+        free(arr->pointsArray);
+        free(arr);
+        return NULL;
+    }
+    for (int i = 0; i < dimension; ++i) {
+        arr->sortArray[i] = malloc(size * sizeof(int));
+        if(!(arr->sortArray[i])){
+            for (int j = 0; j < i; ++j) {
+                free(arr->sortArray[j]);
+            }
+            free(arr->sortArray);
+            free(arr->pointsArray);
+            free(arr);
             return NULL;
         }
     }
     return arr;
 }
 
-SPKDArray spInitSPKDArray(SPPoint** arr, int size){
-    if(!arr || size < 1){
+int comparator(const void* point1, const void* point2){
+    double value1 = spPointGetAxisCoor((SPPoint*)point1, coordinate);
+    double value2 = spPointGetAxisCoor((SPPoint*)point2, coordinate);
+    if(value1 - value2 == 0){
+        return 0;
+    }
+    else if( value1 - value2 > 0){
+        return 1;
+    }
+    return -1;
+}
+
+SPKDArray spInitSPKDArray(SPPoint** pointsArr, int arrSize){
+    if(!pointsArr || arrSize < 1){
         return NULL;
     }
-    int dimension = spPointGetDimension(arr[0]);
-    SPKDArray array = spkdArrayConstructor(dimension, size);
+    int pointDim = spPointGetDimension(pointsArr[0]);
+    SPKDArray array = spkdArrayConstructor(pointDim, arrSize);
     if (!array){
         return NULL;
     }
-    for (int i = 0; i < dimension; ++i) {
-        for (int j = 0; j < size; ++j) {
-            array->array[i][j] = arr[j];
-        }
-
-        int comparator(const void* point1, const void* point2){
-            double coor1 = spPointGetAxisCoor((SPPoint*)point1, i);
-            double coor2 = spPointGetAxisCoor((SPPoint*)point2, i);
-            if(coor1 - coor2 == 0){
-                return 0;
-            }
-            else if( coor1 - coor2 > 0){
-                return 1;
-            }
-            return -1;
-        }
-
-        qsort(array->array[i], (size_t) size, sizeof(SPPoint*), comparator);
+    for (int i = 0; i < arrSize; ++i) {
+        array->pointsArray[i] = pointsArr[i];
     }
+    // TODO start editing from here
+    for (int i = 0; i < pointDim; ++i) {
+        for (int j = 0; j < arrSize; ++j) {
+            array->array[i][j] = pointsArr[j];
+        }
+        coordinate = i;
+        qsort(array->array[i], (size_t) arrSize, sizeof(SPPoint*), comparator);
+    }
+    coordinate = 0;
     return array;
 }
+
 /**
  * TODO improve this method
  * @param kdArr
@@ -86,7 +106,7 @@ bool spSplitSPKDArray(SPKDArray kdArr, int coor, SPKDArray* kdLeft, SPKDArray* k
     if(!kdArr || coor < 0 || !kdLeft || !kdRight){
         return false;
     }
-    int size = kdArr->size;
+    int size = kdArr->numOfPoints;
     int rightSize = size / 2;
     int leftSize = size - rightSize;
     *kdLeft = spInitSPKDArray(kdArr->array[coor], leftSize);
@@ -94,5 +114,9 @@ bool spSplitSPKDArray(SPKDArray kdArr, int coor, SPKDArray* kdLeft, SPKDArray* k
         return false;
     }
     *kdRight = spInitSPKDArray((kdArr->array[coor]) + leftSize, rightSize);
+    if(!(*kdRight)){
+        spDestroyKDArray(*kdLeft, (*kdLeft)->numOfPoints);
+        return false;
+    }
     return true;
 }
