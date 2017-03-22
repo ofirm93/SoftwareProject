@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "SPKDArray.h"
+#include "SPBPriorityQueue.h"
 
 int coordinate = 0;
 
@@ -15,10 +16,15 @@ struct sp_kd_array_t{
     int numOfPoints;
 };
 
-void spDestroyKDArray(SPKDArray arr, int i) {
-    for (int j = 0; j < i; j++) {
-        free(arr->array[j]);
+void spDestroyKDArray(SPKDArray arr, int lastInitializedDim) {
+    for (int i = 0; i < lastInitializedDim; ++i) {
+        free(arr->sortArray[i]);
     }
+    for (int i = 0; i < arr->numOfPoints; ++i) {
+        spPointDestroy(arr->pointsArray[i]);
+    }
+    free(arr->sortArray);
+    free(arr->pointsArray);
     free(arr);
 }
 
@@ -46,21 +52,16 @@ SPKDArray spkdArrayConstructor(int dimension, int size){
     for (int i = 0; i < dimension; ++i) {
         arr->sortArray[i] = malloc(size * sizeof(int));
         if(!(arr->sortArray[i])){
-            for (int j = 0; j < i; ++j) {
-                free(arr->sortArray[j]);
-            }
-            free(arr->sortArray);
-            free(arr->pointsArray);
-            free(arr);
+            spDestroyKDArray(arr, i);
             return NULL;
         }
     }
     return arr;
 }
 
-int comparator(const void* point1, const void* point2){
-    double value1 = spPointGetAxisCoor((SPPoint*)point1, coordinate);
-    double value2 = spPointGetAxisCoor((SPPoint*)point2, coordinate);
+int comparator(const void* element1, const void* element2){
+    double value1 = (*(BPQueueElement*)element1).value;
+    double value2 = (*(BPQueueElement*)element2).value;
     if(value1 - value2 == 0){
         return 0;
     }
@@ -71,26 +72,37 @@ int comparator(const void* point1, const void* point2){
 }
 
 SPKDArray spInitSPKDArray(SPPoint** pointsArr, int arrSize){
-    if(!pointsArr || arrSize < 1){
+    if(!pointsArr || arrSize < 1){ // input check
         return NULL;
     }
-    int pointDim = spPointGetDimension(pointsArr[0]);
+    int pointDim = spPointGetDimension(pointsArr[0]); // basic KDArray initialization
     SPKDArray array = spkdArrayConstructor(pointDim, arrSize);
     if (!array){
         return NULL;
     }
-    for (int i = 0; i < arrSize; ++i) {
-        array->pointsArray[i] = pointsArr[i];
+  
+    for (int i = 0; i < arrSize; ++i) { // update to concrete points array
+        array->pointsArray[i] = spPointCopy(pointsArr[i]);
     }
-    // TODO start editing from here
-    for (int i = 0; i < pointDim; ++i) {
+
+    BPQueueElement* sortingArr = malloc(arrSize * sizeof(BPQueueElement)); // initialize helper array
+    if (!sortingArr) {
+        spDestroyKDArray(array, pointDim);
+        return NULL;
+    }
+
+    for (int i = 0; i < pointDim; ++i) { // sorting by all coordinates
         for (int j = 0; j < arrSize; ++j) {
-            array->array[i][j] = pointsArr[j];
+            sortingArr[j].index = j;
+            sortingArr[j].value = spPointGetAxisCoor(array->pointsArray[j], i);
         }
-        coordinate = i;
-        qsort(array->array[i], (size_t) arrSize, sizeof(SPPoint*), comparator);
+        qsort(sortingArr, (size_t) arrSize, sizeof(BPQueueElement), comparator);
+        for (int j = 0; j < arrSize; ++j) {
+            array->sortArray[i][j] = sortingArr[j].index;
+        }
     }
-    coordinate = 0;
+
+    free(sortingArr);
     return array;
 }
 
