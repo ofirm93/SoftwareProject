@@ -26,7 +26,7 @@ void spDestroyKDArray(SPKDArray arr, int lastInitializedDim) {
     free(arr);
 }
 
-SPKDArray spkdArrayConstructor(int dimension, int size){
+SPKDArray spKDArrayConstructor(int dimension, int size){
     if(dimension < 1 || size < 1){
         return NULL;
     }
@@ -74,7 +74,7 @@ SPKDArray spInitSPKDArray(SPPoint** pointsArr, int arrSize){
         return NULL;
     }
     int pointDim = spPointGetDimension(pointsArr[0]); // basic KDArray initialization
-    SPKDArray array = spkdArrayConstructor(pointDim, arrSize);
+    SPKDArray array = spKDArrayConstructor(pointDim, arrSize);
     if (!array){
         return NULL;
     }
@@ -105,7 +105,7 @@ SPKDArray spInitSPKDArray(SPPoint** pointsArr, int arrSize){
 }
 
 /**
- * TODO improve this method
+ * TODO write documentation
  * @param kdArr
  * @param coor
  * @return
@@ -118,11 +118,11 @@ SPKDArray* spSplitSPKDArray(SPKDArray kdArr, int coor){
     int dim = kdArr->dimension;
     int rightSize = size / 2;
     int leftSize = size - rightSize;
-    SPKDArray kdLeft = spkdArrayConstructor(dim, leftSize);
+    SPKDArray kdLeft = spKDArrayConstructor(dim, leftSize);
     if(!kdLeft){
         return NULL;
     }
-    SPKDArray kdRight = spkdArrayConstructor(dim, rightSize);
+    SPKDArray kdRight = spKDArrayConstructor(dim, rightSize);
     if(!kdRight){
         spDestroyKDArray(kdLeft, kdLeft->dimension);
         return NULL;
@@ -176,8 +176,41 @@ SPPoint* spGetSPKDArrayPoint(SPKDArray kdArr, int index){
 
 int spGetSPKDArraySize(SPKDArray kdArr){
     if(!kdArr){
-        return NULL;
+        return 0;
     }
     return kdArr->numOfPoints;
+}
+
+// TODO Delete the next method - its for testing only
+#include <stdio.h>
+void spPrintKDArrayDetails(SPKDArray kdArr){
+    if(kdArr){
+        int size = kdArr->numOfPoints;
+        int dim = kdArr->dimension;
+        printf("The size of the array is : %d\n", size);
+        printf("The dimension of the array is : %d\n", dim);
+        printf("The points in the array are :\n");
+        for (int i = 0; i < size; ++i) {
+            printf("point %2d : (", i);
+            for (int j = 0; j < dim; ++j) {
+                if(j > 0){
+                    printf(", ");
+                }
+                printf("%2lf", spPointGetAxisCoor(kdArr->pointsArray[i], j));
+            }
+            printf(")\n");
+        }
+        printf("The sorted indices in the array are :\n");
+        for (int i = 0; i < dim; ++i) {
+            printf("dimension %2d : (", i);
+            for (int j = 0; j < size; ++j) {
+                if(j > 0){
+                    printf(", ");
+                }
+                printf("%2d", kdArr->sortArray[i][j]);
+            }
+            printf(")\n");
+        }
+    }
 }
 

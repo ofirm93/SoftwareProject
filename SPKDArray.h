@@ -8,21 +8,11 @@
 #define SOFTWAREPROJECT_SPKDARRAY_H
 
 typedef struct sp_kd_array_t* SPKDArray;
-/**
-struct sp_kd_array_t{
-    SPPoint** pointsArray;
-    int** sortArray;
-    int dimension;
-    int numOfPoints;
-};
-
-*/
 
 //d * nlogn
 SPKDArray spInitSPKDArray(SPPoint** arr, int size);
 
 SPKDArray* spSplitSPKDArray(SPKDArray kdArr, int coor);
-
 
 /**
  * TODO documentation
@@ -31,5 +21,9 @@ SPKDArray* spSplitSPKDArray(SPKDArray kdArr, int coor);
 SPPoint* spGetSPKDArrayPoint(SPKDArray kdArr, int index);
 
 int spGetSPKDArraySize(SPKDArray kdArr);
+
+
+// TODO Delete the next method - its for testing only
+void spPrintKDArrayDetails(SPKDArray kdArr);
 
 #endif //SOFTWAREPROJECT_SPKDARRAY_H
