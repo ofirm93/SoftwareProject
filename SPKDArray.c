@@ -7,6 +7,8 @@
 #include "SPKDArray.h"
 #include "SPBPriorityQueue.h"
 
+int coordinate = 0;
+
 struct sp_kd_array_t{
     SPPoint** pointsArray;
     int** sortArray;
@@ -78,7 +80,7 @@ SPKDArray spInitSPKDArray(SPPoint** pointsArr, int arrSize){
     if (!array){
         return NULL;
     }
-
+  
     for (int i = 0; i < arrSize; ++i) { // update to concrete points array
         array->pointsArray[i] = spPointCopy(pointsArr[i]);
     }
