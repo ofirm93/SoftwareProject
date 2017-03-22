@@ -44,7 +44,7 @@ SPKDArray spkdArrayConstructor(int dimension, int size){
         return NULL;
     }
     arr->sortArray = malloc(dimension * sizeof(int*));
-    if(!arr->sortArray){
+    if(!(arr->sortArray)){
         free(arr->pointsArray);
         free(arr);
         return NULL;
@@ -132,3 +132,11 @@ bool spSplitSPKDArray(SPKDArray kdArr, int coor, SPKDArray* kdLeft, SPKDArray* k
     }
     return true;
 }
+
+SPPoint* spGetSPKDArrayPoint(SPKDArray kdArr, int index){
+    if(!kdArr || index < 0 || index >= kdArr->numOfPoints || !(kdArr->pointsArray)){
+        return NULL;
+    }
+    return kdArr->pointsArray[index];
+}
+

@@ -28,7 +28,7 @@ SPKDArray* spSplitSPKDArray(SPKDArray kdArr, int coor);
  * TODO documentation
  * Get point i in pointsArray
  */
-SPPoint* spGetSPKDArrayPoint(SPKDArray kdArr, int i);
+SPPoint* spGetSPKDArrayPoint(SPKDArray kdArr, int index);
 
 
 
