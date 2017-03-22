@@ -30,6 +30,6 @@ SPKDArray* spSplitSPKDArray(SPKDArray kdArr, int coor);
  */
 SPPoint* spGetSPKDArrayPoint(SPKDArray kdArr, int index);
 
-
+int spGetSPKDArraySize(SPKDArray kdArr);
 
 #endif //SOFTWAREPROJECT_SPKDARRAY_H
