@@ -12,6 +12,8 @@ typedef struct sp_kd_array_t* SPKDArray;
 //d * nlogn
 SPKDArray spInitSPKDArray(SPPoint** arr, int size);
 
+void spDestroyKDArray(SPKDArray arr);
+
 SPKDArray* spSplitSPKDArray(SPKDArray kdArr, int coor);
 
 /**

@@ -14,16 +14,24 @@ struct sp_kd_array_t{
     int numOfPoints;
 };
 
-void spDestroyKDArray(SPKDArray arr, int lastInitializedDim) {
-    for (int i = 0; i < lastInitializedDim; ++i) {
-        free(arr->sortArray[i]);
+void spDestroyKDArrayWithDim(SPKDArray arr, int lastInitializedDim) {
+    if(arr){
+        for (int i = 0; i < lastInitializedDim; ++i) {
+            free(arr->sortArray[i]);
+        }
+        for (int i = 0; i < arr->numOfPoints; ++i) {
+            spPointDestroy(arr->pointsArray[i]);
+        }
+        free(arr->sortArray);
+        free(arr->pointsArray);
+        free(arr);
     }
-    for (int i = 0; i < arr->numOfPoints; ++i) {
-        spPointDestroy(arr->pointsArray[i]);
+}
+
+void spDestroyKDArray(SPKDArray arr){
+    if (arr){
+        spDestroyKDArrayWithDim(arr, arr->dimension);
     }
-    free(arr->sortArray);
-    free(arr->pointsArray);
-    free(arr);
 }
 
 SPKDArray spKDArrayConstructor(int dimension, int size){
@@ -50,7 +58,7 @@ SPKDArray spKDArrayConstructor(int dimension, int size){
     for (int i = 0; i < dimension; ++i) {
         arr->sortArray[i] = malloc(size * sizeof(int));
         if(!(arr->sortArray[i])){
-            spDestroyKDArray(arr, i);
+            spDestroyKDArrayWithDim(arr, i);
             return NULL;
         }
     }
@@ -85,7 +93,7 @@ SPKDArray spInitSPKDArray(SPPoint** pointsArr, int arrSize){
 
     BPQueueElement* sortingArr = malloc(arrSize * sizeof(BPQueueElement)); // initialize helper array
     if (!sortingArr) {
-        spDestroyKDArray(array, pointDim);
+        spDestroyKDArrayWithDim(array, pointDim);
         return NULL;
     }
 
@@ -124,14 +132,14 @@ SPKDArray* spSplitSPKDArray(SPKDArray kdArr, int coor){
     }
     SPKDArray kdRight = spKDArrayConstructor(dim, rightSize);
     if(!kdRight){
-        spDestroyKDArray(kdLeft, kdLeft->dimension);
+        spDestroyKDArrayWithDim(kdLeft, kdLeft->dimension);
         return NULL;
     }
 
     bool* isInLeft = malloc(size * sizeof(bool));
     if (!isInLeft){
-        spDestroyKDArray(kdLeft, dim);
-        spDestroyKDArray(kdRight, dim);
+        spDestroyKDArrayWithDim(kdLeft, dim);
+        spDestroyKDArrayWithDim(kdRight, dim);
         return NULL;
     }
 
