@@ -8,8 +8,10 @@
 #include "../SPPoint.c"
 
 
-
-int main() {
+int main(int argc, const char* argv[]) {
+    for(int i=0; i< argc; i++){
+        printf("%s\n",argv[i]);
+    }
     int numOfPoints = 4;
     int dimension = 3;
     int coordinate = 2;
