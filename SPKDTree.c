@@ -26,6 +26,12 @@ struct sp_kd_tree_t{
 	SPKDArray features;
 };
 
+/**
+ * *******************
+ * KD TREE NODE
+ *
+ * *******************
+ */
 KDTreeNode* spInitKDTreeNode(int dim, double val, KDTreeNode* left, KDTreeNode* right, SPPoint* data){
 
 	KDTreeNode* kdNode = malloc(sizeof(KDTreeNode));
@@ -40,12 +46,70 @@ KDTreeNode* spInitKDTreeNode(int dim, double val, KDTreeNode* left, KDTreeNode* 
 	return kdNode;
 }
 
+
+bool isLeaf(KDTreeNode* node){
+	if(!node){
+		return false;
+	}
+	if(!node->left && !node->right){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+int spKDTreeNodeGetDim(KDTreeNode* node){
+	return node->dim ;
+}
+
+
+double spKDTreeNodeGetVal(KDTreeNode* node){
+	return node->val ;
+}
+
+KDTreeNode* spKDTreeNodeGetLeft(KDTreeNode* node){
+	return node->left;
+}
+
+KDTreeNode* spKDTreeNodeGetRight(KDTreeNode* node){
+	return node->right ;
+}
+
+SPPoint* spKDTreeNodeGetPoint(KDTreeNode* node) {
+	return node->data;
+}
+
+int spKDTreeNodeGetPointIndex(KDTreeNode* node){
+	return spPointGetIndex(node->data) ;
+}
+
+double spKDTreeNodeGetPointVal(KDTreeNode* node){
+	return spPointGetAxisCoor(node->data, node->dim);
+}
+
+
+
 void spDestroyKDTreeNode(KDTreeNode* node){
 	spPointDestroy(node -> data);
 	spDestroyKDTreeNode(node->left);
 	spDestroyKDTreeNode(node->right);
 	free(node);
 }
+
+
+
+/**
+ * *******************
+ * KD TREE
+ *
+ * *******************
+ */
+
+KDTreeNode* spGetSPKDTreeRoot(SPKDTree* tree){
+	return tree->root;
+}
+
 
 KDTreeNode* spInitSPKDTreeRec(SPKDArray kdArray, SP_KD_SPLIT_MODE splitMethod, int pointDim, int size,
 		int prevSplitDim){
