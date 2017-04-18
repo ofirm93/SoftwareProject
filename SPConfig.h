@@ -196,6 +196,30 @@ SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
 SP_CONFIG_MSG spConfigGetKDTreeSplitMethod(const SPConfig config, SP_KD_SPLIT_MODE* splitMethod);
 
 /**
+ * TODO documentation
+ *  Basically returns imagesDirectory path in pointer on success
+ */
+SP_CONFIG_MSG spConfigGetImagesDirectory(const SPConfig config, char* imagesDirectory);
+
+/**
+ * TODO documentation
+ *  Basically returns imagesPrefix in pointer on success
+ */
+SP_CONFIG_MSG spConfigGetImagesPrefix(const SPConfig config, char* imagesPrefix);
+
+/**
+ * TODO documentation
+ *  Basically returns imagesSuffix in pointer on success
+ */
+SP_CONFIG_MSG spConfigGetImagesSuffix(const SPConfig config, char* imagesSuffix);
+
+/**
+ * TODO documentation
+ *  Basically returns KNN on success
+ */
+int spConfigGetKNN(const SPConfig config, SP_CONFIG_MSG* msg);
+
+/**
  * Frees all memory resources associate with config. 
  * If config == NULL nothig is done.
  */
