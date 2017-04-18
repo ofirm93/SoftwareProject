@@ -152,5 +152,3 @@ SPPoint*** NotExtractionModeAct(char* directory, char* imagePrefix, char* imageS
 	free(numOfFeatures);
 	return gallery;
 }
-
-

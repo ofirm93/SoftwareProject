@@ -30,6 +30,7 @@ void ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffix,
 		int spNumOfImages, int spNumOfFeatures, sp::ImageProc spIp);
 
 
+
 /**
  * Using this function to start Non-ExtractionMode.
  * In this mode, we extract the features from the files we created earlier

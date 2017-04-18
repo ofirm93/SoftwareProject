@@ -597,6 +597,48 @@ SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config){
     return SP_CONFIG_SUCCESS;
 }
 
+SP_CONFIG_MSG spConfigGetKDTreeSplitMethod(const SPConfig config, SP_KD_SPLIT_MODE* splitMethod){
+	if (splitMethod == NULL || !config) {
+		return SP_CONFIG_INVALID_ARGUMENT;
+	}
+	*splitMethod = config->KDTreeSplitMethod;
+	return SP_CONFIG_SUCCESS;
+}
+
+
+SP_CONFIG_MSG spConfigGetImagesDirectory(const SPConfig config, char* imagesDirectory){
+	if (imagesDirectory == NULL || config == NULL) {
+		return SP_CONFIG_INVALID_ARGUMENT;
+	}
+	sprintf(imagesDirectory, "%s", config->imagesDirectory);
+	return SP_CONFIG_SUCCESS;
+}
+
+SP_CONFIG_MSG spConfigGetImagesPrefix(const SPConfig config, char* imagesPrefix){
+	if (imagesPrefix == NULL || config == NULL) {
+		return SP_CONFIG_INVALID_ARGUMENT;
+	}
+	sprintf(imagesPrefix, "%s", config->imagesPrefix);
+	return SP_CONFIG_SUCCESS;
+}
+
+SP_CONFIG_MSG spConfigGetImagesSuffix(const SPConfig config, char* imagesSuffix){
+	if (imagesSuffix == NULL || config == NULL) {
+		return SP_CONFIG_INVALID_ARGUMENT;
+	}
+	sprintf(imagesSuffix, "%s", config->imagesSuffix);
+	return SP_CONFIG_SUCCESS;
+}
+
+int spConfigGetKNN(const SPConfig config, SP_CONFIG_MSG* msg){
+	if (config == NULL) {
+		*msg = SP_CONFIG_INVALID_ARGUMENT;
+		return -1;
+	}
+	*msg = SP_CONFIG_SUCCESS;
+	return config->KNN;
+}
+
 void spConfigDestroy(SPConfig config){
     if(config){
         free(config->imagesDirectory);
