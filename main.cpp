@@ -10,6 +10,8 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
+#include "main_aux.h"
+
 extern "C"{
     #include "SPConfig.h"
 }
@@ -51,7 +53,6 @@ int main(int argc, const char* argv[]) {
                 free(msg);
                 return 0;
             }
-            break;
         case SP_CONFIG_ALLOC_FAIL:break;
         case SP_CONFIG_INVALID_INTEGER:break;
         case SP_CONFIG_INVALID_STRING:break;

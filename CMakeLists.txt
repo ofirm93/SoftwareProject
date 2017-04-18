@@ -3,5 +3,18 @@ project(SoftwareProject)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES main.cpp SPConfig.c unit_tests/sp_config_unit_test.c SPKDArray.c SPKDArray.h unit_tests/sp_kd_array_unit_test.c)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake-build-debug)
+set(OpenCV_DIR "C:\\opencv\\sources")
+
+find_package(OpenCV REQUIRED)
+
+if( OpenCV_FOUND )
+    message( "Found OpenCV" )
+    message( "Includes: " ${OpenCV_INCLUDE_DIRS} )
+else()
+    message( "OpenCV not found, woot" )
+endif( OpenCV_FOUND )
+
+set(SOURCE_FILES main.cpp SPConfig.c unit_tests/sp_config_unit_test.c SPKDArray.c SPKDArray.h unit_tests/sp_kd_array_unit_test.c main_aux.cpp main_aux.h unit_tests/sp_main_aux_unit_test.c)
 add_executable(SoftwareProject ${SOURCE_FILES})
+target_link_libraries( SoftwareProject ${OpenCV_LIBS} )
