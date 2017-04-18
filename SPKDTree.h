@@ -9,8 +9,10 @@
 #define SPKDTREE_H_
 
 #include "SPKDArray.h"
+
 #include "SPConfig.h"
 #include "SPBPriorityQueue.h"
+
 //SPKDArray - pointer so remember to free
 
 //TODO delete after we set system var
@@ -18,6 +20,7 @@
 typedef struct sp_kd_tree_t SPKDTree;
 
 typedef struct sp_kd_tree_node_t KDTreeNode;
+
 
 
 
@@ -92,6 +95,7 @@ SPKDTree* spInitSPKDTree(SPPoint** arr, int size, int pointDim, SP_KD_SPLIT_MODE
  * Otherwise, NULL;
  */
 KDTreeNode* spGetSPKDTreeRoot(SPKDTree* tree);
+
 
 
 #endif /* SPKDTREE_H_ */

@@ -11,12 +11,15 @@
 #include <stdbool.h>
 #include <float.h>
 
+
 #define INVALID 1
+
 struct sp_kd_tree_node_t
 {
 	int dim;
 	double val;
-	KDTreeNode* left;
+
+  KDTreeNode* left;
 	KDTreeNode* right;
 	SPPoint* data;
 };
@@ -26,6 +29,7 @@ struct sp_kd_tree_t{
 	SPKDArray features;
 };
 
+
 /**
  * *******************
  * KD TREE NODE
@@ -33,7 +37,6 @@ struct sp_kd_tree_t{
  * *******************
  */
 KDTreeNode* spInitKDTreeNode(int dim, double val, KDTreeNode* left, KDTreeNode* right, SPPoint* data){
-
 	KDTreeNode* kdNode = malloc(sizeof(KDTreeNode));
 	if(!kdNode){
 		return NULL;
@@ -45,6 +48,7 @@ KDTreeNode* spInitKDTreeNode(int dim, double val, KDTreeNode* left, KDTreeNode* 
 	kdNode -> data = spPointCopy(data);
 	return kdNode;
 }
+
 
 
 bool isLeaf(KDTreeNode* node){
@@ -133,10 +137,12 @@ KDTreeNode* spInitSPKDTreeRec(SPKDArray kdArray, SP_KD_SPLIT_MODE splitMethod, i
 		if(!spreadArr){
 			return NULL;
 		}
+
 		double tmpMax = -DBL_MAX , tmpMin = DBL_MAX;
 		double coor = 0;
 		for (int j=0; j<pointDim; j++){
 			for(int i=0; i<size; i++){
+
 				SPPoint* point = spGetSPKDArrayPoint(kdArray,i);
 				if(!point){
 					free(spreadArr);
@@ -151,10 +157,12 @@ KDTreeNode* spInitSPKDTreeRec(SPKDArray kdArray, SP_KD_SPLIT_MODE splitMethod, i
 					tmpMin = coor;
 				}
 				free(point); // needed free?
+
 			}
 			spreadArr[j] = tmpMax - tmpMin;
 			tmpMax = -DBL_MAX;
 			tmpMin = DBL_MAX;
+
 		}
 		for(int i=0; i<pointDim; i++){
 			if(tmpMax < spreadArr[i]){
