@@ -16,6 +16,18 @@
 #define QRY_IMG_MSG "Please enter an image path:\n"
 #define EXIT_MSG "Exiting...\n"
 
+#define ERR_MSG_INVALID_ARG "One of the arguments supplied to the method is invalid."
+#define ERR_MSG_INVALID_COMM_LINE_ARG "\"Invalid command line arguments : use -c <config_filename>\"\n"
+#define ERR_MSG_READ_CONF_FILE "Error while reading the configuration file : "
+#define ERR_MSG_MISSING_DIR "Didn't find images directory path."
+#define ERR_MSG_MISSING_PREFIX "Didn't find images prefix."
+#define ERR_MSG_MISSING_SUFFIX "Didn't find images suffix."
+#define ERR_MSG_MISSING_NUM_IMAGES "Didn't find the number of images."
+#define ERR_MSG_CANNOT_OPEN_DEFAULT_CONF_FILE "\"The default configuration file spcbir.config couldn’t be open\"\n"
+#define ERR_MSG_CANNOT_OPEN_CONF_FILE "\"The configuration file %s couldn’t be open\"\n"
+#define ERR_MSG_ALLOC_FAIL "Error : An allocation error happened."
+#define ERR_MSG_INVALID_INTEGER "An integer value was expected"
+#define ERR_MSG_INVALID_STRING "One string value was expected"
 extern "C"{
     #include "SPConfig.h"
     #include "main_aux.h"
@@ -25,63 +37,68 @@ extern "C"{
 using namespace std;
 
 int main(int argc, const char* argv[]) {
-    SP_CONFIG_MSG* msg = (SP_CONFIG_MSG*) malloc(sizeof(SP_CONFIG_MSG));
-    if(!msg) {
-
-        // TODO alloc problem report
-        return 1;
-    }
+    SP_CONFIG_MSG configMsg;
     bool isDefaultConfig = true;
     SPConfig config;
-
+    
     if(argc == 3 && strcmp(argv[1], "-c") == 0){
         isDefaultConfig = false;
-        config = spConfigCreate(argv[2],msg);
+        config = spConfigCreate(argv[2],&configMsg);
     }
     else if(argc == 1){
-        config = spConfigCreate("spcbir.config", msg);
+        config = spConfigCreate("spcbir.config", &configMsg);
     }
     else{
-        free(msg);
-        printf("\"Invalid command line : use -c <config_filename>\"\n");
+        printf(ERR_MSG_INVALID_COMM_LINE_ARG);
         return 0;
     }
-    switch (*msg){
-        case SP_CONFIG_MISSING_DIR:break;
-        case SP_CONFIG_MISSING_PREFIX:break;
-        case SP_CONFIG_MISSING_SUFFIX:break;
-        case SP_CONFIG_MISSING_NUM_IMAGES:break;
-        case SP_CONFIG_CANNOT_OPEN_FILE :
-            if(isDefaultConfig){
-                printf("\"The default configuration file spcbir.config couldn’t be open\"\n");
-                free(msg);
-                return 0;
-            }
-            else{
-                printf("\"The configuration file %s couldn’t be open\"\n", argv[2]);
-                free(msg);
-                return 0;
-            }
-        case SP_CONFIG_ALLOC_FAIL:break;
-        case SP_CONFIG_INVALID_INTEGER:break;
-        case SP_CONFIG_INVALID_STRING:break;
+    switch (configMsg){
         case SP_CONFIG_INVALID_ARGUMENT :
             break;
+        case SP_CONFIG_MISSING_DIR:
+            printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_MISSING_DIR);
+            return 0;
+        case SP_CONFIG_MISSING_PREFIX:
+            printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_MISSING_PREFIX);
+            return 0;
+        case SP_CONFIG_MISSING_SUFFIX:
+            printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_MISSING_SUFFIX);
+            return 0;
+        case SP_CONFIG_MISSING_NUM_IMAGES:
+            printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_MISSING_NUM_IMAGES);
+            return 0;
+        case SP_CONFIG_CANNOT_OPEN_FILE :
+            if(isDefaultConfig){
+                printf(ERR_MSG_CANNOT_OPEN_DEFAULT_CONF_FILE);
+            }
+            else{
+                printf(ERR_MSG_CANNOT_OPEN_CONF_FILE, argv[2]);
+            }
+            return 0;
+        case SP_CONFIG_ALLOC_FAIL:
+            printf(ERR_MSG_ALLOC_FAIL);
+            return 0;
+        case SP_CONFIG_INVALID_INTEGER:
+            printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_INVALID_INTEGER);
+            return 0;
+        case SP_CONFIG_INVALID_STRING:
+            printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_INVALID_STRING);
+            return 0;
+
         case SP_CONFIG_INDEX_OUT_OF_RANGE:break;
         case SP_CONFIG_SUCCESS:break;
     }
-    free(msg);
 
     char loggerFilename[MAX_PATH_LENGTH];
-    *msg = spConfigGetLoggerFilename(config, loggerFilename);
-    if(*msg == SP_CONFIG_INVALID_ARGUMENT){
+    configMsg = spConfigGetLoggerFilename(config, loggerFilename);
+    if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
         // TODO problem with arguments
-
+        
         return 1;
     }
     int loggerLevelNum;
-    *msg = spConfigGetLoggerLevel(config, &loggerLevelNum);
-    switch (*msg){
+    configMsg = spConfigGetLoggerLevel(config, &loggerLevelNum);
+    switch (configMsg){
         case SP_CONFIG_INVALID_ARGUMENT :
             break;
         case SP_CONFIG_SUCCESS:
@@ -117,49 +134,51 @@ int main(int argc, const char* argv[]) {
             //TODO print error
             return 1;
     }
-    bool isExtractionMode = spConfigIsExtractionMode(config, msg);
-    if(*msg == SP_CONFIG_INVALID_ARGUMENT){
+    // TODO from here on every message is to the logger only.
+    bool isExtractionMode = spConfigIsExtractionMode(config, &configMsg);
+    if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
+        spLoggerPrintError(ERR_MSG_INVALID_ARG, __FILE__, __func__, __LINE__);
         // TODO problem with arguments
 
         return 2;
     }
     // Get all the fields required to extract features.
     char imagesDirectory[MAX_PATH_LENGTH];
-    *msg = spConfigGetImagesDirectory(config, imagesDirectory);
-    if(*msg == SP_CONFIG_INVALID_ARGUMENT){
+    configMsg = spConfigGetImagesDirectory(config, imagesDirectory);
+    if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
         // TODO problem with arguments
         return 3;
     }
     char imagesPrefix[MAX_PATH_LENGTH];
-    *msg = spConfigGetImagesPrefix(config, imagesPrefix);
-    if(*msg == SP_CONFIG_INVALID_ARGUMENT){
+    configMsg = spConfigGetImagesPrefix(config, imagesPrefix);
+    if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
         // TODO problem with arguments
         return 4;
     }
     char imagesSuffix[MAX_PATH_LENGTH];
-    *msg = spConfigGetImagesSuffix(config, imagesSuffix);
-    if(*msg == SP_CONFIG_INVALID_ARGUMENT){
+    configMsg = spConfigGetImagesSuffix(config, imagesSuffix);
+    if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
         // TODO problem with arguments
         return 5;
     }
-    int numOfImages = spConfigGetNumOfImages(config, msg);
-    if(*msg == SP_CONFIG_INVALID_ARGUMENT){
+    int numOfImages = spConfigGetNumOfImages(config, &configMsg);
+    if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
         // TODO problem with arguments
         return 6;
     }
-    int numOfFeatures = spConfigGetNumOfFeatures(config, msg);
-    if(*msg == SP_CONFIG_INVALID_ARGUMENT){
+    int numOfFeatures = spConfigGetNumOfFeatures(config, &configMsg);
+    if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
         // TODO problem with arguments
         return 7;
     }
-    int dim = spConfigGetPCADim(config, msg);
-    if(*msg == SP_CONFIG_INVALID_ARGUMENT){
+    int dim = spConfigGetPCADim(config, &configMsg);
+    if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
         // TODO problem with arguments
         return 8;
     }
     SP_KD_SPLIT_MODE kdSplitMode;
-    *msg = spConfigGetKDTreeSplitMethod(config, &kdSplitMode);
-    if(*msg == SP_CONFIG_INVALID_ARGUMENT){
+    configMsg = spConfigGetKDTreeSplitMethod(config, &kdSplitMode);
+    if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
         // TODO problem with arguments
         return 9;
     }
@@ -192,14 +211,14 @@ int main(int argc, const char* argv[]) {
         } else{
             int* KNN = spGetGetBestKMatches(tree, queryStr, config);
             if(KNN){
-                bool isGUIMode = spConfigMinimalGui(config, msg);
-                if(*msg == SP_CONFIG_INVALID_ARGUMENT){
+                bool isGUIMode = spConfigMinimalGui(config, &configMsg);
+                if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
                     // TODO problem with arguments
                     //TODO free memory
                     return 10;
                 }
-                int k = spConfigGetKNN(config, msg);
-                if(*msg == SP_CONFIG_INVALID_ARGUMENT){
+                int k = spConfigGetKNN(config, &configMsg);
+                if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
                     // TODO problem with arguments
                     // TODO free all resources
                     return 11;
