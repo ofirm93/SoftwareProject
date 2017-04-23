@@ -25,9 +25,17 @@
 #define ERR_MSG_MISSING_NUM_IMAGES "Didn't find the number of images."
 #define ERR_MSG_CANNOT_OPEN_DEFAULT_CONF_FILE "\"The default configuration file spcbir.config couldn’t be open\"\n"
 #define ERR_MSG_CANNOT_OPEN_CONF_FILE "\"The configuration file %s couldn’t be open\"\n"
-#define ERR_MSG_ALLOC_FAIL "Error : An allocation error happened."
+#define ERR_MSG_ALLOC_FAIL "Error : An allocation error happened "
 #define ERR_MSG_INVALID_INTEGER "An integer value was expected"
 #define ERR_MSG_INVALID_STRING "One string value was expected"
+#define ERR_MSG_GENERAL "General error. Unexpectedly, the program reached to a code where it shouldn't supposed to.\n"
+#define ERR_MSG_CONFIG_INVALID_ARGUMENT "Error : The configuration file wasn't given to the method"
+#define ERR_MSG_INVALID_ARGUMENT_LOGGER_FILENAME "Error : One of the arguments given to the method spConfigGetLoggerFilename() is invalid."
+#define ERR_MSG_INVALID_ARGUMENT_LOGGER_LEVEL_NUM "Error : One of the arguments given to the method spConfigGetLoggerLevel() is invalid."
+#define ERR_MSG_INVALID_ARGUMENT_LOGGER_LEVEL_FROM_NUM "Error : One of the arguments given to the method spLoggerLevelFromNum() is invalid."
+#define ERR_MSG_CREATE_CONF "in the method spConfigCreate()"
+#define ERR_MSG_CREATE_LOGGER "in the method spLoggerCreate()"
+#define ERR_MSG_CANNOT_OPEN_LOGGER_FILE "Error : couldn't open logger file."
 extern "C"{
     #include "SPConfig.h"
     #include "main_aux.h"
@@ -54,7 +62,8 @@ int main(int argc, const char* argv[]) {
     }
     switch (configMsg){
         case SP_CONFIG_INVALID_ARGUMENT :
-            break;
+            printf(ERR_MSG_CONFIG_INVALID_ARGUMENT);
+            return 0;
         case SP_CONFIG_MISSING_DIR:
             printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_MISSING_DIR);
             return 0;
@@ -76,7 +85,7 @@ int main(int argc, const char* argv[]) {
             }
             return 0;
         case SP_CONFIG_ALLOC_FAIL:
-            printf(ERR_MSG_ALLOC_FAIL);
+            printf("%s%s", ERR_MSG_ALLOC_FAIL, ERR_MSG_CREATE_CONF);
             return 0;
         case SP_CONFIG_INVALID_INTEGER:
             printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_INVALID_INTEGER);
@@ -84,40 +93,41 @@ int main(int argc, const char* argv[]) {
         case SP_CONFIG_INVALID_STRING:
             printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_INVALID_STRING);
             return 0;
-
-        case SP_CONFIG_INDEX_OUT_OF_RANGE:break;
-        case SP_CONFIG_SUCCESS:break;
+        case SP_CONFIG_SUCCESS:
+            break;
+        default:
+            printf(ERR_MSG_GENERAL);
+            return 0;
     }
 
     char loggerFilename[MAX_PATH_LENGTH];
     configMsg = spConfigGetLoggerFilename(config, loggerFilename);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        // TODO problem with arguments
-        
+        printf(ERR_MSG_INVALID_ARGUMENT_LOGGER_FILENAME);
         return 1;
     }
     int loggerLevelNum;
     configMsg = spConfigGetLoggerLevel(config, &loggerLevelNum);
     switch (configMsg){
         case SP_CONFIG_INVALID_ARGUMENT :
-            break;
+            printf(ERR_MSG_INVALID_ARGUMENT_LOGGER_LEVEL_NUM);
+            return 1;
         case SP_CONFIG_SUCCESS:
             break;
         default:
-            //TODO print error
+            printf(ERR_MSG_GENERAL);
             return 1;
     }
     SP_LOGGER_LEVEL loggerLevel;
     SP_LOGGER_MSG loggerMsg = spLoggerLevelFromNum(loggerLevelNum, &loggerLevel);
     switch (loggerMsg){
         case SP_LOGGER_INVAlID_ARGUMENT :
-            break;
-        case SP_LOGGER_UNDIFINED:
-            break;
+            printf(ERR_MSG_INVALID_ARGUMENT_LOGGER_LEVEL_FROM_NUM);
+            return 1;
         case SP_LOGGER_SUCCESS:
             break;
         default:
-            //TODO print error
+            printf(ERR_MSG_GENERAL);
             return 1;
     }
     loggerMsg = spLoggerCreate(loggerFilename, loggerLevel);
@@ -125,13 +135,15 @@ int main(int argc, const char* argv[]) {
         case SP_LOGGER_DEFINED :
             break;
         case SP_LOGGER_OUT_OF_MEMORY:
-            break;
+            printf("%s%s", ERR_MSG_ALLOC_FAIL, ERR_MSG_CREATE_LOGGER);
+            return 1;
         case SP_LOGGER_CANNOT_OPEN_FILE:
-            break;
+            printf(ERR_MSG_CANNOT_OPEN_LOGGER_FILE);
+            return 1;
         case SP_LOGGER_SUCCESS:
             break;
         default:
-            //TODO print error
+            printf(ERR_MSG_GENERAL);
             return 1;
     }
     // TODO from here on every message is to the logger only.
@@ -182,25 +194,21 @@ int main(int argc, const char* argv[]) {
         // TODO problem with arguments
         return 9;
     }
-    SPPoint*** features;
-
+    SPPoint** features;
+    int totalNumOfFeatures = 0; // TODO Get features number
     if(isExtractionMode){
         // TODO extract features
         sp::ImageProc s = sp::ImageProc(config);
         // TODO bar should alter the method so it would be correct
-        features = ExtractionModeAct(imagesDirectory, imagesPrefix, imagesSuffix, numOfImages, numOfFeatures, s);
-
+        features = ExtractionModeAct(imagesDirectory, imagesPrefix, imagesSuffix, numOfImages, numOfFeatures, s, &totalNumOfFeatures);
     } else{
-        features = NonExtractionModeAct(imagesDirectory, imagesPrefix, imagesSuffix, numOfImages, numOfFeatures);
+        features = NonExtractionModeAct(imagesDirectory, imagesPrefix, imagesSuffix, numOfImages, numOfFeatures, &totalNumOfFeatures);
     }
     if(!features){
         // TODO Error in extracting features
         return 8;
     }
-
-    SPPoint** gallery = NULL; // TODO flatten features from 3d to only 2d array
-    int gallerySize = 0; // TODO Get features number
-    SPKDTree* tree = spInitSPKDTree(gallery, gallerySize, dim, kdSplitMode);
+    SPKDTree* tree = spInitSPKDTree(features, totalNumOfFeatures, dim, kdSplitMode);
     bool isEnded = false;
     char* queryStr;
     while(!isEnded){

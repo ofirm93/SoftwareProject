@@ -21,7 +21,7 @@ int spPCADimension = 12;//for now only
 
 //wont need the variables after we have system variables
 SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffix,
-		int spNumOfImages, int spNumOfFeatures, sp::ImageProc spIp){
+		int spNumOfImages, int spNumOfFeatures, sp::ImageProc spIp, int* totalNumOfFeatures){
 
 	char featSuffix[7] = ".feats";
 	int* numOfFeatures = (int*) malloc(sizeof(int));
@@ -169,6 +169,7 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 			k++;
 		}
 	}
+	*totalNumOfFeatures = totalNumOfFeat;
 	free(numOfFeatures);
 	free(numOfFeatArray);
 	return allImageFeatures;
@@ -178,7 +179,7 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 
 
 SPPoint** NotExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffix,
-		int spNumOfImages, int spNumOfFeatures){
+		int spNumOfImages, int spNumOfFeatures, int* totalNumOfFeatures){
 	const char readMode = 'r';
 	int checker = 0;
 	//creating the returned variable
@@ -279,6 +280,8 @@ SPPoint** NotExtractionModeAct(char* directory, char* imagePrefix, char* imageSu
 			k++;
 		}
 	}
+
+	*totalNumOfFeatures = totalNumOfFeat;
 	free(featValArray);
 	free(numOfFeatures);
 	free(numOfFeatArray);
