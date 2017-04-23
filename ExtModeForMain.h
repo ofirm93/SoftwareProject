@@ -26,7 +26,7 @@
  *
  *
  */
-void ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffix,
+SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffix,
 		int spNumOfImages, int spNumOfFeatures, sp::ImageProc spIp);
 
 
