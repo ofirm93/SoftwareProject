@@ -2,15 +2,20 @@
 // Created by Ofir on 29/03/2017.
 //
 
-#include "main_aux.h"
+
 #include <cstdio>
 #include <cstdlib>
-#include "SPImageProc.h"
-#include "SPBPriorityQueue.h"
-#include "KNearestSearch.h"
+
 #define MAX_PATH_LENGTH 1024
 
 #define MEM_ALC_ERR_MSG "An error occurred - allocation failure\n"
+
+extern "C"{
+    #include "main_aux.h"
+    #include "SPImageProc.h"
+    #include "SPBPriorityQueue.h"
+    #include "KNearestSearch.h"
+}
 
 char* spGetInputFromUser(const char *command) {
     if(command == NULL)

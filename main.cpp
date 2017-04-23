@@ -10,8 +10,6 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
-#include "main_aux.h"
-#include "ExtModeForMain.h"
 
 #define MAX_PATH_LENGTH 1024
 
@@ -20,6 +18,8 @@
 
 extern "C"{
     #include "SPConfig.h"
+    #include "main_aux.h"
+    #include "ExtModeForMain.h"
 }
 
 using namespace std;
