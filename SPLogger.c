@@ -49,3 +49,26 @@ void spLoggerDestroy() {
 	free(logger);//free allocation
 	logger = NULL;
 }
+
+SP_LOGGER_MSG spLoggerLevelFromNum(int levelNum, SP_LOGGER_LEVEL* loggerLevel){
+	if(!loggerLevel || levelNum < 1 || levelNum > 4){
+		return SP_LOGGER_INVAlID_ARGUMENT;
+	}
+	switch (levelNum){
+		case 1:
+			*loggerLevel = SP_LOGGER_ERROR_LEVEL;
+			break;
+		case 2:
+			*loggerLevel = SP_LOGGER_ERROR_LEVEL;
+			break;
+		case 3:
+			*loggerLevel = SP_LOGGER_ERROR_LEVEL;
+			break;
+		case 4:
+			*loggerLevel = SP_LOGGER_ERROR_LEVEL;
+			break;
+		default:
+			return SP_LOGGER_UNDIFINED;
+	}
+	return SP_LOGGER_SUCCESS;
+}

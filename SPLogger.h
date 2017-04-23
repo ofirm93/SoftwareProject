@@ -214,4 +214,13 @@ SP_LOGGER_MSG spLoggerPrintDebug(const char* msg, const char* file,
  */
 SP_LOGGER_MSG spLoggerPrintMsg(const char* msg);
 
+/**
+ * TODO add documentation
+ * @param levelNum
+ * @param loggerLevel
+ * @return
+ */
+SP_LOGGER_MSG spLoggerLevelFromNum(int levelNum, SP_LOGGER_LEVEL* loggerLevel);
+
+
 #endif

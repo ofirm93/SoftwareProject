@@ -220,9 +220,22 @@ SP_CONFIG_MSG spConfigGetImagesSuffix(const SPConfig config, char* imagesSuffix)
 int spConfigGetKNN(const SPConfig config, SP_CONFIG_MSG* msg);
 
 /**
+ * TODO documentation
+ *  Basically returns the logger filename in pointer on success
+ */
+SP_CONFIG_MSG spConfigGetLoggerFilename(const SPConfig config, char* loggerFilename);
+
+/**
+ * TODO documentation
+ *  Basically returns imagesSuffix in pointer on success
+ */
+SP_CONFIG_MSG spConfigGetLoggerLevel(const SPConfig config, int* loggerLevel);
+
+/**
  * Frees all memory resources associate with config. 
  * If config == NULL nothig is done.
  */
 void spConfigDestroy(SPConfig config);
+
 
 #endif /* SPCONFIG_H_ */

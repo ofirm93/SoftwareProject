@@ -27,6 +27,7 @@ using namespace std;
 int main(int argc, const char* argv[]) {
     SP_CONFIG_MSG* msg = (SP_CONFIG_MSG*) malloc(sizeof(SP_CONFIG_MSG));
     if(!msg) {
+
         // TODO alloc problem report
         return 1;
     }
@@ -69,9 +70,57 @@ int main(int argc, const char* argv[]) {
         case SP_CONFIG_INDEX_OUT_OF_RANGE:break;
         case SP_CONFIG_SUCCESS:break;
     }
+    free(msg);
+
+    char loggerFilename[MAX_PATH_LENGTH];
+    *msg = spConfigGetLoggerFilename(config, loggerFilename);
+    if(*msg == SP_CONFIG_INVALID_ARGUMENT){
+        // TODO problem with arguments
+
+        return 1;
+    }
+    int loggerLevelNum;
+    *msg = spConfigGetLoggerLevel(config, &loggerLevelNum);
+    switch (*msg){
+        case SP_CONFIG_INVALID_ARGUMENT :
+            break;
+        case SP_CONFIG_SUCCESS:
+            break;
+        default:
+            //TODO print error
+            return 1;
+    }
+    SP_LOGGER_LEVEL loggerLevel;
+    SP_LOGGER_MSG loggerMsg = spLoggerLevelFromNum(loggerLevelNum, &loggerLevel);
+    switch (loggerMsg){
+        case SP_LOGGER_INVAlID_ARGUMENT :
+            break;
+        case SP_LOGGER_UNDIFINED:
+            break;
+        case SP_LOGGER_SUCCESS:
+            break;
+        default:
+            //TODO print error
+            return 1;
+    }
+    loggerMsg = spLoggerCreate(loggerFilename, loggerLevel);
+    switch (loggerMsg){
+        case SP_LOGGER_DEFINED :
+            break;
+        case SP_LOGGER_OUT_OF_MEMORY:
+            break;
+        case SP_LOGGER_CANNOT_OPEN_FILE:
+            break;
+        case SP_LOGGER_SUCCESS:
+            break;
+        default:
+            //TODO print error
+            return 1;
+    }
     bool isExtractionMode = spConfigIsExtractionMode(config, msg);
     if(*msg == SP_CONFIG_INVALID_ARGUMENT){
         // TODO problem with arguments
+
         return 2;
     }
     // Get all the fields required to extract features.

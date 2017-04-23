@@ -639,6 +639,23 @@ int spConfigGetKNN(const SPConfig config, SP_CONFIG_MSG* msg){
 	return config->KNN;
 }
 
+SP_CONFIG_MSG spConfigGetLoggerFilename(const SPConfig config, char* loggerFilename){
+    if (loggerFilename == NULL || config == NULL) {
+        return SP_CONFIG_INVALID_ARGUMENT;
+    }
+    sprintf(loggerFilename, "%s", config->loggerFilename);
+    return SP_CONFIG_SUCCESS;
+}
+
+SP_CONFIG_MSG spConfigGetLoggerLevel(const SPConfig config, int* loggerLevel){
+    if (loggerLevel == NULL || config == NULL) {
+        return SP_CONFIG_INVALID_ARGUMENT;
+    }
+    *loggerLevel = config->loggerLevel;
+    return SP_CONFIG_SUCCESS;
+}
+
+
 void spConfigDestroy(SPConfig config){
     if(config){
         free(config->imagesDirectory);
