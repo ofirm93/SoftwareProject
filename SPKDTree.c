@@ -4,6 +4,8 @@
  *  Created on: Mar 18, 2017
  *      Author: user
  */
+//TODO UPDATE IN GIT
+
 
 #include "SPKDTree.h"
 //#include <stdio.h>
@@ -12,14 +14,14 @@
 #include <float.h>
 
 
-#define INVALID 1
+#define INVALID DBL_MAX
 
 struct sp_kd_tree_node_t
 {
 	int dim;
 	double val;
 
-  KDTreeNode* left;
+    KDTreeNode* left;
 	KDTreeNode* right;
 	SPPoint* data;
 };
@@ -45,7 +47,26 @@ KDTreeNode* spInitKDTreeNode(int dim, double val, KDTreeNode* left, KDTreeNode* 
 	kdNode -> val = val;
 	kdNode -> left = left;
 	kdNode -> right = right;
-	kdNode -> data = spPointCopy(data);
+	if(!left && !right && !data)
+	{
+		free(kdNode);
+		printf("Point should not be NULL if it is a leaf");
+		return NULL;
+	}
+	if( (left!= NULL || right!= NULL) && data!= NULL)
+	{
+		free(kdNode);
+		printf("Point should be NULL if it isnt a leaf");
+		return NULL;
+	}
+
+	if(!left && !right && data != NULL)
+	{
+		kdNode -> data = spPointCopy(data);
+	}
+	else if( (left!= NULL || right!= NULL) && !data ){
+		kdNode -> data = NULL;
+	}
 	return kdNode;
 }
 
@@ -64,37 +85,61 @@ bool isLeaf(KDTreeNode* node){
 }
 
 int spKDTreeNodeGetDim(KDTreeNode* node){
+	if(!node){
+		return -1;
+	}
 	return node->dim ;
 }
 
 
 double spKDTreeNodeGetVal(KDTreeNode* node){
+	if(!node){
+		return 0;
+	}
 	return node->val ;
 }
 
 KDTreeNode* spKDTreeNodeGetLeft(KDTreeNode* node){
+	if(!node){
+		return NULL;
+	}
 	return node->left;
 }
 
 KDTreeNode* spKDTreeNodeGetRight(KDTreeNode* node){
+	if(!node){
+		return NULL;
+	}
 	return node->right ;
 }
 
 SPPoint* spKDTreeNodeGetPoint(KDTreeNode* node) {
-	return node->data;
+	if(!node){
+		return NULL;
+	}
+	return node->data; //copy? TODO make sure itsok
 }
 
 int spKDTreeNodeGetPointIndex(KDTreeNode* node){
+	if(!node){
+		return -1;
+	}
 	return spPointGetIndex(node->data) ;
 }
 
 double spKDTreeNodeGetPointVal(KDTreeNode* node){
+	if(!node){
+		return 0;
+	}
 	return spPointGetAxisCoor(node->data, node->dim);
 }
 
 
-
-void spDestroyKDTreeNode(KDTreeNode* node){
+//TODO make sure i want to recursively destroy
+void spDestroyKDTreeNode(KDTreeNode* node){\
+	if(!node){
+		return;
+	}
 	spPointDestroy(node -> data);
 	spDestroyKDTreeNode(node->left);
 	spDestroyKDTreeNode(node->right);
@@ -111,6 +156,9 @@ void spDestroyKDTreeNode(KDTreeNode* node){
  */
 
 KDTreeNode* spGetSPKDTreeRoot(SPKDTree* tree){
+	if(!tree){
+		return NULL;
+	}
 	return tree->root;
 }
 
@@ -127,7 +175,7 @@ KDTreeNode* spInitSPKDTreeRec(SPKDArray kdArray, SP_KD_SPLIT_MODE splitMethod, i
 		if(!singlePoint){
 			return NULL;
 		}
-		return spInitKDTreeNode( INVALID, INVALID, NULL, NULL, singlePoint);  //afaik val >=0 so INVALID is invalid. singlepoint OK?
+		return spInitKDTreeNode( 0, INVALID, NULL, NULL, singlePoint);  //afaik val >=0 so INVALID is invalid. singlepoint OK?
 	}
 	int splitDim = -1, sizeL = 0, sizeR = 0;
 	double median = 0;
@@ -236,6 +284,10 @@ KDTreeNode* spInitSPKDTreeRec(SPKDArray kdArray, SP_KD_SPLIT_MODE splitMethod, i
 
 
 SPKDTree* spInitSPKDTree(SPPoint** arr, int size, int pointDim, SP_KD_SPLIT_MODE splitMethod){
+	if(!arr || size < 1 || pointDim < 1){
+		printf("Some arguments are defected");
+		return NULL;
+	}
 	SPKDTree* tree = malloc(sizeof(SPKDTree));
 	if(!tree){
 		return NULL;
@@ -248,9 +300,36 @@ SPKDTree* spInitSPKDTree(SPPoint** arr, int size, int pointDim, SP_KD_SPLIT_MODE
 	tree->root = spInitSPKDTreeRec(kdArray, splitMethod, pointDim, size, -1);
 	if(!tree->root){
 		free(tree);
-		//TODO destroy spkdarray
+		spDestroyKDArray(kdArray);
 		return NULL;
 	}
 	return tree;
 }
+
+void spDestroyKDTree(SPKDTree* tree){
+	spDestroyKDTreeNode(tree->root);
+	spDestroyKDArray(tree->features);
+}
+
+void inOrderScanRoot (KDTreeNode* node){
+	if(!node){
+		return;
+	}
+	if( !node->left && !node->right){
+		printf("%f,%f,%f \n", spPointGetAxisCoor(node->data,0), spPointGetAxisCoor(node->data,1) , spPointGetAxisCoor(node->data,2) );
+	}
+	inOrderScanRoot(node->left);
+	if(node->val != INVALID){
+		printf("spliiting median: %f\n",node->val);
+	}
+	inOrderScanRoot(node->right);
+
+}
+
+void inOrderScan(SPKDTree* tree){
+	if(!tree){
+		inOrderScanRoot(tree->root);
+	}
+}
+
 

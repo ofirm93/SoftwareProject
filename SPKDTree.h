@@ -39,9 +39,6 @@ KDTreeNode* spInitKDTreeNode(int dim, double val, KDTreeNode* left, KDTreeNode* 
 
 bool isLeaf(KDTreeNode* node);
 
-
-
-
 int spKDTreeNodeGetDim(KDTreeNode* node);
 
 double spKDTreeNodeGetVal(KDTreeNode* node);
@@ -96,6 +93,15 @@ SPKDTree* spInitSPKDTree(SPPoint** arr, int size, int pointDim, SP_KD_SPLIT_MODE
  */
 KDTreeNode* spGetSPKDTreeRoot(SPKDTree* tree);
 
-
+/**
+ * Frees all space allocated for tree.
+ * @param
+ * tree - the tree which we free the space from
+ *
+ *
+ */
+void spDestroyKDTree(SPKDTree* tree);
+//TESTING
+void inOrderScan(SPKDTree* tree);
 
 #endif /* SPKDTREE_H_ */
