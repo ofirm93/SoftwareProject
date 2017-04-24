@@ -7,7 +7,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake-bui
 set(OpenCV_DIR "C:\\opencv\\sources")
 
 find_package( OpenCV REQUIRED )
-target_link_libraries( DisplayImage ${OpenCV_LIBS} )
+#target_link_libraries( DisplayImage ${OpenCV_LIBS} )
 
 #find_package(OpenCV REQUIRED)
 
@@ -18,6 +18,10 @@ target_link_libraries( DisplayImage ${OpenCV_LIBS} )
 #    message( "OpenCV not found, woot" )
 #endif( OpenCV_FOUND )
 
-set(SOURCE_FILES ExtModeForMain.cpp main.cpp SPConfig.c unit_tests/sp_config_unit_test.c SPKDArray.c SPKDArray.h unit_tests/sp_kd_array_unit_test.c main_aux.cpp main_aux.h unit_tests/sp_main_aux_unit_test.c ExtModeForMain.cpp)
+set(SOURCE_FILES SPPoint.c SPLogger.c SPKDTree.c SPImageProc.cpp SPBPriorityQueue.c KNearestSearch.c ExtModeForMain.cpp
+        main.cpp SPConfig.c SPKDArray.c SPKDArray.h main_aux.cpp main_aux.h  ExtModeForMain.cpp)
+set(TESTER_FILES unit_tests/sp_config_unit_test.c unit_tests/sp_kd_array_unit_test.c unit_tests/sp_main_aux_unit_test.c
+        unit_tests/sp_logger_unit_test.c)
+set(ALL_FILES $(SOURCE_FILES) $(TESTER_FILES))
 add_executable(SoftwareProject ${SOURCE_FILES})
 target_link_libraries( SoftwareProject ${OpenCV_LIBS} )

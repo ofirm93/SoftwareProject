@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "SPKDArray.h"
 #include "SPBPriorityQueue.h"
+#include "SPLogger.h"
 
 struct sp_kd_array_t{
     SPPoint** pointsArray;
@@ -202,30 +203,34 @@ void spPrintKDArrayDetails(SPKDArray kdArr){
     if(kdArr){
         int size = kdArr->numOfPoints;
         int dim = kdArr->dimension;
-        printf("The size of the array is : %d\n", size);
-        printf("The dimension of the array is : %d\n", dim);
-        printf("The points in the array are :\n");
+        char msg[10000];
+        sprintf(msg, "The size of the array is : %d\n"
+                "The dimension of the array is : %d\n"
+                "The points in the array are :\n", size, dim);
         for (int i = 0; i < size; ++i) {
-            printf("point %2d : (", i);
+            sprintf(msg, "%spoint %2d : (", msg,i);
             for (int j = 0; j < dim; ++j) {
                 if(j > 0){
-                    printf(", ");
+                    sprintf(msg, "%s, ", msg);
                 }
-                printf("%2lf", spPointGetAxisCoor(kdArr->pointsArray[i], j));
+                sprintf(msg, "%s%2lf", msg,spPointGetAxisCoor(kdArr->pointsArray[i], j));
             }
-            printf(")\n");
+            sprintf(msg, "%s)\n", msg);
         }
-        printf("The sorted indices in the array are :\n");
+        sprintf(msg, "%sThe sorted indices in the array are :\n", msg);
         for (int i = 0; i < dim; ++i) {
-            printf("dimension %2d : (", i);
+            sprintf(msg, "%sdimension %2d : (", msg, i);
             for (int j = 0; j < size; ++j) {
                 if(j > 0){
-                    printf(", ");
+                    sprintf(msg, "%s, ", msg);
                 }
-                printf("%2d", kdArr->sortArray[i][j]);
+                sprintf(msg, "%s%2d", msg, kdArr->sortArray[i][j]);
             }
-            printf(")\n");
+            sprintf(msg, "%s)\n", msg);
         }
+        spLoggerPrintDebug(msg, __FILE__, __func__, __LINE__);
     }
+    spLoggerPrintDebug("Debug : The argument kdArr is NULL.", __FILE__, __func__, __LINE__);
+
 }
 
