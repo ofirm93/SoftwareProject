@@ -16,7 +16,7 @@
 #define QRY_IMG_MSG "Please enter an image path:\n"
 #define EXIT_MSG "Exiting...\n"
 
-#define ERR_MSG_INVALID_ARG "One of the arguments supplied to the method is invalid."
+#define ERR_MSG_INVALID_ARG "Error : One of the arguments supplied to the method %s is invalid."
 #define ERR_MSG_INVALID_COMM_LINE_ARG "\"Invalid command line arguments : use -c <config_filename>\"\n"
 #define ERR_MSG_READ_CONF_FILE "Error while reading the configuration file : "
 #define ERR_MSG_MISSING_DIR "Didn't find images directory path."
@@ -36,6 +36,18 @@
 #define ERR_MSG_CREATE_CONF "in the method spConfigCreate()"
 #define ERR_MSG_CREATE_LOGGER "in the method spLoggerCreate()"
 #define ERR_MSG_CANNOT_OPEN_LOGGER_FILE "Error : couldn't open logger file."
+#define ERR_MSG_GET_IMG_DIR "spConfigGetImagesDirectory()"
+#define ERR_MSG_IS_EXT_MODE "spConfigIsExtractionMode()"
+#define ERR_MSG_GET_IMG_PREFIX "spConfigGetImagesPrefix()"
+#define ERR_MSG_GET_ING_SUFFIX "spConfigGetImagesSuffix()"
+#define ERR_MSG_GET_IMG_NUM "spConfigGetNumOfImages()"
+#define ERR_MSG_GET_FEAT_NUM "spConfigGetNumOfFeatures()"
+#define ERR_MSG_GET_PCA_DIM "spConfigGetPCADim()"
+#define ERR_MSG_GET_SPLIT_METHOD "spConfigGetKDTreeSplitMethod()"
+#define ERR_MSG_CANNOT_OBTAIN_FEAT "Error : couldn't obtain features correctly."
+#define ERR_MSG_CANNOT_CREATE_KDTREE "Error : Couldn't create KDTree from the features."
+#define ERR_MSG_IS_MIN_GUI "spConfigMinimalGui()"
+#define ERR_MSG_GET_KNN "spConfigGetKNN()"
 extern "C"{
     #include "SPConfig.h"
     #include "main_aux.h"
@@ -63,18 +75,23 @@ int main(int argc, const char* argv[]) {
     switch (configMsg){
         case SP_CONFIG_INVALID_ARGUMENT :
             printf(ERR_MSG_CONFIG_INVALID_ARGUMENT);
+            free(config);
             return 0;
         case SP_CONFIG_MISSING_DIR:
             printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_MISSING_DIR);
+            free(config);
             return 0;
         case SP_CONFIG_MISSING_PREFIX:
             printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_MISSING_PREFIX);
+            free(config);
             return 0;
         case SP_CONFIG_MISSING_SUFFIX:
             printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_MISSING_SUFFIX);
+            free(config);
             return 0;
         case SP_CONFIG_MISSING_NUM_IMAGES:
             printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_MISSING_NUM_IMAGES);
+            free(config);
             return 0;
         case SP_CONFIG_CANNOT_OPEN_FILE :
             if(isDefaultConfig){
@@ -83,20 +100,25 @@ int main(int argc, const char* argv[]) {
             else{
                 printf(ERR_MSG_CANNOT_OPEN_CONF_FILE, argv[2]);
             }
+            free(config);
             return 0;
         case SP_CONFIG_ALLOC_FAIL:
             printf("%s%s", ERR_MSG_ALLOC_FAIL, ERR_MSG_CREATE_CONF);
+            free(config);
             return 0;
         case SP_CONFIG_INVALID_INTEGER:
             printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_INVALID_INTEGER);
+            free(config);
             return 0;
         case SP_CONFIG_INVALID_STRING:
             printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_INVALID_STRING);
+            free(config);
             return 0;
         case SP_CONFIG_SUCCESS:
             break;
         default:
             printf(ERR_MSG_GENERAL);
+            free(config);
             return 0;
     }
 
@@ -104,6 +126,7 @@ int main(int argc, const char* argv[]) {
     configMsg = spConfigGetLoggerFilename(config, loggerFilename);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
         printf(ERR_MSG_INVALID_ARGUMENT_LOGGER_FILENAME);
+        free(config);
         return 1;
     }
     int loggerLevelNum;
@@ -111,11 +134,13 @@ int main(int argc, const char* argv[]) {
     switch (configMsg){
         case SP_CONFIG_INVALID_ARGUMENT :
             printf(ERR_MSG_INVALID_ARGUMENT_LOGGER_LEVEL_NUM);
+            free(config);
             return 1;
         case SP_CONFIG_SUCCESS:
             break;
         default:
             printf(ERR_MSG_GENERAL);
+            free(config);
             return 1;
     }
     SP_LOGGER_LEVEL loggerLevel;
@@ -123,11 +148,13 @@ int main(int argc, const char* argv[]) {
     switch (loggerMsg){
         case SP_LOGGER_INVAlID_ARGUMENT :
             printf(ERR_MSG_INVALID_ARGUMENT_LOGGER_LEVEL_FROM_NUM);
+            free(config);
             return 1;
         case SP_LOGGER_SUCCESS:
             break;
         default:
             printf(ERR_MSG_GENERAL);
+            free(config);
             return 1;
     }
     loggerMsg = spLoggerCreate(loggerFilename, loggerLevel);
@@ -136,79 +163,141 @@ int main(int argc, const char* argv[]) {
             break;
         case SP_LOGGER_OUT_OF_MEMORY:
             printf("%s%s", ERR_MSG_ALLOC_FAIL, ERR_MSG_CREATE_LOGGER);
+            free(config);
             return 1;
         case SP_LOGGER_CANNOT_OPEN_FILE:
             printf(ERR_MSG_CANNOT_OPEN_LOGGER_FILE);
+            free(config);
             return 1;
         case SP_LOGGER_SUCCESS:
             break;
         default:
             printf(ERR_MSG_GENERAL);
+            free(config);
             return 1;
     }
     // TODO from here on every message is to the logger only.
     bool isExtractionMode = spConfigIsExtractionMode(config, &configMsg);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        spLoggerPrintError(ERR_MSG_INVALID_ARG, __FILE__, __func__, __LINE__);
-        // TODO problem with arguments
-
+        char errorMsg[1024];
+        sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_IS_EXT_MODE);
+        spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
+        spLoggerDestroy();
+        free(config);
         return 2;
     }
     // Get all the fields required to extract features.
     char imagesDirectory[MAX_PATH_LENGTH];
     configMsg = spConfigGetImagesDirectory(config, imagesDirectory);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        // TODO problem with arguments
+        char errorMsg[1024];
+        sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_IMG_DIR);
+        spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
+        spLoggerDestroy();
+        free(config);
         return 3;
     }
     char imagesPrefix[MAX_PATH_LENGTH];
     configMsg = spConfigGetImagesPrefix(config, imagesPrefix);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        // TODO problem with arguments
+        char errorMsg[1024];
+        sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_IMG_PREFIX);
+        spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
+        spLoggerDestroy();
+        free(config);
         return 4;
     }
     char imagesSuffix[MAX_PATH_LENGTH];
     configMsg = spConfigGetImagesSuffix(config, imagesSuffix);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        // TODO problem with arguments
+        char errorMsg[1024];
+        sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_ING_SUFFIX);
+        spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
+        spLoggerDestroy();
+        free(config);
         return 5;
     }
     int numOfImages = spConfigGetNumOfImages(config, &configMsg);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        // TODO problem with arguments
+        char errorMsg[1024];
+        sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_IMG_NUM);
+        spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
+        spLoggerDestroy();
+        free(config);
         return 6;
     }
     int numOfFeatures = spConfigGetNumOfFeatures(config, &configMsg);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        // TODO problem with arguments
+        char errorMsg[1024];
+        sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_FEAT_NUM);
+        spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
+        spLoggerDestroy();
+        free(config);
         return 7;
     }
     int dim = spConfigGetPCADim(config, &configMsg);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        // TODO problem with arguments
+        char errorMsg[1024];
+        sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_PCA_DIM);
+        spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
+        spLoggerDestroy();
+        free(config);
         return 8;
     }
     SP_KD_SPLIT_MODE kdSplitMode;
     configMsg = spConfigGetKDTreeSplitMethod(config, &kdSplitMode);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        // TODO problem with arguments
+        char errorMsg[1024];
+        sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_SPLIT_METHOD);
+        spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
+        spLoggerDestroy();
+        free(config);
         return 9;
     }
+
+    bool isGUIMode = spConfigMinimalGui(config, &configMsg);
+    if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
+        char errorMsg[1024];
+        sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_IS_MIN_GUI);
+        spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
+        spLoggerDestroy();
+        free(config);
+        return 10;
+    }
+    int k = spConfigGetKNN(config, &configMsg);
+    if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
+        char errorMsg[1024];
+        sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_KNN);
+        spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
+        spLoggerDestroy();
+        free(config);
+        return 11;
+    }
+
     SPPoint** features;
-    int totalNumOfFeatures = 0; // TODO Get features number
+    int totalNumOfFeatures = 0;
     if(isExtractionMode){
-        // TODO extract features
         sp::ImageProc s = sp::ImageProc(config);
-        // TODO bar should alter the method so it would be correct
         features = ExtractionModeAct(imagesDirectory, imagesPrefix, imagesSuffix, numOfImages, numOfFeatures, s, &totalNumOfFeatures);
     } else{
         features = NonExtractionModeAct(imagesDirectory, imagesPrefix, imagesSuffix, numOfImages, numOfFeatures, &totalNumOfFeatures);
     }
     if(!features){
-        // TODO Error in extracting features
+        spLoggerPrintError(ERR_MSG_CANNOT_OBTAIN_FEAT, __FILE__, __func__, __LINE__);
+        spLoggerDestroy();
+        free(config);
         return 8;
     }
+    // TODO from this point destroy features also
     SPKDTree* tree = spInitSPKDTree(features, totalNumOfFeatures, dim, kdSplitMode);
+    if(!tree){
+        spLoggerPrintError(ERR_MSG_CANNOT_CREATE_KDTREE, __FILE__, __func__, __LINE__);
+        spDestroySPPointArray(features, totalNumOfFeatures);
+        spLoggerDestroy();
+        free(config);
+        return 8;
+    }
+    // TODO from this point destroy tree also
     bool isEnded = false;
     char* queryStr;
     while(!isEnded){
@@ -217,20 +306,8 @@ int main(int argc, const char* argv[]) {
             printf(EXIT_MSG);
             isEnded = true;
         } else{
-            int* KNN = spGetGetBestKMatches(tree, queryStr, config);
+            int* KNN = spGetGetBestKMatches(tree, queryStr, config, numOfImages, k);
             if(KNN){
-                bool isGUIMode = spConfigMinimalGui(config, &configMsg);
-                if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-                    // TODO problem with arguments
-                    //TODO free memory
-                    return 10;
-                }
-                int k = spConfigGetKNN(config, &configMsg);
-                if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-                    // TODO problem with arguments
-                    // TODO free all resources
-                    return 11;
-                }
                 if(isGUIMode){
                     spMinimalGUI(config,queryStr,KNN,k);
                 }
@@ -238,8 +315,21 @@ int main(int argc, const char* argv[]) {
                     spNonMinimalGUI(config, queryStr, KNN, k);
                 }
             }
+            else{
+                spDestroyKDTree(tree);
+                spDestroySPPointArray(features, totalNumOfFeatures);
+                spLoggerDestroy();
+                free(config);
+                return 9;
+            }
+            free(KNN);
         }
         free(queryStr);
     }
+
+    spDestroyKDTree(tree);
+    spDestroySPPointArray(features, totalNumOfFeatures);
+    spLoggerDestroy();
+    free(config);
     return 0;
 }

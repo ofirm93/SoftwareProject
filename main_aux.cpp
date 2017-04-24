@@ -8,7 +8,7 @@
 
 #define MAX_PATH_LENGTH 1024
 
-#define MEM_ALC_ERR_MSG "An error occurred - allocation failure\n"
+#define MEM_ALC_ERR_MSG "An error occurred - allocation failure"
 
 extern "C"{
     #include "main_aux.h"
@@ -20,6 +20,7 @@ extern "C"{
 char* spGetInputFromUser(const char *command) {
     if(command == NULL)
     {
+        // TODO print invalid argument error
         return NULL;
     }
     char* input = (char*) malloc(MAX_PATH_LENGTH * sizeof(char));
@@ -36,12 +37,26 @@ char* spGetInputFromUser(const char *command) {
 
 void spNonMinimalGUI(SPConfig config, char* queryPath, int* indexArray, int size) {
     if(!queryPath || !config || !indexArray || size<1){
+        // TODO print invalid argument error
         return;
     }
     printf("\"Best candidates for - %s - are:\n", queryPath);
     for (int i = 0; i < size; ++i) {
         char path[1024];
         SP_CONFIG_MSG msg = spConfigGetImagePath(path, config, indexArray[i]);
+        switch (msg){
+            case SP_CONFIG_INVALID_ARGUMENT:
+                // TODO print invalid arg in spConfigGetImagePath()
+                return;
+            case SP_CONFIG_INDEX_OUT_OF_RANGE:
+                // TODO print asked to show images which doesn't exists
+                return;
+            case SP_CONFIG_SUCCESS:
+                break;
+            default:
+                // TODO unexpectedly reached unreachable code
+                return;
+        }
         printf("%s\n", path);
     }
 }
@@ -54,6 +69,20 @@ void spMinimalGUI(SPConfig config, char* queryPath, int* indexArray, int size) {
     for (int i = 0; i < size; ++i) {
         char path[1024];
         SP_CONFIG_MSG msg = spConfigGetImagePath(path, config, indexArray[i]);
+        //TODO copy switch from the method above
+        switch (msg){
+            case SP_CONFIG_INVALID_ARGUMENT:
+                // TODO print invalid arg in spConfigGetImagePath()
+                return;
+            case SP_CONFIG_INDEX_OUT_OF_RANGE:
+                // TODO print asked to show images which doesn't exists
+                return;
+            case SP_CONFIG_SUCCESS:
+                break;
+            default:
+                // TODO unexpectedly reached unreachable code
+                return;
+        }
         s.showImage(path);
     }
 }
@@ -70,37 +99,19 @@ int elementByValueComparator(const void *element1, const void *element2){
     return -1;
 }
 
-int* spGetGetBestKMatches(SPKDTree* kdTree, char* queryPath, SPConfig config){
-    if(!kdTree || !queryPath || !config){
-        // TODO print argument is fault error
-        return NULL;
-    }
-    SP_CONFIG_MSG msg;
-    int numOfImages = spConfigGetNumOfImages(config, &msg);
-    if(msg == SP_CONFIG_INVALID_ARGUMENT){
-        // TODO problem with arguments
-        return NULL;
-    }
-    int k = spConfigGetKNN(config, &msg);
-    if(msg == SP_CONFIG_INVALID_ARGUMENT){
-        // TODO problem with arguments
-        // TODO free all resources
+int* spGetGetBestKMatches(SPKDTree* kdTree, char* queryPath, SPConfig config, int numOfImages, int k){
+    if(!kdTree || !queryPath || !config || numOfImages < 0 || k < 0){
+        // TODO print invalid argument error
         return NULL;
     }
     if(k > numOfImages){
-        // TODO print asked to many nearest neighbours
+        // TODO print asked for too many nearest neighbours
         // TODO free all resources
         return NULL;
     }
     sp::ImageProc s = sp::ImageProc(config);
-    int* numOfQueryFeat =(int*) malloc(sizeof(int));
-    if(!numOfQueryFeat){
-        // TODO print memory allocation error
-        // TODO free all resources
-        printf(MEM_ALC_ERR_MSG);
-        return NULL;
-    }
-    SPPoint** queryFeat = s.getImageFeatures(queryPath, DEFAULT_INDEX, numOfQueryFeat);
+    int numOfQueryFeat;
+    SPPoint** queryFeat = s.getImageFeatures(queryPath, DEFAULT_INDEX, &numOfQueryFeat);
     if(!queryFeat){
         // TODO print query cannot extract features check if the path is correct
         // TODO free all resources
@@ -113,56 +124,101 @@ int* spGetGetBestKMatches(SPKDTree* kdTree, char* queryPath, SPConfig config){
         printf(MEM_ALC_ERR_MSG);
         return NULL;
     }
+    // TODO from this point free imageCounter before return
     for (int i = 0; i < numOfImages; ++i) {
         imageCounter[i] = 0;
     }
-    for (int i = 0; i < *numOfQueryFeat; ++i) {
+    for (int i = 0; i < numOfQueryFeat; ++i) {
         SPBPQueue* kClose = getKClosestPoints(kdTree, queryFeat[i], k);
         if(!kClose){
             // TODO print error while trying to find best match for a feature
-            // TODO free all resources
+            free(imageCounter);
             return NULL;
         }
         SP_BPQUEUE_MSG bpqMsg;
         BPQueueElement feature;
         while(!spBPQueueIsEmpty(kClose)){
             bpqMsg = spBPQueuePeek(kClose, &feature);
-            if(msg == SP_BPQUEUE_INVALID_ARGUMENT || msg == SP_BPQUEUE_EMPTY){
-                // TODO print error while trying to find best match for a feature
-                // TODO free all resources
-                return NULL;
+            switch (bpqMsg){
+                case SP_BPQUEUE_INVALID_ARGUMENT:
+                    // TODO print invalid argument error in spBPQueuePeek()
+                    free(imageCounter);
+                    spBPQueueDestroy(kClose);
+                    return NULL;
+                case SP_BPQUEUE_EMPTY:
+                    // TODO print empty queue error
+                    free(imageCounter);
+                    spBPQueueDestroy(kClose);
+                    return NULL;
+                case SP_BPQUEUE_SUCCESS:
+                    break;
+                default:
+                    // TODO print unreachable code
+                    free(imageCounter);
+                    spBPQueueDestroy(kClose);
+                    return NULL;
             }
+
             bpqMsg = spBPQueueDequeue(kClose);
-            if(msg == SP_BPQUEUE_INVALID_ARGUMENT || msg == SP_BPQUEUE_EMPTY){
-                // TODO print error while trying to find best match for a feature
-                // TODO free all resources
-                return NULL;
+            switch (bpqMsg){
+                case SP_BPQUEUE_INVALID_ARGUMENT:
+                    // TODO print invalid argument error in spBPQueuePeek()
+                    free(imageCounter);
+                    spBPQueueDestroy(kClose);
+                    return NULL;
+                case SP_BPQUEUE_EMPTY:
+                    // TODO print empty queue error
+                    free(imageCounter);
+                    spBPQueueDestroy(kClose);
+                    return NULL;
+                case SP_BPQUEUE_SUCCESS:
+                    break;
+                default:
+                    // TODO print unreachable code
+                    free(imageCounter);
+                    spBPQueueDestroy(kClose);
+                    return NULL;
             }
         }
+        spBPQueueDestroy(kClose);
     }
+
     BPQueueElement* sortingArr =(BPQueueElement*) malloc(numOfImages * sizeof(BPQueueElement)); // initialize helper array
     if (!sortingArr) {
         // TODO print memory allocation error
-        // TODO free all resources
         printf(MEM_ALC_ERR_MSG);
+        free(imageCounter);
         return NULL;
     }
+    // TODO from this point free sortingArr before return
     for (int i = 0; i < numOfImages; ++i) {
         sortingArr[i].index = i;
         sortingArr[i].value = imageCounter[i];
     }
+    free(imageCounter);
     qsort(sortingArr, (size_t) numOfImages, sizeof(BPQueueElement), elementByValueComparator);
     int* result =(int*) malloc(k * sizeof(int));
     if (!result) {
         // TODO print memory allocation error
-        // TODO free all resources
+        free(sortingArr);
         printf(MEM_ALC_ERR_MSG);
         return NULL;
     }
     for (int i = 0; i < k; ++i) {
         result[i] = sortingArr[k-i].index;
     }
+    free(sortingArr);
     return result;
 }
 
+void spDestroySPPointArray(SPPoint** array, int size){
+    if(!array || size < 0){
+        // TODO print invalid argument error
+        return;
+    }
+    for (int i = 0; i < size; ++i) {
+        spPointDestroy(array[i]);
+    }
+    free(array);
+}
 

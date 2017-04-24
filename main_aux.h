@@ -31,6 +31,11 @@ void spMinimalGUI(SPConfig config, char* queryPath, int* indexArray, int size);
 /**
  * TODO write documentation
  */
-int* spGetGetBestKMatches(SPKDTree* tree, char* queryPath, SPConfig config);
+int* spGetGetBestKMatches(SPKDTree* tree, char* queryPath, SPConfig config, int numOfImages, int k);
+
+/**
+ * TODO write documentation
+ */
+void spDestroySPPointArray(SPPoint** array, int size);
 
 #endif //SOFTWAREPROJECT_MAIN_AUX_H
