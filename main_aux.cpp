@@ -5,12 +5,14 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include "SPImageProc.h"
+#include "main_aux.h"
 
 #define MAX_PATH_LENGTH 1024
 #define MAX_ERR_MSG_LENGTH 1024
 
 #define ERR_MSG_INVALID_ARG "Error : One of the arguments supplied to the method is invalid."
-#define ERR_MSG_INVALID_ARG "Error : One of the arguments supplied to the method %s is invalid."
+#define ERR_MSG_INVALID_ARG_IN_METHOD "Error : One of the arguments supplied to the method %s is invalid."
 #define ERR_MSG_CANNOT_ALLOCATE_MEM "Error : Couldn't allocate needed memory."
 #define MEM_ALC_ERR_MSG "An error occurred - allocation failure"
 #define ERR_MSG_GET_IMG_PATH "spConfigGetImagePath()"
@@ -25,8 +27,6 @@
 #define ERR_MSG_CANNOT_DEQUEUE_EMPTY "Error : Couldn't dequeue element from the queue because it's empty."
 
 extern "C"{
-    #include "main_aux.h"
-    #include "SPImageProc.h"
     #include "SPBPriorityQueue.h"
     #include "KNearestSearch.h"
 }
@@ -53,17 +53,16 @@ void spNonMinimalGUI(SPConfig config, char* queryPath, int* indexArray, int size
         return;
     }
     printf("\"Best candidates for - %s - are:\n", queryPath);
+    char errorMsg[MAX_ERR_MSG_LENGTH];
     for (int i = 0; i < size; ++i) {
         char path[1024];
         SP_CONFIG_MSG msg = spConfigGetImagePath(path, config, indexArray[i]);
         switch (msg){
             case SP_CONFIG_INVALID_ARGUMENT:
-                char errorMsg[MAX_ERR_MSG_LENGTH];
-                sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_IMG_PATH);
+                sprintf(errorMsg, ERR_MSG_INVALID_ARG_IN_METHOD, ERR_MSG_GET_IMG_PATH);
                 spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
                 return;
             case SP_CONFIG_INDEX_OUT_OF_RANGE:
-                char errorMsg[MAX_ERR_MSG_LENGTH];
                 sprintf(errorMsg, ERR_MSG_INDEX_OUT_OF_RANGE, indexArray[i]);
                 spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
                 return;
@@ -83,17 +82,16 @@ void spMinimalGUI(SPConfig config, char* queryPath, int* indexArray, int size) {
         return;
     }
     sp::ImageProc s = sp::ImageProc(config);
+    char errorMsg[MAX_ERR_MSG_LENGTH];
     for (int i = 0; i < size; ++i) {
         char path[1024];
         SP_CONFIG_MSG msg = spConfigGetImagePath(path, config, indexArray[i]);
         switch (msg){
             case SP_CONFIG_INVALID_ARGUMENT:
-                char errorMsg[MAX_ERR_MSG_LENGTH];
-                sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_IMG_PATH);
+                sprintf(errorMsg, ERR_MSG_INVALID_ARG_IN_METHOD, ERR_MSG_GET_IMG_PATH);
                 spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
                 return;
             case SP_CONFIG_INDEX_OUT_OF_RANGE:
-                char errorMsg[MAX_ERR_MSG_LENGTH];
                 sprintf(errorMsg, ERR_MSG_INDEX_OUT_OF_RANGE, indexArray[i]);
                 spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
                 return;
@@ -166,7 +164,7 @@ int* spGetGetBestKMatches(SPKDTree* kdTree, char* queryPath, SPConfig config, in
             switch (bpqMsg){
                 case SP_BPQUEUE_INVALID_ARGUMENT:
                     char errorMsg[MAX_ERR_MSG_LENGTH];
-                    sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_BPQUEUE_PEEK);
+                    sprintf(errorMsg, ERR_MSG_INVALID_ARG_IN_METHOD, ERR_MSG_BPQUEUE_PEEK);
                     spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
                     spDestroySPPointArray(queryFeat, numOfQueryFeat);
                     free(imageCounter);
@@ -192,7 +190,7 @@ int* spGetGetBestKMatches(SPKDTree* kdTree, char* queryPath, SPConfig config, in
             switch (bpqMsg){
                 case SP_BPQUEUE_INVALID_ARGUMENT:
                     char errorMsg[MAX_ERR_MSG_LENGTH];
-                    sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_BPQUEUE_DEQUEUE);
+                    sprintf(errorMsg, ERR_MSG_INVALID_ARG_IN_METHOD, ERR_MSG_BPQUEUE_DEQUEUE);
                     spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
                     spDestroySPPointArray(queryFeat, numOfQueryFeat);
                     free(imageCounter);

@@ -6,7 +6,6 @@
 #include <stdbool.h>
 #include "SPKDArray.h"
 #include "SPBPriorityQueue.h"
-#include "SPLogger.h"
 
 struct sp_kd_array_t{
     SPPoint** pointsArray;

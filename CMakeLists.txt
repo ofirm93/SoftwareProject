@@ -4,7 +4,6 @@ project(SoftwareProject)
 set(CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake-build-debug)
-set(OpenCV_DIR "C:\\opencv\\sources")
 
 find_package( OpenCV REQUIRED )
 #target_link_libraries( DisplayImage ${OpenCV_LIBS} )
