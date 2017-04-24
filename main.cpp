@@ -12,6 +12,7 @@
 #include <cstdlib>
 
 #define MAX_PATH_LENGTH 1024
+#define MAX_ERR_MSG_LENGTH 1024
 
 #define QRY_IMG_MSG "Please enter an image path:\n"
 #define EXIT_MSG "Exiting...\n"
@@ -179,7 +180,7 @@ int main(int argc, const char* argv[]) {
     // TODO from here on every message is to the logger only.
     bool isExtractionMode = spConfigIsExtractionMode(config, &configMsg);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        char errorMsg[1024];
+        char errorMsg[MAX_ERR_MSG_LENGTH];
         sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_IS_EXT_MODE);
         spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
         spLoggerDestroy();
@@ -190,7 +191,7 @@ int main(int argc, const char* argv[]) {
     char imagesDirectory[MAX_PATH_LENGTH];
     configMsg = spConfigGetImagesDirectory(config, imagesDirectory);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        char errorMsg[1024];
+        char errorMsg[MAX_ERR_MSG_LENGTH];
         sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_IMG_DIR);
         spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
         spLoggerDestroy();
@@ -200,7 +201,7 @@ int main(int argc, const char* argv[]) {
     char imagesPrefix[MAX_PATH_LENGTH];
     configMsg = spConfigGetImagesPrefix(config, imagesPrefix);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        char errorMsg[1024];
+        char errorMsg[MAX_ERR_MSG_LENGTH];
         sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_IMG_PREFIX);
         spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
         spLoggerDestroy();
@@ -210,7 +211,7 @@ int main(int argc, const char* argv[]) {
     char imagesSuffix[MAX_PATH_LENGTH];
     configMsg = spConfigGetImagesSuffix(config, imagesSuffix);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        char errorMsg[1024];
+        char errorMsg[MAX_ERR_MSG_LENGTH];
         sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_ING_SUFFIX);
         spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
         spLoggerDestroy();
@@ -219,7 +220,7 @@ int main(int argc, const char* argv[]) {
     }
     int numOfImages = spConfigGetNumOfImages(config, &configMsg);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        char errorMsg[1024];
+        char errorMsg[MAX_ERR_MSG_LENGTH];
         sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_IMG_NUM);
         spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
         spLoggerDestroy();
@@ -228,7 +229,7 @@ int main(int argc, const char* argv[]) {
     }
     int numOfFeatures = spConfigGetNumOfFeatures(config, &configMsg);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        char errorMsg[1024];
+        char errorMsg[MAX_ERR_MSG_LENGTH];
         sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_FEAT_NUM);
         spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
         spLoggerDestroy();
@@ -237,7 +238,7 @@ int main(int argc, const char* argv[]) {
     }
     int dim = spConfigGetPCADim(config, &configMsg);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        char errorMsg[1024];
+        char errorMsg[MAX_ERR_MSG_LENGTH];
         sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_PCA_DIM);
         spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
         spLoggerDestroy();
@@ -247,7 +248,7 @@ int main(int argc, const char* argv[]) {
     SP_KD_SPLIT_MODE kdSplitMode;
     configMsg = spConfigGetKDTreeSplitMethod(config, &kdSplitMode);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        char errorMsg[1024];
+        char errorMsg[MAX_ERR_MSG_LENGTH];
         sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_SPLIT_METHOD);
         spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
         spLoggerDestroy();
@@ -257,7 +258,7 @@ int main(int argc, const char* argv[]) {
 
     bool isGUIMode = spConfigMinimalGui(config, &configMsg);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        char errorMsg[1024];
+        char errorMsg[MAX_ERR_MSG_LENGTH];
         sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_IS_MIN_GUI);
         spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
         spLoggerDestroy();
@@ -266,7 +267,7 @@ int main(int argc, const char* argv[]) {
     }
     int k = spConfigGetKNN(config, &configMsg);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        char errorMsg[1024];
+        char errorMsg[MAX_ERR_MSG_LENGTH];
         sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_KNN);
         spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
         spLoggerDestroy();
@@ -302,6 +303,13 @@ int main(int argc, const char* argv[]) {
     char* queryStr;
     while(!isEnded){
         queryStr = spGetInputFromUser(QRY_IMG_MSG);
+        if(!queryStr){
+            spDestroyKDTree(tree);
+            spDestroySPPointArray(features, totalNumOfFeatures);
+            spLoggerDestroy();
+            free(config);
+            return 9;
+        }
         if(strcmp(queryStr, "<>") == 0){
             printf(EXIT_MSG);
             isEnded = true;

@@ -7,8 +7,22 @@
 #include <cstdlib>
 
 #define MAX_PATH_LENGTH 1024
+#define MAX_ERR_MSG_LENGTH 1024
 
+#define ERR_MSG_INVALID_ARG "Error : One of the arguments supplied to the method is invalid."
+#define ERR_MSG_INVALID_ARG "Error : One of the arguments supplied to the method %s is invalid."
+#define ERR_MSG_CANNOT_ALLOCATE_MEM "Error : Couldn't allocate needed memory."
 #define MEM_ALC_ERR_MSG "An error occurred - allocation failure"
+#define ERR_MSG_GET_IMG_PATH "spConfigGetImagePath()"
+#define ERR_MSG_INDEX_OUT_OF_RANGE "Error : The index %d of a best candidate is out of range"
+#define ERR_MSG_GENERAL "General error. Unexpectedly, the program reached to a code where it shouldn't supposed to."
+#define ERR_MSG_MORE_IMG_THAN_AVAILABLE "Error : asked for %d closest images while there are only %d images at all."
+#define ERR_MSG_CANNOT_EXT_FEAT "Error : Couldn't extract feature from the given image.\n Please check if Path : %s is correct."
+#define ERR_MSG_CANNOT_FIND_CLOSE_FEAT "Error : Couldn't find the closest features to a feature."
+#define ERR_MSG_BPQUEUE_PEEK "spBPQueuePeek()"
+#define ERR_MSG_BPQUEUE_DEQUEUE "spBPQueueDequeue()"
+#define ERR_MSG_CANNOT_PEEK_EMPTY "Error : Couldn't peek to the queue top because it's empty."
+#define ERR_MSG_CANNOT_DEQUEUE_EMPTY "Error : Couldn't dequeue element from the queue because it's empty."
 
 extern "C"{
     #include "main_aux.h"
@@ -18,15 +32,13 @@ extern "C"{
 }
 
 char* spGetInputFromUser(const char *command) {
-    if(command == NULL)
-    {
-        // TODO print invalid argument error
+    if(command == NULL) {
+        spLoggerPrintError(ERR_MSG_INVALID_ARG, __FILE__, __func__, __LINE__);
         return NULL;
     }
     char* input = (char*) malloc(MAX_PATH_LENGTH * sizeof(char));
     if(input == NULL){
-        // TODO print memory allocation error
-        printf(MEM_ALC_ERR_MSG);
+        spLoggerPrintError(ERR_MSG_CANNOT_ALLOCATE_MEM, __FILE__, __func__, __LINE__);
         return NULL;
     }
     printf("%s",command);
@@ -37,7 +49,7 @@ char* spGetInputFromUser(const char *command) {
 
 void spNonMinimalGUI(SPConfig config, char* queryPath, int* indexArray, int size) {
     if(!queryPath || !config || !indexArray || size<1){
-        // TODO print invalid argument error
+        spLoggerPrintError(ERR_MSG_INVALID_ARG, __FILE__, __func__, __LINE__);
         return;
     }
     printf("\"Best candidates for - %s - are:\n", queryPath);
@@ -46,15 +58,19 @@ void spNonMinimalGUI(SPConfig config, char* queryPath, int* indexArray, int size
         SP_CONFIG_MSG msg = spConfigGetImagePath(path, config, indexArray[i]);
         switch (msg){
             case SP_CONFIG_INVALID_ARGUMENT:
-                // TODO print invalid arg in spConfigGetImagePath()
+                char errorMsg[MAX_ERR_MSG_LENGTH];
+                sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_IMG_PATH);
+                spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
                 return;
             case SP_CONFIG_INDEX_OUT_OF_RANGE:
-                // TODO print asked to show images which doesn't exists
+                char errorMsg[MAX_ERR_MSG_LENGTH];
+                sprintf(errorMsg, ERR_MSG_INDEX_OUT_OF_RANGE, indexArray[i]);
+                spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
                 return;
             case SP_CONFIG_SUCCESS:
                 break;
             default:
-                // TODO unexpectedly reached unreachable code
+                spLoggerPrintError(ERR_MSG_GENERAL, __FILE__, __func__, __LINE__);
                 return;
         }
         printf("%s\n", path);
@@ -63,24 +79,28 @@ void spNonMinimalGUI(SPConfig config, char* queryPath, int* indexArray, int size
 
 void spMinimalGUI(SPConfig config, char* queryPath, int* indexArray, int size) {
     if(!queryPath || !config || !indexArray || size<1){
+        spLoggerPrintError(ERR_MSG_INVALID_ARG, __FILE__, __func__, __LINE__);
         return;
     }
     sp::ImageProc s = sp::ImageProc(config);
     for (int i = 0; i < size; ++i) {
         char path[1024];
         SP_CONFIG_MSG msg = spConfigGetImagePath(path, config, indexArray[i]);
-        //TODO copy switch from the method above
         switch (msg){
             case SP_CONFIG_INVALID_ARGUMENT:
-                // TODO print invalid arg in spConfigGetImagePath()
+                char errorMsg[MAX_ERR_MSG_LENGTH];
+                sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_IMG_PATH);
+                spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
                 return;
             case SP_CONFIG_INDEX_OUT_OF_RANGE:
-                // TODO print asked to show images which doesn't exists
+                char errorMsg[MAX_ERR_MSG_LENGTH];
+                sprintf(errorMsg, ERR_MSG_INDEX_OUT_OF_RANGE, indexArray[i]);
+                spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
                 return;
             case SP_CONFIG_SUCCESS:
                 break;
             default:
-                // TODO unexpectedly reached unreachable code
+                spLoggerPrintError(ERR_MSG_GENERAL, __FILE__, __func__, __LINE__);
                 return;
         }
         s.showImage(path);
@@ -101,26 +121,29 @@ int elementByValueComparator(const void *element1, const void *element2){
 
 int* spGetGetBestKMatches(SPKDTree* kdTree, char* queryPath, SPConfig config, int numOfImages, int k){
     if(!kdTree || !queryPath || !config || numOfImages < 0 || k < 0){
-        // TODO print invalid argument error
+        spLoggerPrintError(ERR_MSG_INVALID_ARG, __FILE__, __func__, __LINE__);
         return NULL;
     }
     if(k > numOfImages){
-        // TODO print asked for too many nearest neighbours
-        // TODO free all resources
+        char errorMsg[MAX_ERR_MSG_LENGTH];
+        sprintf(errorMsg, ERR_MSG_MORE_IMG_THAN_AVAILABLE, k, numOfImages);
+        spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
         return NULL;
     }
     sp::ImageProc s = sp::ImageProc(config);
     int numOfQueryFeat;
     SPPoint** queryFeat = s.getImageFeatures(queryPath, DEFAULT_INDEX, &numOfQueryFeat);
     if(!queryFeat){
-        // TODO print query cannot extract features check if the path is correct
-        // TODO free all resources
+        char errorMsg[MAX_ERR_MSG_LENGTH];
+        sprintf(errorMsg, ERR_MSG_CANNOT_EXT_FEAT, queryPath);
+        spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
         return NULL;
     }
+    // TODO from this point free queryFeat
     int* imageCounter =(int*) malloc(numOfImages * sizeof(int));
     if(!imageCounter){
-        // TODO print memory allocation error
-        // TODO free all resources
+        spLoggerPrintError(ERR_MSG_CANNOT_ALLOCATE_MEM, __FILE__, __func__, __LINE__);
+        spDestroySPPointArray(queryFeat, numOfQueryFeat);
         printf(MEM_ALC_ERR_MSG);
         return NULL;
     }
@@ -131,7 +154,8 @@ int* spGetGetBestKMatches(SPKDTree* kdTree, char* queryPath, SPConfig config, in
     for (int i = 0; i < numOfQueryFeat; ++i) {
         SPBPQueue* kClose = getKClosestPoints(kdTree, queryFeat[i], k);
         if(!kClose){
-            // TODO print error while trying to find best match for a feature
+            spLoggerPrintError(ERR_MSG_CANNOT_FIND_CLOSE_FEAT, __FILE__, __func__, __LINE__);
+            spDestroySPPointArray(queryFeat, numOfQueryFeat);
             free(imageCounter);
             return NULL;
         }
@@ -141,19 +165,24 @@ int* spGetGetBestKMatches(SPKDTree* kdTree, char* queryPath, SPConfig config, in
             bpqMsg = spBPQueuePeek(kClose, &feature);
             switch (bpqMsg){
                 case SP_BPQUEUE_INVALID_ARGUMENT:
-                    // TODO print invalid argument error in spBPQueuePeek()
+                    char errorMsg[MAX_ERR_MSG_LENGTH];
+                    sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_BPQUEUE_PEEK);
+                    spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
+                    spDestroySPPointArray(queryFeat, numOfQueryFeat);
                     free(imageCounter);
                     spBPQueueDestroy(kClose);
                     return NULL;
                 case SP_BPQUEUE_EMPTY:
-                    // TODO print empty queue error
+                    spLoggerPrintError(ERR_MSG_CANNOT_PEEK_EMPTY, __FILE__, __func__, __LINE__);
+                    spDestroySPPointArray(queryFeat, numOfQueryFeat);
                     free(imageCounter);
                     spBPQueueDestroy(kClose);
                     return NULL;
                 case SP_BPQUEUE_SUCCESS:
                     break;
                 default:
-                    // TODO print unreachable code
+                    spLoggerPrintError(ERR_MSG_GENERAL, __FILE__, __func__, __LINE__);
+                    spDestroySPPointArray(queryFeat, numOfQueryFeat);
                     free(imageCounter);
                     spBPQueueDestroy(kClose);
                     return NULL;
@@ -162,19 +191,24 @@ int* spGetGetBestKMatches(SPKDTree* kdTree, char* queryPath, SPConfig config, in
             bpqMsg = spBPQueueDequeue(kClose);
             switch (bpqMsg){
                 case SP_BPQUEUE_INVALID_ARGUMENT:
-                    // TODO print invalid argument error in spBPQueuePeek()
+                    char errorMsg[MAX_ERR_MSG_LENGTH];
+                    sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_BPQUEUE_DEQUEUE);
+                    spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
+                    spDestroySPPointArray(queryFeat, numOfQueryFeat);
                     free(imageCounter);
                     spBPQueueDestroy(kClose);
                     return NULL;
                 case SP_BPQUEUE_EMPTY:
-                    // TODO print empty queue error
+                    spLoggerPrintError(ERR_MSG_CANNOT_DEQUEUE_EMPTY, __FILE__, __func__, __LINE__);
+                    spDestroySPPointArray(queryFeat, numOfQueryFeat);
                     free(imageCounter);
                     spBPQueueDestroy(kClose);
                     return NULL;
                 case SP_BPQUEUE_SUCCESS:
                     break;
                 default:
-                    // TODO print unreachable code
+                    spLoggerPrintError(ERR_MSG_GENERAL, __FILE__, __func__, __LINE__);
+                    spDestroySPPointArray(queryFeat, numOfQueryFeat);
                     free(imageCounter);
                     spBPQueueDestroy(kClose);
                     return NULL;
@@ -183,10 +217,10 @@ int* spGetGetBestKMatches(SPKDTree* kdTree, char* queryPath, SPConfig config, in
         spBPQueueDestroy(kClose);
     }
 
+    spDestroySPPointArray(queryFeat, numOfQueryFeat);
     BPQueueElement* sortingArr =(BPQueueElement*) malloc(numOfImages * sizeof(BPQueueElement)); // initialize helper array
     if (!sortingArr) {
-        // TODO print memory allocation error
-        printf(MEM_ALC_ERR_MSG);
+        spLoggerPrintError(ERR_MSG_CANNOT_ALLOCATE_MEM, __FILE__, __func__, __LINE__);
         free(imageCounter);
         return NULL;
     }
@@ -199,9 +233,8 @@ int* spGetGetBestKMatches(SPKDTree* kdTree, char* queryPath, SPConfig config, in
     qsort(sortingArr, (size_t) numOfImages, sizeof(BPQueueElement), elementByValueComparator);
     int* result =(int*) malloc(k * sizeof(int));
     if (!result) {
-        // TODO print memory allocation error
+        spLoggerPrintError(ERR_MSG_CANNOT_ALLOCATE_MEM, __FILE__, __func__, __LINE__);
         free(sortingArr);
-        printf(MEM_ALC_ERR_MSG);
         return NULL;
     }
     for (int i = 0; i < k; ++i) {
@@ -213,7 +246,7 @@ int* spGetGetBestKMatches(SPKDTree* kdTree, char* queryPath, SPConfig config, in
 
 void spDestroySPPointArray(SPPoint** array, int size){
     if(!array || size < 0){
-        // TODO print invalid argument error
+        spLoggerPrintError(ERR_MSG_INVALID_ARG, __FILE__, __func__, __LINE__);
         return;
     }
     for (int i = 0; i < size; ++i) {
