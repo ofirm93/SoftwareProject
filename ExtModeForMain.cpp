@@ -1,5 +1,5 @@
 /*
- * ExtModeForMain.c
+ * ExtModeForMain.cpp
  *
  *  Created on: Mar 14, 2017
  *      Author: user

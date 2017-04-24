@@ -18,6 +18,6 @@ target_link_libraries( DisplayImage ${OpenCV_LIBS} )
 #    message( "OpenCV not found, woot" )
 #endif( OpenCV_FOUND )
 
-set(SOURCE_FILES main.cpp SPConfig.c unit_tests/sp_config_unit_test.c SPKDArray.c SPKDArray.h unit_tests/sp_kd_array_unit_test.c main_aux.cpp main_aux.h unit_tests/sp_main_aux_unit_test.c ExtModeForMain.cpp)
+set(SOURCE_FILES ExtModeForMain.cpp main.cpp SPConfig.c unit_tests/sp_config_unit_test.c SPKDArray.c SPKDArray.h unit_tests/sp_kd_array_unit_test.c main_aux.cpp main_aux.h unit_tests/sp_main_aux_unit_test.c ExtModeForMain.cpp)
 add_executable(SoftwareProject ${SOURCE_FILES})
 target_link_libraries( SoftwareProject ${OpenCV_LIBS} )
