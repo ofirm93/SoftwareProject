@@ -10,6 +10,8 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
+#include "ExtModeForMain.h"
+#include "main_aux.h"
 
 #define MAX_PATH_LENGTH 1024
 #define MAX_ERR_MSG_LENGTH 1024
@@ -49,10 +51,9 @@
 #define ERR_MSG_CANNOT_CREATE_KDTREE "Error : Couldn't create KDTree from the features."
 #define ERR_MSG_IS_MIN_GUI "spConfigMinimalGui()"
 #define ERR_MSG_GET_KNN "spConfigGetKNN()"
+
 extern "C"{
     #include "SPConfig.h"
-    #include "main_aux.h"
-    #include "ExtModeForMain.h"
 }
 
 using namespace std;

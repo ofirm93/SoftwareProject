@@ -8,7 +8,7 @@
 #include "../SPPoint.c"
 
 
-int main(int argc, const char* argv[]) {
+void testSplitSPKDArray(){
     for(int i=0; i< argc; i++){
         printf("%s\n",argv[i]);
     }
@@ -24,16 +24,22 @@ int main(int argc, const char* argv[]) {
         pointArr[i] = spPointCreate(val[i], dimension , i);
     }
     SPKDArray kdArr = spInitSPKDArray(pointArr, numOfPoints);
-    printf("The big array's details are :\n");
-    spPrintKDArrayDetails(kdArr);
+    char mainTitle[1024] = "The big array's details are :\n";
+    char* mainMsg = spPrintKDArrayDetails(kdArr);
     SPKDArray* twoArrays = spSplitSPKDArray(kdArr, coordinate);
-    printf("\n\nThe left array's details are :\n");
-    spPrintKDArrayDetails(twoArrays[0]);
-    printf("\n\nThe right array's details are :\n");
-    spPrintKDArrayDetails(twoArrays[1]);
+    char leftTitle[1024] = "\n\nThe left array's details are :\n";
+    char* leftMsg = spPrintKDArrayDetails(twoArrays[0]);
+    char rightTitle[1024] = "s\n\nThe right array's details are :\n";
+    char* rightMsg = spPrintKDArrayDetails(twoArrays[1]);
+    char msg[20000];
+    sprintf(msg, "%s%s%s%s%s%s", mainTitle, mainMsg, leftTitle, leftMsg, rightTitle, rightMsg);
+    spLoggerPrintDebug(msg, __FILE__, __func__, __LINE__);
     for (int i = 0; i < numOfPoints; ++i) {
         spPointDestroy(pointArr[i]);
     }
     free(pointArr);
+}
+int main(int argc, const char* argv[]) {
+    testSplitSPKDArray();
     return 0;
 }

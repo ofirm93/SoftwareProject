@@ -26,6 +26,6 @@ int spGetSPKDArraySize(SPKDArray kdArr);
 
 
 // TODO Delete the next method - its for testing only
-void spPrintKDArrayDetails(SPKDArray kdArr);
+char* spPrintKDArrayDetails(SPKDArray kdArr);
 
 #endif //SOFTWAREPROJECT_SPKDARRAY_H
