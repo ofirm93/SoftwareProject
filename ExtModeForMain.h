@@ -27,7 +27,7 @@
  *
  */
 SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffix,
-		int spNumOfImages, int spNumOfFeatures, sp::ImageProc spIp);
+		int spNumOfImages, int spNumOfFeatures, sp::ImageProc spIp, int* totalNumOfFeatures);
 
 
 
@@ -47,8 +47,8 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
  * Otherwise returns NULL.
  *
  */
-SPPoint*** NonExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffix,
-		int spNumOfImages, int spNumOfFeatures);
+SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffix,
+		int spNumOfImages, int spNumOfFeatures, int* totalNumOfFeatures);
 
 
 #endif /* EXTMODEFORMAIN_H_ */
