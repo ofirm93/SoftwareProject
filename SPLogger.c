@@ -179,8 +179,6 @@ SP_LOGGER_MSG spLoggerLevelFromNum(int levelNum, SP_LOGGER_LEVEL* loggerLevel){
 		case 4:
 			*loggerLevel = SP_LOGGER_ERROR_LEVEL;
 			break;
-		default:
-			return SP_LOGGER_UNDIFINED;
 	}
 	return SP_LOGGER_SUCCESS;
 }
