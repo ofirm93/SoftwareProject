@@ -199,11 +199,14 @@ int spGetSPKDArraySize(SPKDArray kdArr){
 
 // TODO Delete the next method - its for testing only
 #include <stdio.h>
-void spPrintKDArrayDetails(SPKDArray kdArr){
+char* spPrintKDArrayDetails(SPKDArray kdArr){
     if(kdArr){
         int size = kdArr->numOfPoints;
         int dim = kdArr->dimension;
-        char msg[10000];
+        char* msg = malloc(10000 * sizeof(char));
+        if(!msg){
+            return "Allocation Error";
+        }
         sprintf(msg, "The size of the array is : %d\n"
                 "The dimension of the array is : %d\n"
                 "The points in the array are :\n", size, dim);
@@ -228,9 +231,8 @@ void spPrintKDArrayDetails(SPKDArray kdArr){
             }
             sprintf(msg, "%s)\n", msg);
         }
-        spLoggerPrintDebug(msg, __FILE__, __func__, __LINE__);
+        return msg;
     }
-    spLoggerPrintDebug("Debug : The argument kdArr is NULL.", __FILE__, __func__, __LINE__);
-
+    return "Debug : The argument kdArr is NULL.";
 }
 
