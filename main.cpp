@@ -52,9 +52,10 @@
 #define ERR_MSG_IS_MIN_GUI "spConfigMinimalGui()"
 #define ERR_MSG_GET_KNN "spConfigGetKNN()"
 
-extern "C"{
-    #include "SPConfig.h"
-}
+//extern "C"{
+//    #include "SPConfig.h"
+//    #include "SPKDTree.h"
+//}
 
 using namespace std;
 
