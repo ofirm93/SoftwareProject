@@ -204,7 +204,7 @@ KDTreeNode* spInitSPKDTreeRec(SPKDArray kdArray, SP_KD_SPLIT_MODE splitMethod, i
 				if(tmpMin > coor){
 					tmpMin = coor;
 				}
-				free(point); // needed free?
+				spPointDestroy(point); // needed free?
 
 			}
 			spreadArr[j] = tmpMax - tmpMin;
@@ -236,46 +236,61 @@ KDTreeNode* spInitSPKDTreeRec(SPKDArray kdArray, SP_KD_SPLIT_MODE splitMethod, i
 	if(!leftAndRight){
 		return NULL;
 	}
-	SPPoint* pointL1 = spGetSPKDArrayPoint(leftAndRight[0],size/2);
-	if(!pointL1){
-		free(leftAndRight);
-		return NULL;
-	}
+
+
 	SPPoint* pointL2 = spGetSPKDArrayPoint(leftAndRight[0],size/2 - 1);
 	if(!pointL2){
-		free(pointL1);
+		spDestroyKDArray(leftAndRight[0]);
+		spDestroyKDArray(leftAndRight[1]);
 		free(leftAndRight);
 		return NULL;
 	}
 	SPPoint* pointR = spGetSPKDArrayPoint(leftAndRight[1],size/2 - 1);
 	if(!pointR){
-		free(pointL2);
-		free(pointL1);
+		spPointDestroy(pointL2);
+		spDestroyKDArray(leftAndRight[0]);
+		spDestroyKDArray(leftAndRight[1]);
 		free(leftAndRight);
 		return NULL;
 	}
 	if(size%2 == 1){
+		SPPoint* pointL1 = spGetSPKDArrayPoint(leftAndRight[0],size/2);
+		if(!pointL1){
+			spDestroyKDArray(leftAndRight[0]);
+			spDestroyKDArray(leftAndRight[1]);
+			spPointDestroy(pointL2);
+			spPointDestroy(pointR);
+			free(leftAndRight);
+			return NULL;
+		}
+		spPointDestroy(pointL1);
 		sizeL = size/2 + 1;
 		sizeR = size/2;
-		median = spPointGetAxisCoor(pointL1,size/2);
+		median = spPointGetAxisCoor(pointL1,splitDim);
 	}
 	else{
 		sizeL = size/2;
 		sizeR = size/2;
-		median = (spPointGetAxisCoor(pointL2,size/2 - 1) +  spPointGetAxisCoor(pointR,1)) / 2 ;
+		median = (spPointGetAxisCoor(pointL2,splitDim) +  spPointGetAxisCoor(pointR,splitDim)) / 2 ;
 	}
-	spPointDestroy(pointL1);
+
 	spPointDestroy(pointL2);
 	spPointDestroy(pointR);
 	KDTreeNode* leftNode = spInitSPKDTreeRec(leftAndRight[0],  splitMethod, pointDim, sizeL,
 			splitDim);
 	if(!leftNode){
+		spDestroyKDArray(leftAndRight[0]);
+		spDestroyKDArray(leftAndRight[1]);
+		free(leftAndRight);
 		return NULL;
 	}
 	KDTreeNode* rightNode = spInitSPKDTreeRec(leftAndRight[1], splitMethod, pointDim, sizeR,
 			splitDim);
 	if(!rightNode){
 		spDestroyKDTreeNode(leftNode);
+		spDestroyKDArray(leftAndRight[0]);
+		spDestroyKDArray(leftAndRight[1]);
+		free(leftAndRight);
 		return NULL;
 	}
 	return spInitKDTreeNode(splitDim, median, leftNode, rightNode, NULL);
@@ -299,7 +314,7 @@ SPKDTree* spInitSPKDTree(SPPoint** arr, int size, int pointDim, SP_KD_SPLIT_MODE
 	}
 	tree->root = spInitSPKDTreeRec(kdArray, splitMethod, pointDim, size, -1);
 	if(!tree->root){
-		free(tree);
+		spDestroyKDTree(tree);
 		spDestroyKDArray(kdArray);
 		return NULL;
 	}
@@ -307,6 +322,9 @@ SPKDTree* spInitSPKDTree(SPPoint** arr, int size, int pointDim, SP_KD_SPLIT_MODE
 }
 
 void spDestroyKDTree(SPKDTree* tree){
+	if(!tree){
+		return;
+	}
 	spDestroyKDTreeNode(tree->root);
 	spDestroyKDArray(tree->features);
 }
