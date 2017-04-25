@@ -47,8 +47,9 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 	for(int i=0; i<spNumOfImages;i++){
 		//getting the paths
 		char imgPath[MAX_STRING_LENGTH];
-		checker = sprintf(imgPath, FILE_PATH_PATTERN, directory, imagePrefix, i, imageSuffix); //check positive
-		if(checker < 0){
+//		checker = sprintf(imgPath, FILE_PATH_PATTERN, directory, imagePrefix, i, imageSuffix); //check positive
+		SP_CONFIG_MSG msg = spConfigGetImagePathWithData(imgPath, directory, imagePrefix, i, imageSuffix);
+		if(msg != SP_CONFIG_SUCCESS){
 			printf("Failed to print to string\n");
 			free(numOfFeatures);
 			free(numOfFeatArray);
@@ -61,8 +62,11 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 			return NULL;
 		}*/
 		char filePath [MAX_STRING_LENGTH];
-		checker = sprintf(filePath, FILE_PATH_PATTERN, directory, imagePrefix, i, featSuffix); //check positive
-		if(checker < 0){
+
+//		checker = sprintf(filePath, FILE_PATH_PATTERN, directory, imagePrefix, i, featSuffix); //check positive
+//		if(checker < 0){
+		msg = spConfigGetImagePathWithData(imgPath, directory, imagePrefix, i, imageSuffix);
+		if(msg != SP_CONFIG_SUCCESS){
 			printf("Failed to print to string\n");
 			free(numOfFeatures);
 			free(numOfFeatArray);

@@ -160,7 +160,9 @@ bool spTurnIntoWord(char* str){
         i++;
     }
     if (i >= length){	// if string ended than it's correct and we're done
-        snprintf(str, n + 1, "%s", str); // copy the first word
+		char temp[MAX_LINE_LENGTH];
+		strcpy(temp, str);
+		snprintf(str, n + 1, temp); // copy the first word
 
 //        strncpy(str, str, n);	// copy the first word TODO delete if works
         return true;
@@ -169,7 +171,9 @@ bool spTurnIntoWord(char* str){
         i++;
     }
     if (i >= length){	// if string ended than it's correct and we're done
-        snprintf(str, n + 1, "%s", str); // copy the first word
+        char temp[MAX_LINE_LENGTH];
+		strcpy(temp, str);
+		snprintf(str, n + 1, temp); // copy the first word
 //        strncpy(str, str, n);	// copy the first word TODO delete if works
         return true;
     }
@@ -193,7 +197,7 @@ bool spIsNonNegativeInteger(char *str){
  */
 bool spHandleStringProperty(char** property, bool* propertyCheck, char* value, SP_CONFIG_MSG* msg,
 							const char *filename, int lineNum){
-	if(!property || !propertyCheck || !msg || !filename){
+	if(!property || !msg || !filename){
 		return false;
 	}
 	if(!spTurnIntoWord(value)){
@@ -218,7 +222,7 @@ bool spHandleStringProperty(char** property, bool* propertyCheck, char* value, S
  */
 bool spHandleIntegerProperty(int* property, bool* propertyCheck, char* value, SP_CONFIG_MSG* msg,
 							const char *filename, int lineNum, int lowerBound, int upperBound, bool isThereUpperBound){
-	if(!property || !propertyCheck || !msg || !filename){
+	if(!property || !msg || !filename){
 		return false;
 	}
 	if(!spTurnIntoWord(value)){
@@ -585,7 +589,15 @@ SP_CONFIG_MSG spConfigGetImagePath(char* imagePath, const SPConfig config,
     if(index < 0 || index >= config->numOfImages){
         return SP_CONFIG_INDEX_OUT_OF_RANGE;
     }
-    sprintf(imagePath, "%s%s%d%s",config->imagesDirectory, config->imagesPrefix, index, config->imagesSuffix);
+    sprintf(imagePath, "%s/%s%d%s",config->imagesDirectory, config->imagesPrefix, index, config->imagesSuffix);
+    return SP_CONFIG_SUCCESS;
+}
+
+SP_CONFIG_MSG spConfigGetImagePathWithData(char* imagePath, char* directory, char* prefix, int index, char* suffix){
+    if (!imagePath || !directory || !prefix || !suffix) {
+        return SP_CONFIG_INVALID_ARGUMENT;
+    }
+    sprintf(imagePath, "%s/%s%d%s",directory, prefix, index, suffix);
     return SP_CONFIG_SUCCESS;
 }
 
