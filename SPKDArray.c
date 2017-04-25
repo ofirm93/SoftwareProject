@@ -145,13 +145,25 @@ SPKDArray* spSplitSPKDArray(SPKDArray kdArr, int coor){
         return NULL;
     }
 
+    int* newIndices = malloc(size * sizeof(int));
+    if (!newIndices){
+        free(isInLeft);
+        spDestroyKDArrayWithDim(kdLeft, dim);
+        spDestroyKDArrayWithDim(kdRight, dim);
+        return NULL;
+    }
+
     for (int i = 0; i < leftSize; ++i) {
-        kdLeft->pointsArray[i] = spPointCopy(kdArr->pointsArray[kdArr->sortArray[coor][i]]);
+        int currIndex = kdArr->sortArray[coor][i];
+        kdLeft->pointsArray[i] = spPointCopy(kdArr->pointsArray[currIndex]);
         isInLeft[kdArr->sortArray[coor][i]] = true;
+        newIndices[currIndex] = i;
     }
     for (int i = leftSize; i < size; ++i) {
-        kdRight->pointsArray[i - leftSize] = spPointCopy(kdArr->pointsArray[kdArr->sortArray[coor][i]]);
+        int currIndex = kdArr->sortArray[coor][i];
+        kdRight->pointsArray[i - leftSize] = spPointCopy(kdArr->pointsArray[currIndex]);
         isInLeft[kdArr->sortArray[coor][i]] = false;
+        newIndices[currIndex] = i - leftSize;
     }
 
     for (int i = 0; i < dim; ++i) {
@@ -160,16 +172,16 @@ SPKDArray* spSplitSPKDArray(SPKDArray kdArr, int coor){
         for (int j = 0; j < size; ++j) {
             int index = kdArr->sortArray[i][j];
             if(isInLeft[index]){
-                kdLeft->sortArray[i][leftIndex] = index;
+                kdLeft->sortArray[i][leftIndex] = newIndices[index];
                 leftIndex++;
             }
             else{
-                kdRight->sortArray[i][rightIndex] = index-leftSize;
+                kdRight->sortArray[i][rightIndex] = newIndices[index];
                 rightIndex++;
             }
         }
     }
-
+    free(newIndices);
     free(isInLeft);
     SPKDArray* twoKDArrays = malloc(2 * sizeof(SPKDArray));
     if (!twoKDArrays){
@@ -235,3 +247,5 @@ char* spPrintKDArrayDetails(SPKDArray kdArr){
     return "Debug : The argument kdArr is NULL.";
 }
 
+// TODO Delete the next method - its for testing only
+#include <stdio.h>
