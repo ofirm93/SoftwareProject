@@ -164,7 +164,7 @@ SPKDArray* spSplitSPKDArray(SPKDArray kdArr, int coor){
                 leftIndex++;
             }
             else{
-                kdRight->sortArray[i][rightIndex] = index;
+                kdRight->sortArray[i][rightIndex] = index-leftSize;
                 rightIndex++;
             }
         }
