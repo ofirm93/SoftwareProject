@@ -263,11 +263,11 @@ KDTreeNode* spInitSPKDTreeRec(SPKDArray kdArray, SP_KD_SPLIT_MODE splitMethod, i
 			free(leftAndRight);
 			return NULL;
 		}
-		spPointDestroy(pointL1);
 		sizeL = size/2 + 1;
 		sizeR = size/2;
 		median = spPointGetAxisCoor(pointL1,splitDim);
-	}
+        spPointDestroy(pointL1);
+    }
 	else{
 		sizeL = size/2;
 		sizeR = size/2;

@@ -88,8 +88,9 @@ bool testKDTreeInitAndSearch(){
     return true;
 }
 
+/*
 int main(){
     RUN_TEST( testKDTreeInitAndSearch );
     return 1;
 
-}
+}*/
