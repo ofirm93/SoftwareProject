@@ -170,6 +170,11 @@ int spConfigGetPCADim(const SPConfig config, SP_CONFIG_MSG* msg);
  */
 SP_CONFIG_MSG spConfigGetImagePath(char* imagePath, const SPConfig config,
 		int index);
+/**
+ * TODO documentation
+ *  Same as above just the data is supplied.
+ */
+SP_CONFIG_MSG spConfigGetImagePathWithData(char* imagePath, char* directory, char* prefix, int index, char* suffix);
 
 /**
  * The function stores in pcaPath the full path of the pca file.
