@@ -178,7 +178,7 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 }
 
 
-SPPoint** NotExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffix,
+SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffix,
 		int spNumOfImages, int spNumOfFeatures, int* totalNumOfFeatures){
 	const char readMode = 'r';
 	int checker = 0;

@@ -1,4 +1,4 @@
-#ifndef SPIMAGEPROC_H_
+#ifndef SPIMAGEPROC_H_SPBPriorityQueue
 #define SPIMAGEPROC_H_
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>

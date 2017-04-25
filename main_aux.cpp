@@ -27,7 +27,7 @@
 #define ERR_MSG_CANNOT_DEQUEUE_EMPTY "Error : Couldn't dequeue element from the queue because it's empty."
 
 extern "C"{
-    #include "SPBPriorityQueue.h"
+//    #include "SPBPriorityQueue.h"
     #include "KNearestSearch.h"
 }
 

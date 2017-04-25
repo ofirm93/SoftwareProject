@@ -7,8 +7,12 @@
 
 #define DEFAULT_INDEX 123
 
-#include "SPConfig.h"
-#include "SPKDTree.h"
+extern "C"{
+    #include "SPConfig.h"
+    #include "SPBPriorityQueue.h"
+    #include "SPKDTree.h"
+}
+
 /**
  * This method gets an output command string displays it to the user, gets a string input and returns it.
  * If it gets a NULL command or allocation fails it does nothing and returns NULL.
