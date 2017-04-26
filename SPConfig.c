@@ -1,3 +1,8 @@
+//TODO
+//when printing errors use macros __FILE__ __LINE__ , not lineNum and filename, delete lineNum from the functions because its not needed.
+//maybe change error printing to logger because it does the same. But its too much work now...
+//i did lineNum++ in property because it won't compile if its an unused variable
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -162,9 +167,8 @@ bool spTurnIntoWord(char* str){
     if (i >= length){	// if string ended than it's correct and we're done
 		char temp[MAX_LINE_LENGTH];
 		strcpy(temp, str);
-		snprintf(str, n + 1, temp); // copy the first word
-
-//        strncpy(str, str, n);	// copy the first word TODO delete if works
+		//snprintf(str, n + 1, temp); // wont compile
+		strncpy(str, temp , n+1);	// copy the first word TODO delete if works
         return true;
     }
     while (i < length && (str[i] == ' ' || str[i] == '\n')){	// pass any spaces
@@ -173,8 +177,7 @@ bool spTurnIntoWord(char* str){
     if (i >= length){	// if string ended than it's correct and we're done
         char temp[MAX_LINE_LENGTH];
 		strcpy(temp, str);
-		snprintf(str, n + 1, temp); // copy the first word
-//        strncpy(str, str, n);	// copy the first word TODO delete if works
+		strncpy(str, temp , n+1);
         return true;
     }
     return false;	// if string didn't end than it's incorrect
@@ -184,7 +187,7 @@ bool spIsNonNegativeInteger(char *str){
     if(!str){
         return false;
     }
-    for(int i = 0; i < strlen(str); i++){
+    for(unsigned int i = 0; i < strlen(str); i++){
         if(!isdigit(str[i])){
             return false;
         }
@@ -197,11 +200,12 @@ bool spIsNonNegativeInteger(char *str){
  */
 bool spHandleStringProperty(char** property, bool* propertyCheck, char* value, SP_CONFIG_MSG* msg,
 							const char *filename, int lineNum){
+	lineNum++;
 	if(!property || !msg || !filename){
 		return false;
 	}
 	if(!spTurnIntoWord(value)){
-		spPrintInvalidValueError(filename, lineNum);
+		spPrintInvalidValueError(__FILE__, __LINE__);
 		*msg = SP_CONFIG_INVALID_STRING;
 		return false;
 	}
@@ -222,16 +226,17 @@ bool spHandleStringProperty(char** property, bool* propertyCheck, char* value, S
  */
 bool spHandleIntegerProperty(int* property, bool* propertyCheck, char* value, SP_CONFIG_MSG* msg,
 							const char *filename, int lineNum, int lowerBound, int upperBound, bool isThereUpperBound){
+	lineNum++;
 	if(!property || !msg || !filename){
 		return false;
 	}
 	if(!spTurnIntoWord(value)){
-		spPrintInvalidValueError(filename, lineNum);
+		spPrintInvalidValueError(__FILE__, __LINE__);
 		*msg = SP_CONFIG_INVALID_INTEGER;
 		return false;
 	}
 	if(!spIsNonNegativeInteger(value)){
-		spPrintInvalidValueError(filename, lineNum);
+		spPrintInvalidValueError(__FILE__, __LINE__);
 		*msg = SP_CONFIG_INVALID_INTEGER;
 		return false;
 	}
@@ -244,7 +249,7 @@ bool spHandleIntegerProperty(int* property, bool* propertyCheck, char* value, SP
 	}
 	else{
 		*msg = SP_CONFIG_INVALID_INTEGER;
-		spPrintInvalidValueError(filename, lineNum);
+		spPrintInvalidValueError(__FILE__, __LINE__);
 		return false;
 	}
 	return true;
@@ -255,11 +260,12 @@ bool spHandleIntegerProperty(int* property, bool* propertyCheck, char* value, SP
  */
 bool spHandleBooleanProperty(bool* property, char* value, SP_CONFIG_MSG* msg, const char *filename,
 							 int lineNum){
+	lineNum++;
 	if(!property || !msg || !filename){
 		return false;
 	}
 	if(!spTurnIntoWord(value)){
-		spPrintInvalidValueError(filename, lineNum);
+		spPrintInvalidValueError(__FILE__, __LINE__);
 		*msg = SP_CONFIG_INVALID_STRING;
 		return false;
 	}
@@ -271,7 +277,7 @@ bool spHandleBooleanProperty(bool* property, char* value, SP_CONFIG_MSG* msg, co
 	}
 	else{
 		*msg = SP_CONFIG_INVALID_STRING;
-		spPrintInvalidValueError(filename, lineNum);
+		spPrintInvalidValueError(__FILE__, __LINE__);
 		return false;
 	}
 	return true;
@@ -282,11 +288,12 @@ bool spHandleBooleanProperty(bool* property, char* value, SP_CONFIG_MSG* msg, co
  */
 bool spHandleSuffixProperty(char** property, bool* propertyCheck, char* value, SP_CONFIG_MSG* msg, const char *filename,
 							 int lineNum){
+	lineNum++;
 	if(!property || !propertyCheck || !msg || !filename){
 		return false;
 	}
 	if(!spTurnIntoWord(value)){
-		spPrintInvalidValueError(filename, lineNum);
+		spPrintInvalidValueError(__FILE__, __LINE__);
 		*msg = SP_CONFIG_INVALID_STRING;
 		return false;
 	}
@@ -302,7 +309,7 @@ bool spHandleSuffixProperty(char** property, bool* propertyCheck, char* value, S
 		return true;
 	}
 	*msg = SP_CONFIG_INVALID_STRING;
-	spPrintInvalidValueError(filename, lineNum);
+	spPrintInvalidValueError(__FILE__, __LINE__);
 	return false;
 }
 
@@ -311,11 +318,12 @@ bool spHandleSuffixProperty(char** property, bool* propertyCheck, char* value, S
  */
 bool spHandleSplitMethodProperty(SP_KD_SPLIT_MODE* property, char* value, SP_CONFIG_MSG* msg, const char *filename,
 							 int lineNum){
+	lineNum++;
 	if(!property || !msg || !filename){
 		return false;
 	}
 	if(!spTurnIntoWord(value)){
-		spPrintInvalidValueError(filename, lineNum);
+		spPrintInvalidValueError(__FILE__, __LINE__);
 		*msg = SP_CONFIG_INVALID_STRING;
 		return false;
 	}
@@ -330,7 +338,7 @@ bool spHandleSplitMethodProperty(SP_KD_SPLIT_MODE* property, char* value, SP_CON
 	}
 	else{
 		*msg = SP_CONFIG_INVALID_STRING;
-		spPrintInvalidValueError(filename, lineNum);
+		spPrintInvalidValueError(__FILE__, __LINE__);
 		return false;
 	}
 	return true;
@@ -402,12 +410,12 @@ bool spIsLineParsable(char* line, char* firstStr, char* secondStr){
 		i++;
 	}
 	if (i >= length){	// if line ended than it's empty and correct
-        snprintf(firstStr, 1, "");
+        firstStr[0] =  '\0';
 //		strncpy(firstStr, "", 1); TODO delete if works
 		return true;
 	}
 	if (line[i] == '#'){	// if the first actual character is '#' than this line is comment and ignore it
-        snprintf(firstStr, 1, "");
+        firstStr[0] =  '\0';
 //		strncpy(firstStr, "", 1); TODO delete if works
 		return true;
 	}
@@ -504,7 +512,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 			}
 		} else { // line is not parsable
             *msg = SP_CONFIG_INVALID_STRING; // TODO check with Moab if this is the right message for this error
-			spPrintInvalidLineError(filename, lineNum);
+			spPrintInvalidLineError(__FILE__, __LINE__);
             spConfigDestroy(config);
 			free(config);
             return NULL;
@@ -514,7 +522,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 
 	if (isDirectoryMissing) {
 		*msg = SP_CONFIG_MISSING_DIR;
-        spPrintUndefinedValueError(filename, lineNum, "spImagesDirectory");
+        spPrintUndefinedValueError(__FILE__ , __LINE__, "spImagesDirectory");
 		return NULL;
 	}
 	if (isPrefixMissing) {
