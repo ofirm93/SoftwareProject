@@ -328,3 +328,15 @@ int main(int argc, const char* argv[]) {
     free(config);
     return 0;
 }
+
+/*using namespace cv; TODO remove when ending debugging
+using namespace std;
+#include <unistd.h>
+
+int main(int argc, const char* argv[]) {
+    Mat img = imread("../unit_tests/RotatedEx3plusProj/imag0.png", IMREAD_GRAYSCALE);
+    if (img.empty()) {
+        printf("Error");
+    }
+}*/
+
