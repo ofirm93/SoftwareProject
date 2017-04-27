@@ -266,8 +266,8 @@ KDTreeNode* spInitSPKDTreeRec(SPKDArray kdArray, SP_KD_SPLIT_MODE splitMethod, i
 		sizeL = size/2 + 1;
 		sizeR = size/2;
 		median = spPointGetAxisCoor(pointL1,splitDim);
-        spPointDestroy(pointL1);
-    }
+		spPointDestroy(pointL1);
+	}
 	else{
 		sizeL = size/2;
 		sizeR = size/2;
@@ -329,25 +329,43 @@ void spDestroyKDTree(SPKDTree* tree){
 	spDestroyKDArray(tree->features);
 }
 
-void inOrderScanRoot (KDTreeNode* node){
+void inOrderScanRootPoints (KDTreeNode* node){
 	if(!node){
 		return;
 	}
-	if( !node->left && !node->right){
-		printf("%f,%f,%f \n", spPointGetAxisCoor(node->data,0), spPointGetAxisCoor(node->data,1) , spPointGetAxisCoor(node->data,2) );
+	inOrderScanRootPoints(node->left);
+
+	if( isLeaf(node)){
+		printf("(%f,%f,%f) , index : %d \n", spPointGetAxisCoor(node->data,0), spPointGetAxisCoor(node->data,1) ,
+				spPointGetAxisCoor(node->data,2), spPointGetIndex(node->data) );
 	}
-	inOrderScanRoot(node->left);
-	if(node->val != INVALID){
-		printf("spliiting median: %f\n",node->val);
-	}
-	inOrderScanRoot(node->right);
+
+	inOrderScanRootPoints(node->right);
 
 }
 
+void inOrderScanRootValues (KDTreeNode* node){
+	if(!node){
+		return;
+	}
+	inOrderScanRootValues(node->left);
+
+	if( !isLeaf(node)){
+		printf("Splitting value: %f \n", node->val );
+	}
+
+	inOrderScanRootValues(node->right);
+
+	return;
+}
 void inOrderScan(SPKDTree* tree){
 	if(!tree){
-		inOrderScanRoot(tree->root);
+		return;
 	}
+	printf("Points and their indexes by the scan: \n");
+	inOrderScanRootPoints(tree->root);
+	printf("Values of splitting: \n");
+	inOrderScanRootValues(tree->root);
 }
 
 
