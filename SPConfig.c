@@ -184,7 +184,7 @@ bool spIsNonNegativeInteger(char *str){
     if(!str){
         return false;
     }
-    for(int i = 0; i < strlen(str); i++){
+    for(unsigned int i = 0; i < strlen(str); i++){
         if(!isdigit(str[i])){
             return false;
         }
@@ -402,16 +402,16 @@ bool spIsLineParsable(char* line, char* firstStr, char* secondStr){
 		i++;
 	}
 	if (i >= length){	// if line ended than it's empty and correct
-        snprintf(firstStr, 1, "");
+        snprintf(firstStr, 1, "%s", "");
 //		strncpy(firstStr, "", 1); TODO delete if works
 		return true;
 	}
 	if (line[i] == '#'){	// if the first actual character is '#' than this line is comment and ignore it
-        snprintf(firstStr, 1, "");
+        snprintf(firstStr, 1, "%s", "");
 //		strncpy(firstStr, "", 1); TODO delete if works
 		return true;
 	}
-	int index = i;	// this line must be a configuration for a property and follow its order
+	size_t index = i;	// this line must be a configuration for a property and follow its order
 	size_t n = 0;
 	while (i < length && line[i] != ' ' && line[i] != '='){	// determining the first word's numOfPoints
 		n++;
