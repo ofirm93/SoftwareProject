@@ -58,13 +58,12 @@ int main(int argc, const char* argv[]) {
     SP_CONFIG_MSG configMsg;
     bool isDefaultConfig = true;
     SPConfig config;
-    
     if(argc == 3 && strcmp(argv[1], "-c") == 0){
         isDefaultConfig = false;
         config = spConfigCreate(argv[2],&configMsg);
     }
     else if(argc == 1){
-        config = spConfigCreate("spcbir.config", &configMsg);
+        config = spConfigCreate("./spcbir.config", &configMsg);
     }
     else{
         printf(ERR_MSG_INVALID_COMM_LINE_ARG);
@@ -119,7 +118,6 @@ int main(int argc, const char* argv[]) {
             free(config);
             return 0;
     }
-
     char loggerFilename[MAX_PATH_LENGTH];
     configMsg = spConfigGetLoggerFilename(config, loggerFilename);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
@@ -224,15 +222,7 @@ int main(int argc, const char* argv[]) {
         free(config);
         return 6;
     }
-    int numOfFeatures = spConfigGetNumOfFeatures(config, &configMsg);
-    if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        char errorMsg[MAX_ERR_MSG_LENGTH];
-        sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_FEAT_NUM);
-        spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
-        spLoggerDestroy();
-        free(config);
-        return 7;
-    }
+
     int dim = spConfigGetPCADim(config, &configMsg);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
         char errorMsg[MAX_ERR_MSG_LENGTH];
@@ -276,9 +266,9 @@ int main(int argc, const char* argv[]) {
     int totalNumOfFeatures = 0;
     if(isExtractionMode){
         sp::ImageProc s = sp::ImageProc(config);
-        features = ExtractionModeAct(imagesDirectory, imagesPrefix, imagesSuffix, numOfImages, numOfFeatures, s, &totalNumOfFeatures);
+        features = ExtractionModeAct(imagesDirectory, imagesPrefix, imagesSuffix, numOfImages, s, &totalNumOfFeatures);
     } else{
-        features = NonExtractionModeAct(imagesDirectory, imagesPrefix, imagesSuffix, numOfImages, numOfFeatures, &totalNumOfFeatures);
+        features = NonExtractionModeAct(imagesDirectory, imagesPrefix, numOfImages, &totalNumOfFeatures);
     }
     if(!features){
         spLoggerPrintError(ERR_MSG_CANNOT_OBTAIN_FEAT, __FILE__, __func__, __LINE__);

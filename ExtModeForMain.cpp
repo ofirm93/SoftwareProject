@@ -21,7 +21,7 @@ int spPCADimension = 12;//for now only
 
 //wont need the variables after we have system variables
 SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffix,
-		int spNumOfImages, int spNumOfFeatures, sp::ImageProc spIp, int* totalNumOfFeatures){
+		int spNumOfImages, sp::ImageProc spIp, int* totalNumOfFeatures){
 
 	char featSuffix[7] = ".feats";
 	int* numOfFeatures = (int*) malloc(sizeof(int));
@@ -65,7 +65,7 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 
 //		checker = sprintf(filePath, FILE_PATH_PATTERN, directory, imagePrefix, i, featSuffix); //check positive
 //		if(checker < 0){
-		msg = spConfigGetImagePathWithData(imgPath, directory, imagePrefix, i, imageSuffix);
+		msg = spConfigGetImagePathWithData(filePath, directory, imagePrefix, i, featSuffix);
 		if(msg != SP_CONFIG_SUCCESS){
 			printf("Failed to print to string\n");
 			free(numOfFeatures);
@@ -182,8 +182,8 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 }
 
 
-SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffix,
-		int spNumOfImages, int spNumOfFeatures, int* totalNumOfFeatures){
+SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
+		int spNumOfImages, int* totalNumOfFeatures){
 	const char readMode = 'r';
 	int checker = 0;
 	//creating the returned variable

@@ -18,7 +18,7 @@ void kNearestNeighbors (KDTreeNode* curr , SPBPQueue* bpq, SPPoint* query){
 	bool wentRight = true;
 	int nodeDim = spKDTreeNodeGetDim(curr);
 	double queryVal = spPointGetAxisCoor(query, nodeDim), nodeVal = spKDTreeNodeGetVal(curr);
-	if(!curr || !bpq || query){
+	if(!curr || !bpq || !query){
 		return;
 	}
 	if (isLeaf(curr)){
