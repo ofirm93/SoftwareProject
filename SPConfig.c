@@ -26,7 +26,7 @@ struct sp_config_t{
 };
 
 SPConfig spDefaultConfigConstructor(){
-	SPConfig config = malloc(sizeof(struct sp_config_t));
+    SPConfig config = malloc(sizeof(struct sp_config_t));
 	if(!config){
 		return NULL;
 	}
@@ -670,11 +670,21 @@ SP_CONFIG_MSG spConfigGetLoggerLevel(const SPConfig config, int* loggerLevel){
 
 void spConfigDestroy(SPConfig config){
     if(config){
-        free(config->imagesDirectory);
-        free(config->imagesPrefix);
-        free(config->imagesSuffix);
-        free(config->PCAFilename);
-        free(config->loggerFilename);
+		 if(config->imagesDirectory){
+			 free(config->imagesDirectory);
+		 }
+		if(config->imagesPrefix){
+			free(config->imagesPrefix);
+		}
+		if(config->imagesSuffix){
+			free(config->imagesSuffix);
+		}
+		if(config->PCAFilename){
+			free(config->PCAFilename);
+		}
+		if(config->loggerFilename){
+			free(config->loggerFilename);
+		}
     }
     free(config);
 }
