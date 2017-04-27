@@ -309,15 +309,15 @@ SPKDTree* spInitSPKDTree(SPPoint** arr, int size, int pointDim, SP_KD_SPLIT_MODE
 	if(!tree){
 		return NULL;
 	}
-	SPKDArray kdArray =  spInitSPKDArray(arr, size);
-	if(!kdArray){
+	tree->features =  spInitSPKDArray(arr, size);
+	if(!tree->features){
 		free(tree);
 		return NULL;
 	}
-	tree->root = spInitSPKDTreeRec(kdArray, splitMethod, pointDim, size, -1);
+	tree->root = spInitSPKDTreeRec(tree->features, splitMethod, pointDim, size, -1);
 	if(!tree->root){
-		spDestroyKDTree(tree);
-		spDestroyKDArray(kdArray);
+        spDestroyKDArray(tree->features);
+        spDestroyKDTree(tree);
 		return NULL;
 	}
 	return tree;
