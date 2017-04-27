@@ -162,7 +162,7 @@ bool spTurnIntoWord(char* str){
     if (i >= length){	// if string ended than it's correct and we're done
 		char temp[MAX_LINE_LENGTH];
 		strcpy(temp, str);
-		snprintf(str, n + 1, temp); // copy the first word
+		snprintf(str, n + 1, "%s", temp); // copy the first word
 
 //        strncpy(str, str, n);	// copy the first word TODO delete if works
         return true;
@@ -173,7 +173,7 @@ bool spTurnIntoWord(char* str){
     if (i >= length){	// if string ended than it's correct and we're done
         char temp[MAX_LINE_LENGTH];
 		strcpy(temp, str);
-		snprintf(str, n + 1, temp); // copy the first word
+		snprintf(str, n + 1, "%s", temp); // copy the first word
 //        strncpy(str, str, n);	// copy the first word TODO delete if works
         return true;
     }
