@@ -39,7 +39,7 @@ SPConfig spDefaultConfigConstructor(){
 	config->KNN = 1;
 	config->minimalGUI = false;
 	config->loggerLevel = 3;
-	config->loggerFilename = "stdout";
+	config->loggerFilename = NULL;
 	return config;
 }
 
@@ -155,7 +155,7 @@ bool spTurnIntoWord(char* str){
     size_t length = strlen(str);
     size_t n = 0;
     size_t i = 0;
-    while (i < length && str[i] != ' ' && str[i] != '\n'){	// determining the first word's numOfPoints
+    while (i < length && str[i] != ' ' && str[i] != '\n' && str[i] != '\r'){	// determining the first word's numOfPoints
         n++;
         i++;
     }
@@ -167,7 +167,7 @@ bool spTurnIntoWord(char* str){
 //        strncpy(str, str, n);	// copy the first word TODO delete if works
         return true;
     }
-    while (i < length && (str[i] == ' ' || str[i] == '\n')){	// pass any spaces
+    while (i < length && (str[i] == ' ' || str[i] == '\n' || str[i] == '\r')){	// pass any spaces
         i++;
     }
     if (i >= length){	// if string ended than it's correct and we're done
@@ -215,6 +215,30 @@ bool spHandleStringProperty(char** property, bool* propertyCheck, char* value, S
 		*propertyCheck = false;
 	}
 	return true;
+}
+
+bool spHandleLoggerFilenameProperty(char** property, char* value, SP_CONFIG_MSG* msg,
+                            const char *filename, int lineNum){
+    if(!property || !msg || !filename){
+        return false;
+    }
+    if(!spTurnIntoWord(value)){
+        spPrintInvalidValueError(filename, lineNum);
+        *msg = SP_CONFIG_INVALID_STRING;
+        return false;
+    }
+    if(strcmp(value, "stdout") == 0){
+        *property = NULL;
+    }
+    else{
+        *property = malloc((strlen(value) + 1) * sizeof(char));
+        if(!(*property)){
+            *msg = SP_CONFIG_ALLOC_FAIL;
+            return false;
+        }
+        snprintf(*property, strlen(value) + 1, "%s", value);
+    }
+    return true;
 }
 
 /**
@@ -385,7 +409,7 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 		return spHandleIntegerProperty(&(config->loggerLevel), NULL, secondArg, msg, filename, lineNum, 1, 4, true);
 	}
 	else if(strcmp(firstArg, "spLoggerFilename") == 0){
-		return spHandleStringProperty(&(config->loggerFilename), NULL, secondArg, msg, filename, lineNum);
+		return spHandleLoggerFilenameProperty(&(config->loggerFilename), secondArg, msg, filename, lineNum);
 	}
 	*msg = SP_CONFIG_INVALID_STRING;
 	spPrintInvalidLineError(filename, lineNum);
@@ -660,12 +684,24 @@ int spConfigGetNumOfSimmilarImages(const SPConfig config, SP_CONFIG_MSG* msg){
     return config->numOfSimilarImages;
 }
 
-SP_CONFIG_MSG spConfigGetLoggerFilename(const SPConfig config, char* loggerFilename){
-    if (loggerFilename == NULL || config == NULL) {
-        return SP_CONFIG_INVALID_ARGUMENT;
+char* spConfigGetLoggerFilename(const SPConfig config, SP_CONFIG_MSG* msg){
+    if (config == NULL) {
+        *msg = SP_CONFIG_INVALID_ARGUMENT;
+        return NULL;
     }
+
+    if(!config->loggerFilename){
+        *msg = SP_CONFIG_SUCCESS;
+        return NULL;
+    }
+    char* loggerFilename = malloc(MAX_LINE_LENGTH * sizeof(char));
+    if(!loggerFilename){
+        *msg = SP_CONFIG_ALLOC_FAIL;
+        return NULL;
+    }
+    *msg = SP_CONFIG_SUCCESS;
     sprintf(loggerFilename, "%s", config->loggerFilename);
-    return SP_CONFIG_SUCCESS;
+    return loggerFilename;
 }
 
 SP_CONFIG_MSG spConfigGetLoggerLevel(const SPConfig config, int* loggerLevel){

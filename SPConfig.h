@@ -228,7 +228,7 @@ int spConfigGetKNN(const SPConfig config, SP_CONFIG_MSG* msg);
  * TODO documentation
  *  Basically returns the logger filename in pointer on success
  */
-SP_CONFIG_MSG spConfigGetLoggerFilename(const SPConfig config, char* loggerFilename);
+char* spConfigGetLoggerFilename(const SPConfig config, SP_CONFIG_MSG* msg);
 
 /**
  * TODO documentation

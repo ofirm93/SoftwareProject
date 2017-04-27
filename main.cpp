@@ -118,10 +118,14 @@ int main(int argc, const char* argv[]) {
             free(config);
             return 0;
     }
-    char loggerFilename[MAX_PATH_LENGTH];
-    configMsg = spConfigGetLoggerFilename(config, loggerFilename);
+    char* loggerFilename = spConfigGetLoggerFilename(config, &configMsg);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
         printf(ERR_MSG_INVALID_ARGUMENT_LOGGER_FILENAME);
+        free(config);
+        return 1;
+    }
+    if(configMsg == SP_CONFIG_ALLOC_FAIL){
+        printf(ERR_MSG_ALLOC_FAIL);
         free(config);
         return 1;
     }
@@ -130,12 +134,14 @@ int main(int argc, const char* argv[]) {
     switch (configMsg){
         case SP_CONFIG_INVALID_ARGUMENT :
             printf(ERR_MSG_INVALID_ARGUMENT_LOGGER_LEVEL_NUM);
+            free(loggerFilename);
             free(config);
             return 1;
         case SP_CONFIG_SUCCESS:
             break;
         default:
             printf(ERR_MSG_GENERAL);
+            free(loggerFilename);
             free(config);
             return 1;
     }
@@ -144,16 +150,19 @@ int main(int argc, const char* argv[]) {
     switch (loggerMsg){
         case SP_LOGGER_INVAlID_ARGUMENT :
             printf(ERR_MSG_INVALID_ARGUMENT_LOGGER_LEVEL_FROM_NUM);
+            free(loggerFilename);
             free(config);
             return 1;
         case SP_LOGGER_SUCCESS:
             break;
         default:
             printf(ERR_MSG_GENERAL);
+            free(loggerFilename);
             free(config);
             return 1;
     }
     loggerMsg = spLoggerCreate(loggerFilename, loggerLevel);
+    free(loggerFilename);
     switch (loggerMsg){
         case SP_LOGGER_DEFINED :
             break;
