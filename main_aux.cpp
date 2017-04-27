@@ -185,7 +185,11 @@ int* spGetGetBestKMatches(SPKDTree* kdTree, char* queryPath, SPConfig config, in
                     spBPQueueDestroy(kClose);
                     return NULL;
             }
-
+            if(feature.index < 0 || feature.index > numOfImages){
+                // TODO print error the index of image is out of bounds
+//                #error "out of bounds Error 1"
+            }
+            imageCounter[feature.index] = imageCounter[feature.index] + 1;
             bpqMsg = spBPQueueDequeue(kClose);
             switch (bpqMsg){
                 case SP_BPQUEUE_INVALID_ARGUMENT:
@@ -236,7 +240,7 @@ int* spGetGetBestKMatches(SPKDTree* kdTree, char* queryPath, SPConfig config, in
         return NULL;
     }
     for (int i = 0; i < k; ++i) {
-        result[i] = sortingArr[k-i].index;
+        result[i] = sortingArr[numOfImages - i - 1].index;
     }
     free(sortingArr);
     return result;

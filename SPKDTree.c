@@ -140,7 +140,9 @@ void spDestroyKDTreeNode(KDTreeNode* node){\
 	if(!node){
 		return;
 	}
-	spPointDestroy(node -> data);
+    if(node->data){
+        spPointDestroy(node -> data);
+    }
 	spDestroyKDTreeNode(node->left);
 	spDestroyKDTreeNode(node->right);
 	free(node);
