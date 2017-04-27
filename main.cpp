@@ -222,14 +222,7 @@ int main(int argc, const char* argv[]) {
         free(config);
         return 6;
     }
-    if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
-        char errorMsg[MAX_ERR_MSG_LENGTH];
-        sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_FEAT_NUM);
-        spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
-        spLoggerDestroy();
-        free(config);
-        return 7;
-    }
+
     int dim = spConfigGetPCADim(config, &configMsg);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
         char errorMsg[MAX_ERR_MSG_LENGTH];
