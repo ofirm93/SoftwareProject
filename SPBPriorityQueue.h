@@ -150,7 +150,7 @@ SP_BPQUEUE_MSG spBPQueueSpaceCheck(SPBPQueue* source, int index, double value);
 SP_BPQUEUE_MSG spBPQueueEnqueue(SPBPQueue* source, int index, double value);
 
 /**
- * This function gets a BPQ, and removes the element with the lowest value if it's possible.
+ * This function gets a BPQ, and removes the element with the highest value if it's possible.
  * If source is NULL it does nothing to the queue and returns SP_BPQUEUE_INVALID_ARGUMENT message.
  * If the queue source is empty it does nothing to the queue and returns SP_BPQUEUE_EMPTY message.
  * Else the function should return SP_BPQUEUE_SUCCESS and do as she supposed to.
