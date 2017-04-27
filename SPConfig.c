@@ -651,6 +651,15 @@ int spConfigGetKNN(const SPConfig config, SP_CONFIG_MSG* msg){
 	return config->KNN;
 }
 
+int spConfigGetNumOfSimmilarImages(const SPConfig config, SP_CONFIG_MSG* msg){
+    if (config == NULL) {
+        *msg = SP_CONFIG_INVALID_ARGUMENT;
+        return -1;
+    }
+    *msg = SP_CONFIG_SUCCESS;
+    return config->numOfSimilarImages;
+}
+
 SP_CONFIG_MSG spConfigGetLoggerFilename(const SPConfig config, char* loggerFilename){
     if (loggerFilename == NULL || config == NULL) {
         return SP_CONFIG_INVALID_ARGUMENT;

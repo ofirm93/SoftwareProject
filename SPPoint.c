@@ -42,10 +42,11 @@ SPPoint* spPointCopy(SPPoint* source){
 }
 
 void spPointDestroy(SPPoint* point){
-	free(point->data);
-	point->data = NULL; //if we dont we crash on test!!!
-	free(point);
-	point = NULL; //safety on test. might need to remove this when we use valgrind
+    if(point){
+        free(point->data);
+        point->data = NULL; //if we dont we crash on test!!!
+        free(point);
+    }
 }
 
 int spPointGetDimension(SPPoint* point){

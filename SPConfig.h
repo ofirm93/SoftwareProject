@@ -242,5 +242,10 @@ SP_CONFIG_MSG spConfigGetLoggerLevel(const SPConfig config, int* loggerLevel);
  */
 void spConfigDestroy(SPConfig config);
 
+/**
+* TODO documentation
+*  Basically returns numOfSimmilarImages on success
+*/
+int spConfigGetNumOfSimmilarImages(const SPConfig config, SP_CONFIG_MSG* msg);
 
 #endif /* SPCONFIG_H_ */
