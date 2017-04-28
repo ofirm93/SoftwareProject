@@ -194,7 +194,6 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
 	int* numOfFeatArray = (int*) malloc(sizeof(int) * spNumOfImages);
 	if(!numOfFeatArray){
 		printf("failed to allocate memory\n");
-
 		return NULL;
 	}
 	int totalNumOfFeat = 0;
