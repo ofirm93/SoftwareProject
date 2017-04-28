@@ -126,7 +126,7 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 		if(file == NULL)
 		{
 
-			char errorMsg[MAX_ERR_MSG_LENGTH]; // TODO print something or delete
+			//char errorMsg[MAX_ERR_MSG_LENGTH]; // TODO print something or delete
 			spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
 			free(numOfFeatures);
 			free(numOfFeatArray);
@@ -251,29 +251,32 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
 	}
 	for(int i=0; i<spNumOfImages; i++){
 		char filePath [MAX_STRING_LENGTH];
+		/**
 		checker = sprintf(filePath, FILE_PATH_PATTERN, directory, imagePrefix, i, featSuffix); //check positive
 		if(checker < 0 ){
 			char errorMsg[MAX_ERR_MSG_LENGTH];
 			sprintf(errorMsg, ERR_MSG_INVALID_ARG_IN_METHOD, ERR_MSG_MTHD_GET_IMG_PATH_DATA);
 			spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
-// 			printf("failed reading to string\n");
 			spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
 			free(numOfFeatures);
 			free(numOfFeatArray);
 			free(featValArray);
 			return NULL;
 		}
-//		SP_CONFIG_MSG msg = spConfigGetImagePathWithData(filePath, directory, imagePrefix, i, featSuffix);
-//		if(msg != SP_CONFIG_SUCCESS){
-//			char errorMsg[MAX_ERR_MSG_LENGTH];
-//			sprintf(errorMsg, ERR_MSG_INVALID_ARG_IN_METHOD, ERR_MSG_MTHD_GET_IMG_PATH_DATA);
-//			spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
-////			printf("Failed to print to string\n"); TODO
-//			free(numOfFeatures);
-//			free(numOfFeatArray);
-//			free(Gallery);
-//			return NULL;
-//		}
+		*/
+
+		SP_CONFIG_MSG msg = spConfigGetImagePathWithData(filePath, directory, imagePrefix, i, featSuffix);
+		if(msg != SP_CONFIG_SUCCESS){
+			char errorMsg[MAX_ERR_MSG_LENGTH];
+			sprintf(errorMsg, ERR_MSG_INVALID_ARG_IN_METHOD, ERR_MSG_MTHD_GET_IMG_PATH_DATA);
+			spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
+//			printf("Failed to print to string\n"); TODO
+			free(numOfFeatures);
+			free(numOfFeatArray);
+			free(featValArray);
+			spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
+			return NULL;
+		}
 		FILE* file = fopen(filePath, &readMode);
 		if(file == NULL)
 		{
@@ -293,6 +296,7 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
 			free(numOfFeatures);
 			free(numOfFeatArray);
 			free(featValArray);
+			fclose(file);
 			return NULL;
 		}
 		numOfFeatArray[i] = *numOfFeatures;
@@ -343,7 +347,7 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
 	}
 	int k = 0;
 	for(int i=0; i<spNumOfImages; i++){
-		for(int j=0; j<numOfFeatArray[j]; j++){
+		for(int j=0; j<numOfFeatArray[i]; j++){
 			allImageFeatures[k] = gallery[i][j];
 			k++;
 		}
@@ -353,6 +357,9 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
 	free(featValArray);
 	free(numOfFeatures);
 	free(numOfFeatArray);
+	for(int k=0; k<spNumOfImages; k++){
+		free(gallery[k]);
+	}
 	free(gallery); //NOT destroy - we need the points.
 	return allImageFeatures;
 }
