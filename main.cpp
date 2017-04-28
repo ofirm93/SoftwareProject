@@ -275,9 +275,9 @@ int main(int argc, const char* argv[]) {
     int totalNumOfFeatures = 0;
     if(isExtractionMode){
         sp::ImageProc s = sp::ImageProc(config);
-        features = ExtractionModeAct(imagesDirectory, imagesPrefix, imagesSuffix, numOfImages, s, &totalNumOfFeatures);
+        features = ExtractionModeAct(imagesDirectory, imagesPrefix, imagesSuffix, numOfImages, s, &totalNumOfFeatures, dim);
     } else{
-        features = NonExtractionModeAct(imagesDirectory, imagesPrefix, numOfImages, &totalNumOfFeatures);
+        features = NonExtractionModeAct(imagesDirectory, imagesPrefix, numOfImages, &totalNumOfFeatures, dim);
     }
     if(!features){
         spLoggerPrintError(ERR_MSG_CANNOT_OBTAIN_FEAT, __FILE__, __func__, __LINE__);
