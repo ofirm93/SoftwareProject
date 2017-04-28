@@ -206,6 +206,7 @@ bool spHandleStringProperty(char** property, bool* propertyCheck, char* value, S
 		return false;
 	}
 	*property = malloc((strlen(value) + 1) * sizeof(char));
+	//TODO this variable is not freed properly.
 	if(!(*property)){
 		*msg = SP_CONFIG_ALLOC_FAIL;
 		return false;
@@ -317,6 +318,7 @@ bool spHandleSuffixProperty(char** property, bool* propertyCheck, char* value, S
 	if((strcmp(value, ".jpg") == 0) || (strcmp(value, ".png") == 0) ||
 	   (strcmp(value, ".bmp") == 0) || (strcmp(value, ".gif") == 0)){
 		*property = malloc((strlen(value) + 1) * sizeof(char));
+		//TODO this variable is not freed properly.
 		if(!(*property)){
 			*msg = SP_CONFIG_ALLOC_FAIL;
 			return false;

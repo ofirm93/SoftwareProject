@@ -62,7 +62,7 @@ KDTreeNode* spInitKDTreeNode(int dim, double val, KDTreeNode* left, KDTreeNode* 
 
 	if(!left && !right && data != NULL)
 	{
-		kdNode -> data = spPointCopy(data);
+		kdNode -> data = data;
 	}
 	else if( (left!= NULL || right!= NULL) && !data ){
 		kdNode -> data = NULL;
@@ -295,6 +295,9 @@ KDTreeNode* spInitSPKDTreeRec(SPKDArray kdArray, SP_KD_SPLIT_MODE splitMethod, i
 		free(leftAndRight);
 		return NULL;
 	}
+	spDestroyKDArray(leftAndRight[0]);
+	spDestroyKDArray(leftAndRight[1]);
+	free(leftAndRight);
 	return spInitKDTreeNode(splitDim, median, leftNode, rightNode, NULL);
 
 }
@@ -327,8 +330,13 @@ void spDestroyKDTree(SPKDTree* tree){
 	if(!tree){
 		return;
 	}
+	if(tree->root){
 	spDestroyKDTreeNode(tree->root);
+	}
+	if(tree->features){
 	spDestroyKDArray(tree->features);
+	}
+	free(tree);
 }
 
 void inOrderScanRootPoints (KDTreeNode* node){
