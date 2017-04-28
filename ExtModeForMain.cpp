@@ -13,16 +13,27 @@
 #include <stdbool.h>
 
 
+
 #define MAX_STRING_LENGTH 1024
 #define FILE_PATH_PATTERN "%s%s%d%s"
-#define FEATURE_DIM 128
 
-int spPCADimension = 12;//for now only
+
+void spDestroySPPoint2DimArray(SPPoint*** gallery, int* numOfFeatArray, int sizeOfGallery){
+	if(!gallery|| !numOfFeatArray){
+		return;
+	}
+	for(int i = 0; i< sizeOfGallery; i++){
+		spDestroySPPointArray(gallery[i],numOfFeatArray[i]);
+	}
+	free(gallery);
+}
 
 //wont need the variables after we have system variables
 SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffix,
-		int spNumOfImages, sp::ImageProc spIp, int* totalNumOfFeatures){
-
+		int spNumOfImages, sp::ImageProc spIp, int* totalNumOfFeatures, int spPCADimension){
+	if(!directory || !imagePrefix || !imageSuffix || !totalNumOfFeatures){
+		return NULL;
+	}
 	char featSuffix[7] = ".feats";
 	int* numOfFeatures = (int*) malloc(sizeof(int));
 	if(!numOfFeatures){
@@ -37,8 +48,8 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 	}
 	int totalNumOfFeat = 0;
 	int checker = 0;
-	SPPoint*** Gallery = (SPPoint***) malloc ( sizeof(*Gallery) * spNumOfImages ) ;
-	if(!Gallery){
+	SPPoint*** gallery = (SPPoint***) malloc ( sizeof(*gallery) * spNumOfImages ) ;
+	if(!gallery){
 		free(numOfFeatures);
 		free(numOfFeatArray);
 		printf("failed to allocate memory\n");
@@ -51,9 +62,9 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 		SP_CONFIG_MSG msg = spConfigGetImagePathWithData(imgPath, directory, imagePrefix, i, imageSuffix);
 		if(msg != SP_CONFIG_SUCCESS){
 			printf("Failed to print to string\n");
+			spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
 			free(numOfFeatures);
 			free(numOfFeatArray);
-			free(Gallery);
 			return NULL;
 		}
 
@@ -68,9 +79,9 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 		msg = spConfigGetImagePathWithData(filePath, directory, imagePrefix, i, featSuffix);
 		if(msg != SP_CONFIG_SUCCESS){
 			printf("Failed to print to string\n");
+			spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
 			free(numOfFeatures);
 			free(numOfFeatArray);
-			free(Gallery);
 			return NULL;
 		}
 		/*
@@ -83,34 +94,39 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 		FILE* file = fopen(destPtr, &writeMode);
 		if(file == NULL)
 		{
+			spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
 			free(numOfFeatures);
 			free(numOfFeatArray);
-			free(Gallery);
 			return NULL;
 		}
 		SPPoint** imgFeatures = spIp.getImageFeatures(imgPath,i,numOfFeatures);
 		if(imgFeatures == NULL){
+			spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
 			fclose(file);
 			free(numOfFeatures);
 			free(numOfFeatArray);
-			free(Gallery);
 			return NULL;
 		}
+		for(int k = 0 ; k<*numOfFeatures; k++){
+			if(!imgFeatures[k]){
+				spDestroySPPointArray(imgFeatures,k);
+				fclose(file);
+				free(numOfFeatures);
+				free(numOfFeatArray);
+				free(gallery);
+				return NULL;
+			}
+		}
 		numOfFeatArray[i] = *numOfFeatures;
-		Gallery[i] = imgFeatures;
+		gallery[i] = imgFeatures;
 		totalNumOfFeat += *numOfFeatures;
 		checker = fprintf(file,"%d,", *numOfFeatures); //check positive
 		if(checker < 0){
 			printf("Failed to print to file\n");
-			for(int m=0; m<i;m++){
-				for(int j=0; j<numOfFeatArray[m];j++){
-					spPointDestroy(Gallery[m][j]);
-				}
-			}
+			spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
 			fclose(file);
 			free(numOfFeatures);
 			free(numOfFeatArray);
-			free(Gallery);
 			return NULL;
 		}
 		/*
@@ -121,31 +137,14 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 
 
 		for (int k=0; k<*numOfFeatures;k++){
-			///* there no need for this - getImageFeatures returns NULL on an error... so we wont get here!
-//			if(imgFeatures[k] == NULL){
-//				for(int m=0; m<k;m++){
-//					spPointDestroy(imgFeatures[m]);
-//				}
-//				free (imgFeatures);
-//				free(numOfFeatures);
-//				fclose(file);
-//				return NULL;
-//			}
-
 			for( int j=0; j<spPCADimension; j++){
 				checker = fprintf(file,"%f,",spPointGetAxisCoor(imgFeatures[k],j));
 				if(checker < 0){
 					printf("Failed to print to file\n");
-					for(int m=0; m<i;m++){
-						for(int j=0; j<numOfFeatArray[m];j++){
-							spPointDestroy(Gallery[m][j]);
-						}
-					}
+					spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
 					fclose(file);
 					free(numOfFeatures);
 					free(numOfFeatArray);
-					free(Gallery);
-
 					return NULL;
 				}
 			}
@@ -156,34 +155,31 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 	SPPoint** allImageFeatures = (SPPoint**) malloc(totalNumOfFeat * sizeof(*allImageFeatures));
 	if(!allImageFeatures){
 		printf("Failed to print to file\n");
-		for(int m=0; m<spNumOfImages;m++){
-			for(int j=0; j<numOfFeatArray[m];j++){
-				spPointDestroy(Gallery[m][j]);
-			}
-		}
+		spDestroySPPoint2DimArray(gallery,numOfFeatArray,spNumOfImages);
 		free(numOfFeatures);
 		free(numOfFeatArray);
-		free(Gallery);
 		return NULL;
 	}
 	int k = 0;
 	for(int i=0; i<spNumOfImages;i++){
 		for(int j = 0; j < numOfFeatArray[i]; j++){
-			allImageFeatures[k] = Gallery[i][j];
+			allImageFeatures[k] = gallery[i][j];
 			k++;
 		}
 	}
 	*totalNumOfFeatures = totalNumOfFeat;
 	free(numOfFeatures);
 	free(numOfFeatArray);
+	free(gallery);// NOT destroy - we need the points!
 	return allImageFeatures;
-
-
 }
 
 
 SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
-		int spNumOfImages, int* totalNumOfFeatures){
+		int spNumOfImages, int* totalNumOfFeatures,  int spPCADimension){
+	if(!directory || !imagePrefix || !totalNumOfFeatures){
+		return NULL;
+	}
 	const char readMode = 'r';
 	int checker = 0;
 	//creating the returned variable
@@ -194,6 +190,7 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
 	int* numOfFeatArray = (int*) malloc(sizeof(int) * spNumOfImages);
 	if(!numOfFeatArray){
 		printf("failed to allocate memory\n");
+		free(gallery);
 		return NULL;
 	}
 	int totalNumOfFeat = 0;
@@ -201,6 +198,7 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
 	char featSuffix[7] = ".feats";
 	int* numOfFeatures = (int*) malloc(sizeof(int));
 	if(numOfFeatures == NULL){
+		free(numOfFeatArray);
 		free(gallery);
 		return NULL;
 	}
@@ -208,6 +206,7 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
 	if(featValArray == NULL){
 		free(gallery);
 		free(numOfFeatures);
+		free(numOfFeatArray);
 		return NULL;
 	}
 	for(int i=0; i<spNumOfImages; i++){
@@ -215,34 +214,38 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
 		checker = sprintf(filePath, FILE_PATH_PATTERN, directory, imagePrefix, i, featSuffix); //check positive
 		if(checker < 0 ){
 			printf("failed reading to string\n");
+			spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
+			free(numOfFeatures);
+			free(numOfFeatArray);
+			free(featValArray);
 			return NULL;
 		}
 		FILE* file = fopen(filePath, &readMode);
 		if(file == NULL)
 		{
-			free(gallery);
-			free(featValArray);
+			spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
 			free(numOfFeatures);
+			free(numOfFeatArray);
+			free(featValArray);
 			return NULL;
 		}
 		checker = fscanf(file, "%d,",numOfFeatures);
 		if(checker < 0){
 			printf("failed scanning from file \n");
+			spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
+			free(numOfFeatures);
+			free(numOfFeatArray);
+			free(featValArray);
 			return NULL;
 		}
 		numOfFeatArray[i] = *numOfFeatures;
 		totalNumOfFeat += *numOfFeatures;
 		gallery[i] = (SPPoint**) malloc(sizeof(SPPoint*) * *numOfFeatures);
 		if(gallery[i] == NULL){
-			for(int b=0; b<i; b++){
-				for( int j=0; j<spPCADimension; j++){
-					spPointDestroy(gallery[b][j]);
-				}
-				free(gallery[b]);
-			}
-			free(gallery);
-			free(featValArray);
+			spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
 			free(numOfFeatures);
+			free(numOfFeatArray);
+			free(featValArray);
 			fclose(file);
 			return NULL;
 		}
@@ -251,24 +254,19 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
 				checker = fscanf(file, "%lf,",&featValArray[j]); // check if something fucks up, other fscanf too
 				if(checker < 0){
 					printf("failed scanning from file \n");
+					spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
+					free(numOfFeatures);
+					free(numOfFeatArray);
+					free(featValArray);
 					return NULL;
 				}
 			}
 			gallery[i][k]= spPointCreate(featValArray,spPCADimension,i); //index of feature is image's index
 			if(gallery[i][k] == NULL){
-				for(int b=0; b<i; b++){
-					for( int j=0; j<spPCADimension; j++){
-						spPointDestroy(gallery[b][j]);
-					}
-					free(gallery[b]);
-				}
-				for(int j=0; j<k;j++){
-					spPointDestroy(gallery[i][k]);
-				}
-				free(gallery[i]);
-				free(gallery);
-				free(featValArray);
+				spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
 				free(numOfFeatures);
+				free(numOfFeatArray);
+				free(featValArray);
 				fclose(file);
 				return NULL;
 			}
@@ -277,6 +275,12 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
 	}
 
 	SPPoint** allImageFeatures = (SPPoint**) malloc (totalNumOfFeat * sizeof(SPPoint*) );
+	if(!allImageFeatures){
+		spDestroySPPoint2DimArray(gallery,numOfFeatArray,spNumOfImages);
+		free(numOfFeatures);
+		free(numOfFeatArray);
+		free(featValArray);
+	}
 	int k = 0;
 	for(int i=0; i<spNumOfImages; i++){
 		for(int j=0; j<numOfFeatArray[j]; j++){
@@ -289,6 +293,6 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
 	free(featValArray);
 	free(numOfFeatures);
 	free(numOfFeatArray);
-	free(gallery); //should be ok
+	free(gallery); //NOT destroy - we need the points.
 	return allImageFeatures;
 }

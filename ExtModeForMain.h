@@ -9,7 +9,7 @@
 #define EXTMODEFORMAIN_H_
 
 #include "SPImageProc.h"
-
+#include "main_aux.h"
 
 /**
  * Using this function to start ExtractionMode.
@@ -27,7 +27,7 @@
  *
  */
 SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffix,
-		int spNumOfImages, sp::ImageProc spIp, int* totalNumOfFeatures);
+		int spNumOfImages, sp::ImageProc spIp, int* totalNumOfFeatures, int spPCADimension);
 
 
 
@@ -48,7 +48,7 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
  *
  */
 SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
-		int spNumOfImages, int* totalNumOfFeatures);
+		int spNumOfImages, int* totalNumOfFeatures, int spPCADimension);
 
 
 #endif /* EXTMODEFORMAIN_H_ */
