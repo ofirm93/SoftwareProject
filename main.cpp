@@ -303,7 +303,7 @@ int main(int argc, const char* argv[]) {
             spDestroyKDTree(tree);
             spDestroySPPointArray(features, totalNumOfFeatures);
             spLoggerDestroy();
-            free(config);
+            spConfigDestroy(config);
             return 9;
         }
         if(strcmp(queryStr, "<>") == 0){
@@ -323,7 +323,7 @@ int main(int argc, const char* argv[]) {
                 spDestroyKDTree(tree);
                 spDestroySPPointArray(features, totalNumOfFeatures);
                 spLoggerDestroy();
-                free(config);
+                spConfigDestroy(config);
                 return 9;
             }
             free(KNN);
@@ -334,7 +334,7 @@ int main(int argc, const char* argv[]) {
     spDestroyKDTree(tree);
     spDestroySPPointArray(features, totalNumOfFeatures);
     spLoggerDestroy();
-    free(config);
+    spConfigDestroy(config);
     return 0;
 }
 
