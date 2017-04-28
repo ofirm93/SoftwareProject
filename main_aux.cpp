@@ -52,7 +52,7 @@ void spNonMinimalGUI(SPConfig config, char* queryPath, int* indexArray, int size
         spLoggerPrintError(ERR_MSG_INVALID_ARG, __FILE__, __func__, __LINE__);
         return;
     }
-    printf("\"Best candidates for - %s - are:\n", queryPath);
+    printf("Best candidates for - %s - are:\n", queryPath);
     char errorMsg[MAX_ERR_MSG_LENGTH];
     for (int i = 0; i < size; ++i) {
         char path[1024];
@@ -186,8 +186,13 @@ int* spGetGetBestKMatches(SPKDTree* kdTree, char* queryPath, SPConfig config, in
                     return NULL;
             }
             if(feature.index < 0 || feature.index > numOfImages){
-                // TODO print error the index of image is out of bounds
-//                #error "out of bounds Error 1"
+                char errorMsg[MAX_ERR_MSG_LENGTH];
+                sprintf(errorMsg, ERR_MSG_INDEX_OUT_OF_RANGE, feature.index);
+                spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
+                spDestroySPPointArray(queryFeat, numOfQueryFeat);
+                free(imageCounter);
+                spBPQueueDestroy(kClose);
+                return NULL;
             }
             imageCounter[feature.index] = imageCounter[feature.index] + 1;
             bpqMsg = spBPQueueDequeue(kClose);

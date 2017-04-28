@@ -7,6 +7,7 @@
 
 #define READ_MODE "r"
 #define MAX_LINE_LENGTH 1024
+#define DEFAULT_PCA_FILENAME "pca.yml"
 
 struct sp_config_t{
 	char* imagesDirectory;
@@ -31,7 +32,12 @@ SPConfig spDefaultConfigConstructor(){
 		return NULL;
 	}
 	config->PCADimension = 20;
-	config->PCAFilename = "pca.yml";
+    config->PCAFilename = malloc(8 + sizeof(char));
+    if(!config->PCAFilename){
+        free(config);
+        return NULL;
+    }
+    snprintf(config->PCAFilename, strlen(DEFAULT_PCA_FILENAME) + 1, "%s", DEFAULT_PCA_FILENAME);
 	config->numOfFeatures = 100;
 	config->extractionMode = true;
 	config->numOfSimilarImages = 1;
