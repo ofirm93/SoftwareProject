@@ -142,7 +142,6 @@ int* spGetGetBestKMatches(SPKDTree* kdTree, char* queryPath, SPConfig config, in
     if(!imageCounter){
         spLoggerPrintError(ERR_MSG_CANNOT_ALLOCATE_MEM, __FILE__, __func__, __LINE__);
         spDestroySPPointArray(queryFeat, numOfQueryFeat);
-        printf(MEM_ALC_ERR_MSG);
         return NULL;
     }
     // TODO from this point free imageCounter before return

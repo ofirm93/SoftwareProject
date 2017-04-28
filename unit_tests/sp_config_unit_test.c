@@ -1,7 +1,10 @@
 #include "../SPConfig.h"
+#include "unit_test_util.h"
 
 #include <stdlib.h>
 #include <string.h>
+
+#define FAIL_TEST_FILENAME_FORMAT "./unit_tests/config_files/fail_test%d.config"
 //
 // Created by Ofir on 09/03/2017.
 //
@@ -47,6 +50,44 @@
 //    return true;
 //}
 
+bool spTestGoodConfigFile(){
+    char filename[] = "./unit_tests/config_files/good_config.config";
+    SPConfig expectedConfig = spConfigConstructor("./images/", "img", ".png", 17, 20, "pca.yml", 100, true, 5, MAX_SPREAD, 1, false, 3, "stdout");
+    SP_CONFIG_MSG msg;
+    SPConfig config = spConfigCreate(filename, &msg);
+    if(msg == SP_CONFIG_SUCCESS){
+        if(!spIsConfigEqual(config, expectedConfig)){
+            spLoggerPrintDebug("Debug : The configuration file built was different from the expected one.", __FILE__, __func__, __LINE__);
+            return false;
+        }
+    }
+    else{
+        spLoggerPrintDebug("Debug : Failed building the good configuration.", __FILE__, __func__, __LINE__);
+        return false;
+    }
+    return true;
+}
+
+bool spTestBadConfig(){
+    char filename[] = "./unit_tests/config_files/fail_test%d.config";
+    for (int i = 1; i <= 22; ++i) {
+        int checker = sprintf(filename, FAIL_TEST_FILENAME_FORMAT, i);
+        if(checker < 0){
+            spLoggerPrintDebug("Debug : The filename of the bad configuration file wasn't well formatted.", __FILE__, __func__, __LINE__);
+            return false;
+        }
+        SP_CONFIG_MSG msg;
+        SPConfig config = spConfigCreate(filename, &msg);
+        if(msg != SP_CONFIG_SUCCESS){
+            return true;
+        }
+        else{
+            spLoggerPrintDebug("Debug : The bad config didn't failed to be built.", __FILE__, __func__, __LINE__);
+            return false;
+        }
+        return true;
+    }
+}
 bool spTestFile(char* filename, SPConfig expectedConfig, SP_CONFIG_MSG expectedMsg){
     SP_CONFIG_MSG* msg = malloc(sizeof(SP_CONFIG_MSG));
     if(!msg){
@@ -104,9 +145,8 @@ bool spTestFile(char* filename, SPConfig expectedConfig, SP_CONFIG_MSG expectedM
  * change the third line SP_CONFIG_MSG to the expected message.
  * @return
  */
-int spMainTester(){
-    char filename[] = "C:\\Users\\Ofir\\CLionProjects\\SoftwareProject\\unit_tests\\config_files\\good_config.config";
-    SPConfig expConfig = spConfigConstructor("./images/", "img", ".png", 17, 20, "pca.yml", 100, true, 5, MAX_SPREAD, 1, false, 3, "stdout");
-    printf("Is the messages the same ? (0 - No, 1 - Yes) : %d", spTestFile(filename, expConfig, SP_CONFIG_SUCCESS));
+int main(){
+    RUN_TEST(spTestGoodConfigFile);
+    RUN_TEST(spTestBadConfig);
     return 0;
 }
