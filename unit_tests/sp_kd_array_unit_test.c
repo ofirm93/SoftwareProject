@@ -6,18 +6,16 @@
 #include <stdlib.h>
 #include "../SPKDArray.h"
 #include "../SPPoint.c"
+#include "../SPLogger.h"
 
 
 void testSplitSPKDArray(){
-    for(int i=0; i< argc; i++){
-        printf("%s\n",argv[i]);
-    }
     int numOfPoints = 4;
     int dimension = 3;
     int coordinate = 2;
     SPPoint** pointArr = malloc(numOfPoints * sizeof(SPPoint*));
     if(!pointArr){
-        return 0;
+        return;
     }
     double val[4][3] = {{0, 5, -5}, {1, 4, -4}, {2, 3, -3}, {3, 2, -2}};
     for (int i = 0; i < numOfPoints; ++i) {

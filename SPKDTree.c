@@ -16,6 +16,9 @@
 
 #define INVALID DBL_MAX
 
+#define ERR_MSG_INVALID_ARG "Error : One of the arguments supplied to the method is invalid."
+
+
 struct sp_kd_tree_node_t
 {
 	int dim;
@@ -50,10 +53,11 @@ KDTreeNode* spInitKDTreeNode(int dim, double val, KDTreeNode* left, KDTreeNode* 
 	if(!left && !right && !data)
 	{
 		free(kdNode);
+		spLoggerPrintError("Error : Point shouldn't be NULL if it is a leaf.", __FILE__, __func__, __LINE__);
 		printf("Point should not be NULL if it is a leaf");
 		return NULL;
 	}
-	if( (left!= NULL || right!= NULL) && data!= NULL)
+	if( (left!= NULL || right!= NULL) && data!= NULL) // TODO write log
 	{
 		free(kdNode);
 		printf("Point should be NULL if it isnt a leaf");
@@ -305,7 +309,7 @@ KDTreeNode* spInitSPKDTreeRec(SPKDArray kdArray, SP_KD_SPLIT_MODE splitMethod, i
 
 SPKDTree* spInitSPKDTree(SPPoint** arr, int size, int pointDim, SP_KD_SPLIT_MODE splitMethod){
 	if(!arr || size < 1 || pointDim < 1){
-		printf("Some arguments are defected");
+		spLoggerPrintError(ERR_MSG_INVALID_ARG, __FILE__, __func__, __LINE__);
 		return NULL;
 	}
 	SPKDTree* tree = malloc(sizeof(SPKDTree));
@@ -346,6 +350,7 @@ void inOrderScanRootPoints (KDTreeNode* node){
 	inOrderScanRootPoints(node->left);
 
 	if( isLeaf(node)){
+		// TODO print log debug
 		printf("(%f,%f,%f) , index : %d \n", spPointGetAxisCoor(node->data,0), spPointGetAxisCoor(node->data,1) ,
 				spPointGetAxisCoor(node->data,2), spPointGetIndex(node->data) );
 	}
@@ -361,6 +366,7 @@ void inOrderScanRootValues (KDTreeNode* node){
 	inOrderScanRootValues(node->left);
 
 	if( !isLeaf(node)){
+		// TODO print log debug
 		printf("Splitting value: %f \n", node->val );
 	}
 
@@ -372,8 +378,10 @@ void inOrderScan(SPKDTree* tree){
 	if(!tree){
 		return;
 	}
+	// TODO print log debug
 	printf("Points and their indexes by the scan: \n");
 	inOrderScanRootPoints(tree->root);
+	// TODO print log debug
 	printf("Values of splitting: \n");
 	inOrderScanRootValues(tree->root);
 }

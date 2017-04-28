@@ -52,19 +52,18 @@ void spDestroySPPoint2DimArray(SPPoint*** gallery, int* numOfFeatArray, int size
 SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffix,
 		int spNumOfImages, sp::ImageProc spIp, int* totalNumOfFeatures, int spPCADimension){
 	if(!directory || !imagePrefix || !imageSuffix || !totalNumOfFeatures){
-		return NULL;
+        spLoggerPrintError(ERR_MSG_INVALID_ARG, __FILE__, __func__, __LINE__);
+        return NULL;
 	}
 	char featSuffix[7] = ".feats";
 	int* numOfFeatures = (int*) malloc(sizeof(int));
 	if(!numOfFeatures){
 		spLoggerPrintError(ERR_MSG_CANNOT_ALLOCATE_MEM, __FILE__, __func__, __LINE__);
-//		printf("failed to allocate memory\n"); TODO
 		return NULL;
 	}
 	int* numOfFeatArray = (int*) malloc(sizeof(int) * spNumOfImages);
 	if(!numOfFeatArray){
 		spLoggerPrintError(ERR_MSG_CANNOT_ALLOCATE_MEM, __FILE__, __func__, __LINE__);
-//		printf("failed to allocate memory\n"); TODO
 		free(numOfFeatures);
 		return NULL;
 	}
@@ -75,7 +74,6 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 		free(numOfFeatures);
 		free(numOfFeatArray);
 		spLoggerPrintError(ERR_MSG_CANNOT_ALLOCATE_MEM, __FILE__, __func__, __LINE__);
-//		printf("failed to allocate memory\n"); TODO
 		return NULL;
 	}
 	for(int i=0; i<spNumOfImages;i++){
@@ -88,7 +86,6 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 			char errorMsg[MAX_ERR_MSG_LENGTH];
 			sprintf(errorMsg, ERR_MSG_INVALID_ARG_IN_METHOD, ERR_MSG_MTHD_GET_IMG_PATH_DATA);
 			spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
-//			printf("Failed to print to string\n"); TODO
   	  spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
 			free(numOfFeatures);
 			free(numOfFeatArray);
@@ -109,7 +106,6 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 			char errorMsg[MAX_ERR_MSG_LENGTH];
 			sprintf(errorMsg, ERR_MSG_INVALID_ARG_IN_METHOD, ERR_MSG_MTHD_GET_IMG_PATH_DATA);
 			spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
-//			printf("Failed to print to string\n"); TODO
   		spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
 			free(numOfFeatures);
 			free(numOfFeatArray);
@@ -125,8 +121,9 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 		FILE* file = fopen(destPtr, &writeMode);
 		if(file == NULL)
 		{
-
-			//char errorMsg[MAX_ERR_MSG_LENGTH]; // TODO print something or delete
+			char errorMsg[MAX_ERR_MSG_LENGTH];
+			sprintf(errorMsg, "Error : Couldn't open a file.\nPlease check if Path : %s is correct.", destPtr);
+			spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
 			spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
 			free(numOfFeatures);
 			free(numOfFeatArray);
@@ -159,7 +156,6 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 		checker = fprintf(file,"%d,", *numOfFeatures); //check positive
 		if(checker < 0){
 			spLoggerPrintError(ERR_MSG_FAIL_PRINT_TO_FILE, __FILE__, __func__, __LINE__);
-//			printf("Failed to print to file\n"); TODO
 			spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
 			fclose(file);
 			free(numOfFeatures);
@@ -178,7 +174,6 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 				checker = fprintf(file,"%f,",spPointGetAxisCoor(imgFeatures[k],j));
 				if(checker < 0){
 					spLoggerPrintError(ERR_MSG_FAIL_PRINT_TO_FILE, __FILE__, __func__, __LINE__);
-//					printf("Failed to print to file\n"); TODO
 					spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
 					fclose(file);
 					free(numOfFeatures);
@@ -193,7 +188,6 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
 	SPPoint** allImageFeatures = (SPPoint**) malloc(totalNumOfFeat * sizeof(*allImageFeatures));
 	if(!allImageFeatures){
 		spLoggerPrintError(ERR_MSG_FAIL_PRINT_TO_FILE, __FILE__, __func__, __LINE__);
-//		printf("Failed to print to file\n"); TODO
 		spDestroySPPoint2DimArray(gallery,numOfFeatArray,spNumOfImages);
 		free(numOfFeatures);
 		free(numOfFeatArray);
@@ -229,7 +223,6 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
 	int* numOfFeatArray = (int*) malloc(sizeof(int) * spNumOfImages);
 	if(!numOfFeatArray){
 		spLoggerPrintError(ERR_MSG_CANNOT_ALLOCATE_MEM, __FILE__, __func__, __LINE__);
-//		printf("failed to allocate memory\n"); TODO
 		free(gallery); // TODO bar? : why didn't use 		spDestroySPPoint2DimArray(gallery,numOfFeatArray,spNumOfImages);
 		return NULL;
 	}
@@ -270,7 +263,6 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
 			char errorMsg[MAX_ERR_MSG_LENGTH];
 			sprintf(errorMsg, ERR_MSG_INVALID_ARG_IN_METHOD, ERR_MSG_MTHD_GET_IMG_PATH_DATA);
 			spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
-//			printf("Failed to print to string\n"); TODO
 			free(numOfFeatures);
 			free(numOfFeatArray);
 			free(featValArray);
@@ -291,7 +283,6 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
 			char errorMsg[MAX_ERR_MSG_LENGTH];
 			sprintf(errorMsg, ERR_MSG_FAIL_SCAN_FILE, filePath);
 			spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
-//			printf("failed scanning from file \n"); TODO
 			spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
 			free(numOfFeatures);
 			free(numOfFeatArray);
@@ -317,7 +308,6 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
 					char errorMsg[MAX_ERR_MSG_LENGTH];
 					sprintf(errorMsg, ERR_MSG_FAIL_SCAN_FILE, filePath);
 					spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
-//					printf("failed scanning from file \n"); TODO
 					spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
 					free(numOfFeatures);
 					free(numOfFeatArray);
