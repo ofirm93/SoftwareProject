@@ -4,7 +4,7 @@
  *  Created on: Mar 18, 2017
  *      Author: user
  */
-//TODO UPDATE IN GIT
+
 
 
 #include "SPKDTree.h"
@@ -15,6 +15,7 @@
 
 
 #define INVALID DBL_MAX
+#define MAX_ERR_MSG_LENGTH 1024
 
 #define ERR_MSG_INVALID_ARG "Error : One of the arguments supplied to the method is invalid."
 
@@ -52,15 +53,15 @@ KDTreeNode* spInitKDTreeNode(int dim, double val, KDTreeNode* left, KDTreeNode* 
 	kdNode -> right = right;
 	if(!left && !right && !data)
 	{
-		free(kdNode);
+		spDestroyKDTreeNode(kdNode);
 		spLoggerPrintError("Error : Point shouldn't be NULL if it is a leaf.", __FILE__, __func__, __LINE__);
-		printf("Point should not be NULL if it is a leaf");
+		//printf("Point should not be NULL if it is a leaf");
 		return NULL;
 	}
 	if( (left!= NULL || right!= NULL) && data!= NULL) // TODO write log
 	{
-		free(kdNode);
-		printf("Point should be NULL if it isnt a leaf");
+		spDestroyKDTreeNode(kdNode);
+		spLoggerPrintError("Error : Point should be NULL if it isn't a leaf.", __FILE__, __func__, __LINE__);
 		return NULL;
 	}
 
@@ -121,7 +122,7 @@ SPPoint* spKDTreeNodeGetPoint(KDTreeNode* node) {
 	if(!node){
 		return NULL;
 	}
-	return node->data; //copy? TODO make sure itsok
+	return node->data;
 }
 
 int spKDTreeNodeGetPointIndex(KDTreeNode* node){
@@ -139,7 +140,7 @@ double spKDTreeNodeGetPointVal(KDTreeNode* node){
 }
 
 
-//TODO make sure i want to recursively destroy
+
 void spDestroyKDTreeNode(KDTreeNode* node){\
 	if(!node){
 		return;
@@ -351,8 +352,10 @@ void inOrderScanRootPoints (KDTreeNode* node){
 
 	if( isLeaf(node)){
 		// TODO print log debug
-		printf("(%f,%f,%f) , index : %d \n", spPointGetAxisCoor(node->data,0), spPointGetAxisCoor(node->data,1) ,
+		char dbgMsg[MAX_ERR_MSG_LENGTH];
+		sprintf(dbgMsg,"(%f,%f,%f) , index : %d \n", spPointGetAxisCoor(node->data,0), spPointGetAxisCoor(node->data,1) ,
 				spPointGetAxisCoor(node->data,2), spPointGetIndex(node->data) );
+		spLoggerPrintDebug(dbgMsg, __FILE__, __func__, __LINE__);
 	}
 
 	inOrderScanRootPoints(node->right);
@@ -367,7 +370,9 @@ void inOrderScanRootValues (KDTreeNode* node){
 
 	if( !isLeaf(node)){
 		// TODO print log debug
-		printf("Splitting value: %f \n", node->val );
+		char dbgMsg[MAX_ERR_MSG_LENGTH];
+		sprintf(dbgMsg,"Splitting value: %f \n", node->val);
+		spLoggerPrintDebug(dbgMsg, __FILE__, __func__, __LINE__);
 	}
 
 	inOrderScanRootValues(node->right);
@@ -379,10 +384,10 @@ void inOrderScan(SPKDTree* tree){
 		return;
 	}
 	// TODO print log debug
-	printf("Points and their indexes by the scan: \n");
+	spLoggerPrintDebug("Points and their indexes by the scan: \n", __FILE__, __func__, __LINE__);
 	inOrderScanRootPoints(tree->root);
 	// TODO print log debug
-	printf("Values of splitting: \n");
+	spLoggerPrintDebug("Values of splitting: \n", __FILE__, __func__, __LINE__);
 	inOrderScanRootValues(tree->root);
 }
 
