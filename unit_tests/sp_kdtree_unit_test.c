@@ -1,9 +1,9 @@
-/*
- * sp_kdtree_unit_test.c
- *
- *  Created on: Apr 23, 2017
- *      Author: user
- */
+//
+// * sp_kdtree_unit_test.c
+// *
+// *  Created on: Apr 23, 2017
+// *      Author: user
+
 
 #include "../SPKDTree.h"
 #include "unit_test_util.h"
@@ -11,86 +11,124 @@
 #include <stdbool.h>
 #include <float.h>
 #include "../KNearestSearch.h"
+#include "../SPLogger.h"
 //testing KDNode Methods
 
+#define ERR_MSG_INVALID_ARG "Error : One of the arguments supplied to the method is invalid."
+#define MAX_DBG_MSG_LENGTH 1024
+void spDestroyPointArray(SPPoint** array, int size){
+    if(!array || size < 0){
+        spLoggerPrintError(ERR_MSG_INVALID_ARG, __FILE__, __func__, __LINE__);
+        return;
+    }
+    for (int i = 0; i < size; ++i) {
+        spPointDestroy(array[i]);
+    }
+    free(array);
+}
 
-bool testAllKDNodeMethods(SPLogger log){
-    double arr1 [3] = {1,2,3};
-    SPPoint* leafPoint = spPointCreate( arr1 , 3, 1);
-    KDTreeNode* leafy = spInitKDTreeNode(5,2,NULL,NULL,leafPoint);
-    ASSERT_TRUE(!spInitKDTreeNode(5,127.5,NULL,NULL,NULL));
-    ASSERT_TRUE(!spInitKDTreeNode(5,127.5,NULL,leafy,leafPoint));
-    return true;
+bool testKDNodeMethods(){
+	double arr1 [3] = {1,2,3};
+	SPPoint* leafPoint = spPointCreate( arr1 , 3, 1);
+	KDTreeNode* leafy = spInitKDTreeNode(5,2,NULL,NULL,leafPoint);
+	ASSERT_TRUE(!spInitKDTreeNode(5,127.5,NULL,NULL,NULL));
+	ASSERT_TRUE(!spInitKDTreeNode(5,127.5,NULL,leafy,leafPoint));
+	return true;
 }
 
 
 bool testKDTreeInitAndSearch(){
-//    int numOfPoints = 5;
-//    int dimension = 3;
-//    int KNN = 2;
-//    SPPoint** pointArr = (SPPoint**) malloc(numOfPoints * sizeof(SPPoint*));
-//    if(!pointArr){
-//        return 0;
-//    }
-//    double val[5][3] = {{2, 3, -3}, {0, 1, -1}, {3, 2, -3}, {3, 2, -2} , {1,2,3}};
-//    for (int i = 0; i < numOfPoints; ++i) {
-//        pointArr[i] = spPointCreate(val[i], dimension , i);
-//    }
 
-    int numOfPoints = 4;
+    int numOfPoints = 5;
     int dimension = 3;
-    int coordinate = 2;
     int KNN = 2;
     SPPoint** pointArr = malloc(numOfPoints * sizeof(SPPoint*));
     if(!pointArr){
         return 0;
     }
-    double val[4][3] = {{0, 5, -5}, {1, 4, -4}, {2, 3, -3}, {3, 2, -2}};
+    double val[5][3] = {{0, 5, -5}, {1, 4, -4}, {2, 3, -3}, {3, 2, -2}, {0,0,0}};
     for (int i = 0; i < numOfPoints; ++i) {
         pointArr[i] = spPointCreate(val[i], dimension , i);
+        if(!pointArr[i]){
+
+        	spDestroyPointArray(pointArr,i);
+        }
     }
-    SPKDArray kdArray =  spInitSPKDArray(pointArr, numOfPoints);
-    SPKDArray* leftAndRight = spSplitSPKDArray(kdArray, 0);
-    SPKDArray* leftAndRight2 = spSplitSPKDArray(leftAndRight[1], 1);
-    if(!leftAndRight){
-        return NULL;
-    }
-    printf("ok");
-
-
-
 //    //tree test starts
-//    SPKDTree* tree = spInitSPKDTree(pointArr,4,3,INCREMENTAL);
-//    ASSERT_TRUE(tree != NULL);
-//    inOrderScan(tree);
-//    SPKDTree* treeSpread = spInitSPKDTree(pointArr,4,3,MAX_SPREAD);
-//    inOrderScan(treeSpread);
-//    ASSERT_TRUE(treeSpread != NULL);
-//    double valArr[3] = {3,2,-4};
-//    SPPoint* query = spPointCreate(valArr,3,5);
-//    SPBPQueue* kClosest = getKClosestPoints(tree,  query, KNN);
-//    SPBPQueue* kClosestSpread = getKClosestPoints(treeSpread,  query, KNN);
-//    BPQueueElement* element = malloc(sizeof(*element));
-//    int index1 =0 ,index2 = 0;
-//    for(int i=0; i<KNN; i++){
-//    	spBPQueuePeek(kClosest,element );
-//    	index1 = element ->index;
-//    	spBPQueuePeek(kClosestSpread,element );
-//    	index2 = element ->index;
-//    	ASSERT_TRUE(spBPQueueMinValue(kClosest) == spBPQueueMinValue(kClosestSpread));
-//    	ASSERT_TRUE(index1 == index2);
-//    	//later : ASSERT_TRUE(spBPQueueMinValue(kClosest) == );
-//    	ASSERT_TRUE(spBPQueueDequeue(kClosest) == SP_BPQUEUE_SUCCESS);
-//    	ASSERT_TRUE(spBPQueueDequeue(kClosestSpread) == SP_BPQUEUE_SUCCESS);
-//    }
-
-
-    return true;
+    SPKDTree* tree = spInitSPKDTree(pointArr,5,3,INCREMENTAL);
+    if(!tree){
+        spDestroyKDTree(tree);
+        spDestroyPointArray(pointArr,numOfPoints);
+    }
+    inOrderScan(tree);
+    SPKDTree* treeSpread = spInitSPKDTree(pointArr,5,3,MAX_SPREAD);
+    if(!treeSpread){
+        spDestroyKDTree(tree);
+        spDestroyPointArray(pointArr,numOfPoints);
+    }
+    inOrderScan(treeSpread);
+    double valArr[3] = {3,2,-4};
+    SPPoint* query = spPointCreate(valArr,3,5);
+    if(!query){
+        spDestroyKDTree(tree);
+        spDestroyKDTree(treeSpread);
+        spDestroyPointArray(pointArr,numOfPoints);
+    }
+    SPBPQueue* kClosest = getKClosestPoints(tree,  query, KNN);
+    if(!kClosest){
+        spPointDestroy(query);
+        spDestroyKDTree(tree);
+        spDestroyKDTree(treeSpread);
+        spDestroyPointArray(pointArr,numOfPoints);
+    }
+    SPBPQueue* kClosestSpread = getKClosestPoints(treeSpread,  query, KNN);
+    if(!kClosestSpread){
+        spBPQueueDestroy(kClosest);
+        spPointDestroy(query);
+        spDestroyKDTree(tree);
+        spDestroyKDTree(treeSpread);
+        spDestroyPointArray(pointArr,numOfPoints);
+    }
+    BPQueueElement* element = malloc(sizeof(*element));
+    if(!element){
+        spBPQueueDestroy(kClosest);
+        spBPQueueDestroy(kClosestSpread);
+        spPointDestroy(query);
+        spDestroyKDTree(tree);
+        spDestroyKDTree(treeSpread);
+        spDestroyPointArray(pointArr,numOfPoints);
+    }
+    int index1 =0 ,index2 = 0;
+    for(int i=0; i<KNN; i++){
+    	spBPQueuePeek(kClosest,element );
+    	index1 = element ->index;
+    	char dbgMsg[MAX_DBG_MSG_LENGTH];
+    	spBPQueuePeek(kClosestSpread,element );
+    	index2 = element ->index;
+      	sprintf(dbgMsg,"Closest index of number %d of Incremental,Spread : %d , %d \n",i +1,index1, index2);
+    	spLoggerPrintDebug(dbgMsg,__FILE__,__func__,__LINE__);
+    	ASSERT_TRUE(spBPQueueMinValue(kClosest) == spBPQueueMinValue(kClosestSpread));
+    	ASSERT_TRUE(index1 == index2);
+    	ASSERT_TRUE(spBPQueueDequeue(kClosest) == SP_BPQUEUE_SUCCESS);
+    	ASSERT_TRUE(spBPQueueDequeue(kClosestSpread) == SP_BPQUEUE_SUCCESS);
+    }
+    spBPQueueDestroy(kClosest);
+    spBPQueueDestroy(kClosestSpread);
+    free(element);
+    spPointDestroy(query);
+    spDestroyKDTree(tree);
+    spDestroyKDTree(treeSpread);
+    spDestroyPointArray(pointArr,numOfPoints);
+	return true;
 }
 
-/*
 int main(){
-    RUN_TEST( testKDTreeInitAndSearch );
-    return 1;
+	SP_LOGGER_MSG loggerMsg = spLoggerCreate(NULL, SP_LOGGER_DEBUG_INFO_WARNING_ERROR_LEVEL);
+	if(loggerMsg != SP_LOGGER_SUCCESS){
+		printf("Failed creating the logger.");
+		return -1;
+	}
+	RUN_TEST( testKDTreeInitAndSearch );
+	return 0;
 
-}*/
+}
