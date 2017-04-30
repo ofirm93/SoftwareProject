@@ -54,7 +54,7 @@ SP_LOGGER_MSG spLoggerPrintError(const char* msg, const char* file,
 		verifier = printf("---ERROR---\n- file: %s\n- function: %s\n- line: %d\n- message: %s\n",
 		file,function,line,msg); }
 	if (logger->isStdOut == false){
-		verifier = fprintf(logger->outputChannel,"---Error---\n- file: %s\n- function: %s\n- line: %d\n- message: %s\n",
+		verifier = fprintf(logger->outputChannel,"---ERROR---\n- file: %s\n- function: %s\n- line: %d\n- message: %s\n",
 		file,function,line,msg); }
 
 	if (verifier < 0){

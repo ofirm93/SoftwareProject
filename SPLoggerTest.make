@@ -7,7 +7,9 @@ COMP_FLAG = -std=c99 -Wall -Wextra \
 
 $(EXEC): $(OBJS)
 	$(CC) $(OBJS) -o $@
-sp_logger_unit_test.o: $(TESTS_DIR)/sp_logger_unit_test.c $(TESTS_DIR)/unit_test_util.h SPLogger.h
+sp_logger_unit_test.o: unit_tests/sp_logger_unit_test.c \
+ unit_tests/unit_test_util.h unit_tests/../SPLogger.h
+
 	$(CC) $(COMP_FLAG) -c $(TESTS_DIR)/$*.c
 SPLogger.o: SPLogger.c SPLogger.h 
 	$(CC) $(COMP_FLAG) -c $*.c
