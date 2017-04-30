@@ -8,8 +8,6 @@
 #define DEFAULT_INDEX 123
 
 extern "C"{
-    #include "SPConfig.h"
-    #include "SPBPriorityQueue.h"
     #include "SPKDTree.h"
 }
 

@@ -171,13 +171,15 @@ SP_LOGGER_MSG spLoggerLevelFromNum(int levelNum, SP_LOGGER_LEVEL* loggerLevel){
 			*loggerLevel = SP_LOGGER_ERROR_LEVEL;
 			break;
 		case 2:
-			*loggerLevel = SP_LOGGER_ERROR_LEVEL;
+			*loggerLevel = SP_LOGGER_WARNING_ERROR_LEVEL;
 			break;
 		case 3:
-			*loggerLevel = SP_LOGGER_ERROR_LEVEL;
+			*loggerLevel = SP_LOGGER_INFO_WARNING_ERROR_LEVEL;
 			break;
 		case 4:
-			*loggerLevel = SP_LOGGER_ERROR_LEVEL;
+			*loggerLevel = SP_LOGGER_DEBUG_INFO_WARNING_ERROR_LEVEL;
+			break;
+		default:
 			break;
 	}
 	return SP_LOGGER_SUCCESS;
