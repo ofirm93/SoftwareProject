@@ -261,7 +261,7 @@ int main(int argc, const char* argv[]) {
         free(config);
         return 10;
     }
-    int k = spConfigGetNumOfSimmilarImages(config, &configMsg);
+    int k = spConfigGetNumOfSimilarImages(config, &configMsg);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
         char errorMsg[MAX_ERR_MSG_LENGTH];
         sprintf(errorMsg, ERR_MSG_INVALID_ARG, ERR_MSG_GET_KNN);
@@ -310,7 +310,7 @@ int main(int argc, const char* argv[]) {
             printf(EXIT_MSG);
             isEnded = true;
         } else{
-            int* KNN = spGetGetBestKMatches(tree, queryStr, config, numOfImages, k);
+            int* KNN = spGetBestKMatches(tree, queryStr, config, numOfImages, k);
             if(KNN){
                 if(isGUIMode){
                     spMinimalGUI(config,queryStr,KNN,k);

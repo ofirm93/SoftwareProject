@@ -21,22 +21,40 @@ extern "C"{
 char* spGetInputFromUser(const char *command);
 
 /**
- * TODO write documentation
+ * This method simulates text based GUI of the results of the best matches.
+ * @param config - the configuration file
+ * @param queryPath - the path of the query image
+ * @param indexArray - the array of the indices of the best matches
+ * @param size - the size of the array above
  */
 void spNonMinimalGUI(SPConfig config, char* queryPath, int* indexArray, int size);
 
 /**
- * TODO write documentation
+ * This method simulates minimal GUI of the results of the best matches.
+ * @param config - the configuration file
+ * @param queryPath - the path of the query image
+ * @param indexArray - the array of the indices of the best matches
+ * @param size - the size of the array above
  */
 void spMinimalGUI(SPConfig config, char* queryPath, int* indexArray, int size);
 
 /**
- * TODO write documentation
+ * This method finds the best matches to the query image.
+ * @param tree - a tree to find the results based on the algorithm
+ * @param queryPath - the path to the query image
+ * @param config - the configuration file
+ * @param numOfImages - the number of images in the directory
+ * @param k - the number og matches to find
+ * @return
+ * NULL                                             - if one argument is invalid
+ * The array of the indices of the best matches     - otherwise
  */
-int* spGetGetBestKMatches(SPKDTree* tree, char* queryPath, SPConfig config, int numOfImages, int k);
+int* spGetBestKMatches(SPKDTree *tree, char *queryPath, SPConfig config, int numOfImages, int k);
 
 /**
- * TODO write documentation
+ * A destroyer for an array of SPPoints
+ * @param array - the array to destroy
+ * @param size - the array's size
  */
 void spDestroySPPointArray(SPPoint** array, int size);
 

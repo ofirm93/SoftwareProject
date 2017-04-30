@@ -117,7 +117,7 @@ int elementByValueComparator(const void *element1, const void *element2){
     return -1;
 }
 
-int* spGetGetBestKMatches(SPKDTree* kdTree, char* queryPath, SPConfig config, int numOfImages, int k){
+int* spGetBestKMatches(SPKDTree *kdTree, char *queryPath, SPConfig config, int numOfImages, int k){
     if(!kdTree || !queryPath || !config || numOfImages < 0 || k < 0){
         spLoggerPrintError(ERR_MSG_INVALID_ARG, __FILE__, __func__, __LINE__);
         return NULL;

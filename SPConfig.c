@@ -681,7 +681,7 @@ int spConfigGetKNN(const SPConfig config, SP_CONFIG_MSG* msg){
 	return config->KNN;
 }
 
-int spConfigGetNumOfSimmilarImages(const SPConfig config, SP_CONFIG_MSG* msg){
+int spConfigGetNumOfSimilarImages(const SPConfig config, SP_CONFIG_MSG *msg){
     if (config == NULL) {
         *msg = SP_CONFIG_INVALID_ARGUMENT;
         return -1;

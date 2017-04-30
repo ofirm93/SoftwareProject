@@ -19,6 +19,14 @@
 #define DIMENSION 3
 #define NUM_OF_POINTS 5
 
+/**
+ * Tester for splitting a given array.
+ * @param testArray
+ * @param numOfPoints
+ * @param dimension
+ * @param expectedArray
+ * @return true if successful otherwise false
+ */
 bool spTestSplitForArray(double testArray[NUM_OF_POINTS][DIMENSION], int numOfPoints, int dimension, double expectedArray[DIMENSION][NUM_OF_POINTS][DIMENSION]){
     SPPoint** pointArr = malloc(numOfPoints * sizeof(SPPoint*));
     if(!pointArr){
@@ -117,7 +125,10 @@ bool spTestSplitForArray(double testArray[NUM_OF_POINTS][DIMENSION], int numOfPo
     free(pointArr);
     return true;
 }
-
+/**
+ * A tester for splitting arrays. based on edge cases.
+ * @return true if successful otherwise false
+ */
 bool testSplitSPKDArray(){
     int numOfPoints[NUM_OF_TEST_CASES] = {5, 4};
     double testArr1[NUM_OF_POINTS][DIMENSION] = {{0, 5, -5}, {1, 4, -4}, {2, 3, -3}, {3, 2, -2}, {4, 1, -1}};
