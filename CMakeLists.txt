@@ -23,8 +23,22 @@ set(SOURCE_FILES SPPoint.c SPLogger.c SPKDTree.c SPImageProc.cpp SPBPriorityQueu
 #        unit_tests/sp_logger_unit_test.c )
 #set(ALL_FILES $(SOURCE_FILES) $(TESTER_FILES))
 set(SPKDARRAY_TESTER_SOURCE_FILES SPLogger.c SPBPriorityQueue.c SPKDArray.c unit_tests/unit_test_util.h unit_tests/sp_kd_array_unit_test.c)
+#set(MAIN_AUX_TESTER_SOURCE_FILES unit_tests/unit_test_util.h SPKDArray.c SPImageProc.cpp SPLogger.c SPConfig.c
+#        KNearestSearch.c SPPoint.c SPKDTree.c unit_tests/sp_main_aux_unit_test.c main_aux.cpp SPBPriorityQueue.c)
+#unit_tests/unit_test_util.h  SPLogger.c SPConfig.c main_aux.cpp  SPPoint.c SPKDTree.c
+set(MAIN_AUX_TESTER_SOURCE_FILES unit_tests/sp_main_aux_unit_test.cpp
+unit_tests/../main_aux.h unit_tests/../SPKDTree.h
+unit_tests/../SPKDArray.h unit_tests/../SPPoint.h
+unit_tests/../SPConfig.h unit_tests/../SPLogger.h
+unit_tests/../SPBPriorityQueue.h unit_tests/unit_test_util.h
+unit_tests/../SPLogger.h)
+
+#        SPConfig.h SPLogger.h main_aux.h SPKDTree.h SPKDArray.h SPPoint.h SPConfig.h SPBPriorityQueue.h unit_tests/unit_test_util.h unit_tests/sp_main_aux_unit_test.cpp)
+
 add_executable(SoftwareProject ${SOURCE_FILES})
 add_executable(KDArrayTester ${SPKDARRAY_TESTER_SOURCE_FILES})
+add_executable(MainAuxTester ${MAIN_AUX_TESTER_SOURCE_FILES})
 
 target_link_libraries( SoftwareProject ${OpenCV_LIBS} )
 target_link_libraries( KDArrayTester ${OpenCV_LIBS} )
+target_link_libraries( MainAuxTester ${OpenCV_LIBS} )

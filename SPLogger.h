@@ -215,10 +215,13 @@ SP_LOGGER_MSG spLoggerPrintDebug(const char* msg, const char* file,
 SP_LOGGER_MSG spLoggerPrintMsg(const char* msg);
 
 /**
- * TODO add documentation
- * @param levelNum
- * @param loggerLevel
+ * This method gets a number and a pointer to SP_LOGGER_LEVEL, and assigns the correct logger level to the pointer,
+ * according to the number.
+ * @param levelNum - The number of the logger level
+ * @param loggerLevel - The pointer to assign the level
  * @return
+ * SP_LOGGER_INVAlID_ARGUMENT   - If levelNum > 4 or levelNum < 1 or loggerLevel is NULL
+ * SP_LOGGER_SUCCESS            - otherwise
  */
 SP_LOGGER_MSG spLoggerLevelFromNum(int levelNum, SP_LOGGER_LEVEL* loggerLevel);
 
