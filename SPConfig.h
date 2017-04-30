@@ -31,8 +31,18 @@ typedef enum sp_kdtree_split_mode_t {
 
 typedef struct sp_config_t* SPConfig;
 
+/**
+ * A default constructor for SPConfig
+ * @return
+ * a default SPConfig
+ */
 SPConfig spDefaultConfigConstructor(); // TODO Delete this line - its for testing only
 
+/**
+ * A constructor for SPConfig based on the parameters given.
+ * @return
+ * a SPConfig with the given values
+ */
 SPConfig spConfigConstructor(char *imagesDirectory, // TODO Delete this method - its for testing only
                              char *imagesPrefix,
                              char *imagesSuffix,
@@ -48,6 +58,14 @@ SPConfig spConfigConstructor(char *imagesDirectory, // TODO Delete this method -
                              int loggerLevel,
                              char *loggerFilename);
 
+/**
+ * This method gets two configurations checks if they are the same and if so returns true.
+ * @param config
+ * @param configExp
+ * @return
+ * true 	- if the two configurations are valid and the same.
+ * false 	- otherwise
+ */
 bool spIsConfigEqual(SPConfig config, SPConfig configExp); // TODO Delete this line - its for testing only
 
 /**
@@ -76,7 +94,7 @@ bool spIsConfigEqual(SPConfig config, SPConfig configExp); // TODO Delete this l
  */
 SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg);
 
-/*
+/**
  * Returns true if spExtractionMode = true, false otherwise.
  *
  * @param config - the configuration structure
@@ -89,7 +107,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg);
  */
 bool spConfigIsExtractionMode(const SPConfig config, SP_CONFIG_MSG* msg);
 
-/*
+/**
  * Returns true if spMinimalGUI = true, false otherwise.
  *
  * @param config - the configuration structure
@@ -102,7 +120,7 @@ bool spConfigIsExtractionMode(const SPConfig config, SP_CONFIG_MSG* msg);
  */
 bool spConfigMinimalGui(const SPConfig config, SP_CONFIG_MSG* msg);
 
-/*
+/**
  * Returns the number of images set in the configuration file, i.e the value
  * of spNumOfImages.
  *
@@ -116,7 +134,7 @@ bool spConfigMinimalGui(const SPConfig config, SP_CONFIG_MSG* msg);
  */
 int spConfigGetNumOfImages(const SPConfig config, SP_CONFIG_MSG* msg);
 
-/*
+/**
  * Returns the number of features to be extracted. i.e the value
  * of spNumOfFeatures.
  *
@@ -171,8 +189,7 @@ int spConfigGetPCADim(const SPConfig config, SP_CONFIG_MSG* msg);
 SP_CONFIG_MSG spConfigGetImagePath(char* imagePath, const SPConfig config,
 		int index);
 /**
- * TODO documentation
- *  Same as above just the data is supplied.
+ * This method is the same as the method spConfigGetImagePath() but the properties are given explicitly.
  */
 SP_CONFIG_MSG spConfigGetImagePathWithData(char* imagePath, char* directory, char* prefix, int index, char* suffix);
 
@@ -195,50 +212,79 @@ SP_CONFIG_MSG spConfigGetImagePathWithData(char* imagePath, char* directory, cha
 SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
 
 /**
- * TODO documentation
- *  Basically returns KDTreeSplitMethod in pointer on success
+ * A Getter method for the KDTreeSplitMethod.
+ * @param config - the configuration to extract from.
+ * @param splitMethod - a pointer to assign the requested value.
+ * @return
+ * SP_CONFIG_INVALID_ARGUMENT 		- if one of the arguments is invalid
+ * SP_CONFIG_SUCCESS 				- otherwise
  */
 SP_CONFIG_MSG spConfigGetKDTreeSplitMethod(const SPConfig config, SP_KD_SPLIT_MODE* splitMethod);
 
 /**
- * TODO documentation
- *  Basically returns imagesDirectory path in pointer on success
+ * A Getter method for the ImageDirectory.
+ * @param config - the configuration to extract from.
+ * @param imagesDirectory - a pointer to assign the requested value.
+ * @return
+ * SP_CONFIG_INVALID_ARGUMENT 		- if one of the arguments is invalid
+ * SP_CONFIG_SUCCESS 				- otherwise
  */
 SP_CONFIG_MSG spConfigGetImagesDirectory(const SPConfig config, char* imagesDirectory);
 
 /**
- * TODO documentation
- *  Basically returns imagesPrefix in pointer on success
+ * A Getter method for the ImagePrefix.
+ * @param config - the configuration to extract from.
+ * @param imagesPrefix - a pointer to assign the requested value.
+ * @return
+ * SP_CONFIG_INVALID_ARGUMENT 		- if one of the arguments is invalid
+ * SP_CONFIG_SUCCESS 				- otherwise
  */
 SP_CONFIG_MSG spConfigGetImagesPrefix(const SPConfig config, char* imagesPrefix);
 
 /**
- * TODO documentation
- *  Basically returns imagesSuffix in pointer on success
+ * A Getter method for the ImageSuffix.
+ * @param config - the configuration to extract from.
+ * @param imagesSuffix - a pointer to assign the requested value.
+ * SP_CONFIG_INVALID_ARGUMENT 		- if one of the arguments is invalid
+ * SP_CONFIG_SUCCESS 				- otherwise
  */
 SP_CONFIG_MSG spConfigGetImagesSuffix(const SPConfig config, char* imagesSuffix);
 
 /**
- * TODO documentation
- *  Basically returns KNN on success
+ * A Getter method for the KNN.
+ * @param config - the configuration to extract from.
+ * @param msg - a config message pointer to assign the method's result.
+ * @return
+ * -1 		- if one of the arguments is invalid. (msg = SP_CONFIG_INVALID_ARGUMENT)
+ * KNN 		- otherwise (msg = SP_CONFIG_SUCCESS)
  */
 int spConfigGetKNN(const SPConfig config, SP_CONFIG_MSG* msg);
 
 /**
- * TODO documentation
- *  Basically returns the logger filename in pointer on success
+ * A Getter method for the LoggerFilename.
+ * @param config - the configuration to extract from.
+ * @param msg - a config message pointer to assign the method's result.
+ * @return
+ * NULL 				- if one of the arguments is invalid. (msg = SP_CONFIG_INVALID_ARGUMENT)
+ * (msg = SP_CONFIG_ALLOC_FAIL if failed allocating memory)
+ * The logger filename 	- otherwise
  */
 char* spConfigGetLoggerFilename(const SPConfig config, SP_CONFIG_MSG* msg);
 
 /**
- * TODO documentation
- *  Basically returns imagesSuffix in pointer on success
+ * A Getter method for the LoggerLevel.
+ * @param config - the configuration to extract from.
+ * @param loggerLevel - a pointer to assign the requested value.
+ * @return
+ * SP_CONFIG_INVALID_ARGUMENT 		- if one of the arguments is invalid
+ * SP_CONFIG_SUCCESS 				- otherwise
  */
 SP_CONFIG_MSG spConfigGetLoggerLevel(const SPConfig config, int* loggerLevel);
 
 /**
- * Frees all memory resources associate with config. 
- * If config == NULL nothig is done.
+ * Frees all memory resources associate with config.
+ * If config == NULL nothing is done.
+ * @param config - the configuration to destroy
  */
 void spConfigDestroy(SPConfig config);
 
@@ -246,6 +292,14 @@ void spConfigDestroy(SPConfig config);
 * TODO documentation
 *  Basically returns numOfSimmilarImages on success
 */
-int spConfigGetNumOfSimmilarImages(const SPConfig config, SP_CONFIG_MSG* msg);
+/**
+ * A Getter method for the NumberOfSimilarImages.
+ * @param config - the configuration to extract from.
+ * @param msg - a config message pointer to assign the method's result.
+ * @return
+ * -1 							- if one of the arguments is invalid. (msg = SP_CONFIG_INVALID_ARGUMENT)
+ * NumberOfSimilarImages 		- otherwise (msg = SP_CONFIG_SUCCESS)
+ */
+int spConfigGetNumOfSimilarImages(const SPConfig config, SP_CONFIG_MSG *msg);
 
 #endif /* SPCONFIG_H_ */
