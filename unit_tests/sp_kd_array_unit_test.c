@@ -17,9 +17,9 @@
 
 #define NUM_OF_TEST_CASES 2
 #define DIMENSION 3
-#define NUM_OF_POINTS(x) (x == 0 ? 5 : 4)
+#define NUM_OF_POINTS 5
 
-bool spTestSplitForArray(double testArray[][DIMENSION], int numOfPoints, int dimension, double** expectedArray[DIMENSION][2]){
+bool spTestSplitForArray(double testArray[NUM_OF_POINTS][DIMENSION], int numOfPoints, int dimension, double expectedArray[DIMENSION][NUM_OF_POINTS][DIMENSION]){
     SPPoint** pointArr = malloc(numOfPoints * sizeof(SPPoint*));
     if(!pointArr){
         spLoggerPrintError(ERR_MSG_CANNOT_ALLOCATE_MEM, __FILE__, __func__, __LINE__);
@@ -54,17 +54,17 @@ bool spTestSplitForArray(double testArray[][DIMENSION], int numOfPoints, int dim
 
         char leftTitle[1024] = "\n\nThe left array's details are :\n";
         char* leftMsg = spPrintKDArrayDetails(twoArrays[0]);
-        char rightTitle[1024] = "s\n\nThe right array's details are :\n";
+        char rightTitle[1024] = "\n\nThe right array's details are :\n";
         char* rightMsg = spPrintKDArrayDetails(twoArrays[1]);
         char msg[20000];
         sprintf(msg, "%s%s%s%s%s%s", mainTitle, mainMsg, leftTitle, leftMsg, rightTitle, rightMsg);
         spLoggerPrintDebug(msg, __FILE__, __func__, __LINE__);
 
         for (int l = 0; l < dimension; ++l) {
-            for (int point = 0; point < numOfPoints/2; ++point) {
+            for (int point = 0; point < numOfPoints - numOfPoints/2; ++point) {
                 SPPoint* p = spGetSPKDArrayPoint(twoArrays[0], point);
                 for (int dim = 0; dim < dimension; ++dim) {
-                    double expectedValue = expectedArray[k][0][point][dim];
+                    double expectedValue = expectedArray[k][point][dim];
                     double value = spPointGetAxisCoor(p, dim);
                     if(expectedValue != value){
                         spLoggerPrintError(ERR_MSG_UNEXPECTED_VALUE, __FILE__, __func__, __LINE__);
@@ -82,10 +82,10 @@ bool spTestSplitForArray(double testArray[][DIMENSION], int numOfPoints, int dim
                     }
                 }
             }
-            for (int point = numOfPoints/2; point < numOfPoints; ++point) {
-                SPPoint* p = spGetSPKDArrayPoint(twoArrays[0], point - numOfPoints/2);
+            for (int point = numOfPoints - numOfPoints/2; point < numOfPoints; ++point) {
+                SPPoint* p = spGetSPKDArrayPoint(twoArrays[1], point - (numOfPoints - numOfPoints/2));
                 for (int dim = 0; dim < dimension; ++dim) {
-                    double expectedValue = expectedArray[k][1][point][dim];
+                    double expectedValue = expectedArray[k][point][dim];
                     double value = spPointGetAxisCoor(p, dim);
                     if(expectedValue != value){
                         spLoggerPrintError(ERR_MSG_UNEXPECTED_VALUE, __FILE__, __func__, __LINE__);
@@ -115,28 +115,29 @@ bool spTestSplitForArray(double testArray[][DIMENSION], int numOfPoints, int dim
     }
     spDestroyKDArray(kdArr);
     free(pointArr);
+    return true;
 }
 
 bool testSplitSPKDArray(){
     int numOfPoints[NUM_OF_TEST_CASES] = {5, 4};
-    double testArr1[NUM_OF_POINTS(0)][DIMENSION] = {{0, 5, -5}, {1, 4, -4}, {2, 3, -3}, {3, 2, -2}, {4, 1, -1}};
-    double testArr2[NUM_OF_POINTS(1)][DIMENSION] = {{0, 5, -5}, {1, 4, -4},  {3, 2, -2}, {4, 1, -1}};
+    double testArr1[NUM_OF_POINTS][DIMENSION] = {{0, 5, -5}, {1, 4, -4}, {2, 3, -3}, {3, 2, -2}, {4, 1, -1}};
+    double testArr2[NUM_OF_POINTS][DIMENSION] = {{0, 5, -5}, {1, 4, -4},  {3, 2, -2}, {4, 1, -1}, {0, 0, 0}};
 
-    double expectedArr1[DIMENSION][2][5][DIMENSION] = {
-            {{{0, 5, -5}, {1, 4, -4}, {2, 3, -3}}, {{3, 2, -2}, {4, 1, -1}}},
-            {{{4, 1, -1}, {3, 2, -2}, {2, 3, -3}}, {{1, 4, -4}, {0, 5, -5}}},
-            {{{0, 5, -5}, {1, 4, -4}, {2, 3, -3}}, {{3, 2, -2}, {4, 1, -1}}}
+    double expectedArr1[DIMENSION][NUM_OF_POINTS][DIMENSION] = {
+            {{0, 5, -5}, {1, 4, -4}, {2, 3, -3}, {3, 2, -2}, {4, 1, -1}},
+            {{4, 1, -1}, {3, 2, -2}, {2, 3, -3}, {1, 4, -4}, {0, 5, -5}},
+            {{0, 5, -5}, {1, 4, -4}, {2, 3, -3}, {3, 2, -2}, {4, 1, -1}}
     };
-    double expectedArr2[DIMENSION][2][4][DIMENSION] = {
-            {{{0, 5, -5}, {1, 4, -4}}, {{3, 2, -2}, {4, 1, -1}}},
-            {{{4, 1, -1}, {3, 2, -2}}, {{1, 4, -4}, {0, 5, -5}}},
-            {{{0, 5, -5}, {1, 4, -4}}, {{3, 2, -2}, {4, 1, -1}}}
+    double expectedArr2[DIMENSION][NUM_OF_POINTS][DIMENSION] = {
+            {{0, 5, -5}, {1, 4, -4}, {3, 2, -2}, {4, 1, -1}, {0, 0, 0}},
+            {{4, 1, -1}, {3, 2, -2}, {1, 4, -4}, {0, 5, -5}, {0, 0, 0}},
+            {{0, 5, -5}, {1, 4, -4}, {3, 2, -2}, {4, 1, -1}, {0, 0, 0}}
     };
-    bool f = spTestSplitForArray(testArr1, numOfPoints[0], DIMENSION, (double **[2]*) expectedArr1);
+    bool f = spTestSplitForArray(testArr1, numOfPoints[0], DIMENSION, expectedArr1);
     if(!f){
         return false;
     }
-    f = spTestSplitForArray(testArr2, numOfPoints[1], DIMENSION, (double **[2]) expectedArr2);
+    f = spTestSplitForArray(testArr2, numOfPoints[1], DIMENSION, expectedArr2);
     if(!f){
         return false;
     }
