@@ -32,7 +32,7 @@ SPConfig spDefaultConfigConstructor(){
 		return NULL;
 	}
 	config->PCADimension = 20;
-    config->PCAFilename = malloc(8 + sizeof(char));
+    config->PCAFilename = malloc(strlen(DEFAULT_PCA_FILENAME) + sizeof(char));
     if(!config->PCAFilename){
         free(config);
         return NULL;
@@ -72,7 +72,7 @@ SPConfig spConfigConstructor(char *imagesDirectory,
                        char *loggerFilename) {
     SPConfig config = spDefaultConfigConstructor();
     if(!config){
-        printf("[Ofir_Test] Allocation error in spBuildConfig()");
+        printf("Error : Allocation error in spBuildConfig()");
         return NULL;
     }
     config->imagesDirectory = imagesDirectory;
@@ -80,6 +80,7 @@ SPConfig spConfigConstructor(char *imagesDirectory,
     config->imagesSuffix = imagesSuffix;
     config->numOfImages = numOfImages;
     config->PCADimension = PCADimension;
+	free(config->PCAFilename);
     config->PCAFilename = PCAFilename;
     config->numOfFeatures = numOfFeatures;
     config->extractionMode = extractionMode;
@@ -96,12 +97,12 @@ SPConfig spConfigConstructor(char *imagesDirectory,
 bool spIsStringsEqual(char *paramName, char *str, char *strExp){
     if(strcmp(paramName,"loggerFilename") == 0 && strcmp(strExp, "stdout") == 0){
         if(str){
-            printf("[Ofir_Test] The parameter %s in the created config is %s while the expected is %s", paramName,str, strExp);
+            printf("Error : The parameter %s in the created config is %s while the expected is %s", paramName,str, strExp);
             return false;
         }
     }
     else if(strcmp(str,strExp) != 0){
-        printf("[Ofir_Test] The parameter %s in the created config is %s while the expected is %s", paramName,str, strExp);
+        printf("Error : The parameter %s in the created config is %s while the expected is %s", paramName,str, strExp);
         return false;
     }
     return true;
@@ -110,7 +111,7 @@ bool spIsStringsEqual(char *paramName, char *str, char *strExp){
 // TODO Delete the next method - its for testing only
 bool spIsNumbersEqual(char *paramName, int num, int numExp){
     if(num != numExp){
-        printf("[Ofir_Test] The parameter %s in the created config is %d while the expected is %d", paramName,num, numExp);
+        printf("Error : The parameter %s in the created config is %d while the expected is %d", paramName,num, numExp);
         return false;
     }
     return true;
@@ -119,7 +120,7 @@ bool spIsNumbersEqual(char *paramName, int num, int numExp){
 // TODO Delete the next method - its for testing only
 bool spIsConfigEqual(SPConfig config, SPConfig configExp) {
     if(!config || !configExp){
-        printf("[Ofir_Test] Null pointer error in  spIsConfigEqual()");
+        printf("Error : Null pointer error in  spIsConfigEqual()");
         return false;
     }
     if((!spIsStringsEqual("imagesDirectory", config->imagesDirectory, configExp->imagesDirectory)) ||
@@ -401,6 +402,7 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 		return spHandleIntegerProperty(&(config->PCADimension), NULL, secondArg, msg, filename, lineNum, 10, 28, true);
 	}
 	else if(strcmp(firstArg, "spPCAFilename") == 0){
+		free(config->PCAFilename);
 		return spHandleStringProperty(&(config->PCAFilename), NULL, secondArg, msg, filename, lineNum);
 	}
 	else if(strcmp(firstArg, "spNumOfFeatures") == 0){
