@@ -97,7 +97,7 @@ static bool basicLoggerInfoTest() {
 
 
 static bool initFailTest(){
-	const char* testFile = "basicLoggerErrorTest.log";
+	const char* testFile = "basicLoggerInitFail.log";
 	ASSERT_TRUE(spLoggerCreate(testFile,SP_LOGGER_ERROR_LEVEL) == SP_LOGGER_SUCCESS);
 	ASSERT_TRUE(spLoggerCreate(testFile,SP_LOGGER_ERROR_LEVEL) == SP_LOGGER_DEFINED);
 	spLoggerDestroy();
@@ -114,3 +114,4 @@ int main() {
 	RUN_TEST(initFailTest);
 	return 0;
 }
+
