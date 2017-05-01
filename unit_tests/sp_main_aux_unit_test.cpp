@@ -23,8 +23,10 @@ bool spTestMinimalGUI(){
         spLoggerPrintError("Error : Failed creating configuration from file", __FILE__, __func__, __LINE__);
         return false;
     }
+    free(msg);
     int indexArray[] = {0,1,2};
     spMinimalGUI(config, (char *) "<some query path>", indexArray, 3);
+    spConfigDestroy(config);
     return true;
 }
 
@@ -39,8 +41,10 @@ bool spTestNonMinimalGUI(){
         spLoggerPrintError("Error : Failed creating configuration from file", __FILE__, __func__, __LINE__);
         return false;
     }
+    free(msg);
     int indexArray[] = {0,1,2};
     spNonMinimalGUI(config, (char *) "<some query path>", indexArray, 3);
+    spConfigDestroy(config);
     return true;
 }
 

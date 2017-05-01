@@ -15,8 +15,8 @@
  * @return true if successful otherwise false
  */
 bool spTestGoodConfigFile(){
-    char filename[] = "./unit_tests/config_files/good_config.config";
-    SPConfig expectedConfig = spConfigConstructor("./unit_tests/RotatedEx3plusProj", "imag", ".png", 17, 20, "pca.yml", 100, true, 5, MAX_SPREAD, 1, false, 3, "stdout");
+    char filename[] = "../unit_tests/config_files/good_config_for_testing.config";
+    SPConfig expectedConfig = spConfigConstructor("../unit_tests/RotatedEx3plusProj", "imag", ".png", 17, 20, "pca.yml", 100, true, 5, MAX_SPREAD, 1, false, 3, "stdout");
     SP_CONFIG_MSG msg;
     SPConfig config = spConfigCreate(filename, &msg);
     if(msg == SP_CONFIG_SUCCESS){
