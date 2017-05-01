@@ -129,12 +129,18 @@ int spKDTreeNodeGetPointIndex(KDTreeNode* node){
 	if(!node){
 		return -1;
 	}
+	if(!node->data){
+		return -1;
+	}
 	return spPointGetIndex(node->data) ;
 }
 
 double spKDTreeNodeGetPointVal(KDTreeNode* node){
 	if(!node){
-		return 0;
+		return DBL_MAX;
+	}
+	if(!node->data){
+		return DBL_MAX;
 	}
 	return spPointGetAxisCoor(node->data, node->dim);
 }
