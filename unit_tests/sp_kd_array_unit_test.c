@@ -66,7 +66,8 @@ bool spTestSplitForArray(double testArray[NUM_OF_POINTS][DIMENSION], int numOfPo
         char msg[20000];
         sprintf(msg, "%s%s%s%s%s%s", mainTitle, mainMsg, leftTitle, leftMsg, rightTitle, rightMsg);
         spLoggerPrintDebug(msg, __FILE__, __func__, __LINE__);
-
+        free(rightMsg);
+        free(leftMsg);
         for (int l = 0; l < dimension; ++l) {
             for (int point = 0; point < numOfPoints - numOfPoints/2; ++point) {
                 SPPoint* p = spGetSPKDArrayPoint(twoArrays[0], point);
@@ -75,6 +76,7 @@ bool spTestSplitForArray(double testArray[NUM_OF_POINTS][DIMENSION], int numOfPo
                     double value = spPointGetAxisCoor(p, dim);
                     if(expectedValue != value){
                         spLoggerPrintError(ERR_MSG_UNEXPECTED_VALUE, __FILE__, __func__, __LINE__);
+                        spPointDestroy(p);
                         spDestroyKDArray(kdArr);
                         spDestroyKDArray(twoArrays[0]);
                         spDestroyKDArray(twoArrays[1]);
@@ -88,6 +90,7 @@ bool spTestSplitForArray(double testArray[NUM_OF_POINTS][DIMENSION], int numOfPo
                         return false;
                     }
                 }
+                spPointDestroy(p);
             }
             for (int point = numOfPoints - numOfPoints/2; point < numOfPoints; ++point) {
                 SPPoint* p = spGetSPKDArrayPoint(twoArrays[1], point - (numOfPoints - numOfPoints/2));
@@ -110,6 +113,7 @@ bool spTestSplitForArray(double testArray[NUM_OF_POINTS][DIMENSION], int numOfPo
                     }
 
                 }
+                spPointDestroy(p);
             }
         }
 
@@ -122,6 +126,7 @@ bool spTestSplitForArray(double testArray[NUM_OF_POINTS][DIMENSION], int numOfPo
     }
     spDestroyKDArray(kdArr);
     free(pointArr);
+    free(mainMsg);
     return true;
 }
 /**
