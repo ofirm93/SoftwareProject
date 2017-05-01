@@ -18,7 +18,7 @@ bool spTestMinimalGUI(){
         spLoggerPrintError(ERR_MSG_CANNOT_ALLOCATE_MEM, __FILE__, __func__, __LINE__);
         return false;
     }
-    SPConfig config = spConfigCreate("../unit_tests/config_files/config_for_main_aux_minimal_gui_tester.config", msg);
+    SPConfig config = spConfigCreate("./unit_tests/config_files/config_for_main_aux_minimal_gui_tester.config", msg);
     if(*msg != SP_CONFIG_SUCCESS){
         spLoggerPrintError("Error : Failed creating configuration from file", __FILE__, __func__, __LINE__);
         return false;
@@ -34,7 +34,7 @@ bool spTestNonMinimalGUI(){
         spLoggerPrintError(ERR_MSG_CANNOT_ALLOCATE_MEM, __FILE__, __func__, __LINE__);
         return false;
     }
-    SPConfig config = spConfigCreate("../unit_tests/config_files/good_config.config", msg);
+    SPConfig config = spConfigCreate("./unit_tests/config_files/good_config.config", msg);
     if(*msg != SP_CONFIG_SUCCESS){
         spLoggerPrintError("Error : Failed creating configuration from file", __FILE__, __func__, __LINE__);
         return false;
