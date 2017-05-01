@@ -1,17 +1,12 @@
 //============================================================================
 // Name        : SPCBIR.cpp
-// Author      :
-// Version     :
-// Copyright   : Your copyright notice
-// Description : Hello World in C++, Ansi-style
+// Author      : Bar Yaacovi and Ofir Moses
+// Version     : v1.0
 //============================================================================
 
 #include <iostream>
-#include <cstdio>
 #include <cstring>
-#include <cstdlib>
 #include "ExtModeForMain.h"
-#include "main_aux.h"
 
 #define MAX_PATH_LENGTH 1024
 #define MAX_ERR_MSG_LENGTH 1024
@@ -44,7 +39,6 @@
 #define ERR_MSG_GET_IMG_PREFIX "spConfigGetImagesPrefix()"
 #define ERR_MSG_GET_ING_SUFFIX "spConfigGetImagesSuffix()"
 #define ERR_MSG_GET_IMG_NUM "spConfigGetNumOfImages()"
-#define ERR_MSG_GET_FEAT_NUM "spConfigGetNumOfFeatures()"
 #define ERR_MSG_GET_PCA_DIM "spConfigGetPCADim()"
 #define ERR_MSG_GET_SPLIT_METHOD "spConfigGetKDTreeSplitMethod()"
 #define ERR_MSG_CANNOT_OBTAIN_FEAT "Error : couldn't obtain features correctly."
@@ -55,6 +49,7 @@
 using namespace std;
 
 int main(int argc, const char* argv[]) {
+    // Extract configuration from file
     SP_CONFIG_MSG configMsg;
     bool isDefaultConfig = true;
     SPConfig config;
@@ -118,6 +113,7 @@ int main(int argc, const char* argv[]) {
             free(config);
             return 1;
     }
+    // Initialize logger
     char* loggerFilename = spConfigGetLoggerFilename(config, &configMsg);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
         printf(ERR_MSG_INVALID_ARGUMENT_LOGGER_FILENAME);
@@ -181,7 +177,7 @@ int main(int argc, const char* argv[]) {
             free(config);
             return 1;
     }
-    // TODO from here on every message is to the logger only.
+    // Extract key fields requaired for the algorithm from the configuration object
     bool isExtractionMode = spConfigIsExtractionMode(config, &configMsg);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
         char errorMsg[MAX_ERR_MSG_LENGTH];
@@ -191,7 +187,6 @@ int main(int argc, const char* argv[]) {
         free(config);
         return 2;
     }
-    // Get all the fields required to extract features.
     char imagesDirectory[MAX_PATH_LENGTH];
     configMsg = spConfigGetImagesDirectory(config, imagesDirectory);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
@@ -270,7 +265,7 @@ int main(int argc, const char* argv[]) {
         free(config);
         return 11;
     }
-
+    // Extract features from the images based on the extraction mode.
     SPPoint** features;
     int totalNumOfFeatures = 0;
     if(isExtractionMode){
@@ -285,7 +280,7 @@ int main(int argc, const char* argv[]) {
         free(config);
         return 8;
     }
-    // TODO from this point destroy features also
+    // Create a KD-Tree for the features
     SPKDTree* tree = spInitSPKDTree(features, totalNumOfFeatures, dim, kdSplitMode);
     if(!tree){
         spLoggerPrintError(ERR_MSG_CANNOT_CREATE_KDTREE, __FILE__, __func__, __LINE__);
@@ -294,7 +289,7 @@ int main(int argc, const char* argv[]) {
         free(config);
         return 8;
     }
-    // TODO from this point destroy tree also
+    // Loop for querying an image to search upon and print results
     bool isEnded = false;
     char* queryStr;
     while(!isEnded){
@@ -330,22 +325,10 @@ int main(int argc, const char* argv[]) {
         }
         free(queryStr);
     }
-
+    // Free resources
     spDestroyKDTree(tree);
     spDestroySPPointArray(features, totalNumOfFeatures);
     spLoggerDestroy();
     spConfigDestroy(config);
     return 0;
 }
-
-/*using namespace cv; TODO remove when ending debugging
-using namespace std;
-#include <unistd.h>
-
-int main(int argc, const char* argv[]) {
-    Mat img = imread("../unit_tests/RotatedEx3plusProj/imag0.png", IMREAD_GRAYSCALE);
-    if (img.empty()) {
-        printf("Error");
-    }
-}*/
-

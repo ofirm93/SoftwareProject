@@ -14,7 +14,6 @@
 #define ERR_MSG_INVALID_ARG "Error : One of the arguments supplied to the method is invalid."
 #define ERR_MSG_INVALID_ARG_IN_METHOD "Error : One of the arguments supplied to the method %s is invalid."
 #define ERR_MSG_CANNOT_ALLOCATE_MEM "Error : Couldn't allocate needed memory."
-#define MEM_ALC_ERR_MSG "An error occurred - allocation failure"
 #define ERR_MSG_GET_IMG_PATH "spConfigGetImagePath()"
 #define ERR_MSG_INDEX_OUT_OF_RANGE "Error : The index %d of a best candidate is out of range"
 #define ERR_MSG_GENERAL "General error. Unexpectedly, the program reached to a code where it shouldn't supposed to."
