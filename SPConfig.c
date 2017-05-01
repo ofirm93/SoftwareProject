@@ -54,7 +54,6 @@ SPConfig spDefaultConfigConstructor(){
 	return config;
 }
 
-
 // TODO Delete the next method - its for testing only
 SPConfig spConfigConstructor(char *imagesDirectory,
                        char *imagesPrefix,
