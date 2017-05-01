@@ -22,11 +22,15 @@ bool spTestGoodConfigFile(){
     if(msg == SP_CONFIG_SUCCESS){
         if(!spIsConfigEqual(config, expectedConfig)){
             spLoggerPrintDebug("Debug : The configuration file built was different from the expected one.", __FILE__, __func__, __LINE__);
+            spConfigDestroy(config);
+            free(expectedConfig);
             return false;
         }
     }
     else{
         spLoggerPrintDebug("Debug : Failed building the good configuration.", __FILE__, __func__, __LINE__);
+         spConfigDestroy(config);
+         free(expectedConfig);
         return false;
     }
     spConfigDestroy(config);
