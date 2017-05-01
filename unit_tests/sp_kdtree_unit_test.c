@@ -13,7 +13,7 @@
 #include <float.h>
 #include "../KNearestSearch.h"
 #include "../SPLogger.h"
-//testing KDNode Methods
+
 
 #define ERR_MSG_INVALID_ARG "Error : One of the arguments supplied to the method is invalid."
 #define MAX_DBG_MSG_LENGTH 1024
@@ -26,15 +26,6 @@ void spDestroyPointArray(SPPoint** array, int size){
         spPointDestroy(array[i]);
     }
     free(array);
-}
-
-bool testKDNodeMethods(){
-	double arr1 [3] = {1,2,3};
-	SPPoint* leafPoint = spPointCreate( arr1 , 3, 1);
-	KDTreeNode* leafy = spInitKDTreeNode(5,2,NULL,NULL,leafPoint);
-	ASSERT_TRUE(!spInitKDTreeNode(5,127.5,NULL,NULL,NULL));
-	ASSERT_TRUE(!spInitKDTreeNode(5,127.5,NULL,leafy,leafPoint));
-	return true;
 }
 
 
