@@ -154,7 +154,7 @@ bool testSplitSPKDArray(){
     return true;
 }
 
-int main(int argc, const char* argv[]) {
+int main() {
     SP_LOGGER_MSG loggerMsg = spLoggerCreate(NULL, SP_LOGGER_DEBUG_INFO_WARNING_ERROR_LEVEL);
     if(loggerMsg != SP_LOGGER_SUCCESS){
         printf("Failed creating the logger.");
@@ -164,3 +164,4 @@ int main(int argc, const char* argv[]) {
     spLoggerDestroy();
     return 0;
 }
+
