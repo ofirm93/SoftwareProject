@@ -8,9 +8,7 @@
 
 
 #include "SPKDTree.h"
-//#include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <float.h>
 
 
@@ -55,7 +53,7 @@ KDTreeNode* spInitKDTreeNode(int dim, double val, KDTreeNode* left, KDTreeNode* 
 	{
 		spDestroyKDTreeNode(kdNode);
 		spLoggerPrintError("Error : Point shouldn't be NULL if it is a leaf.", __FILE__, __func__, __LINE__);
-		//printf("Point should not be NULL if it is a leaf");
+		//printf("Point should not be NULL if it is a leaf"); TODO ofir says : delete if unnecessary
 		return NULL;
 	}
 	if( (left!= NULL || right!= NULL) && data!= NULL) // TODO write log

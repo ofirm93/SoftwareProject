@@ -6,7 +6,6 @@
  */
 #include "SPPoint.h"
 #include <stdlib.h>
-#include <math.h>
 #include <assert.h>
 
 struct sp_point_t{

@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "../SPKDArray.h"
-#include "../SPPoint.h"
 #include "../SPLogger.h"
 #include "unit_test_util.h"
 

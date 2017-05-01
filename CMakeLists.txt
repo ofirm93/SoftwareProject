@@ -35,7 +35,7 @@ unit_tests/../SPLogger.h)
 
 #        SPConfig.h SPLogger.h main_aux.h SPKDTree.h SPKDArray.h SPPoint.h SPConfig.h SPBPriorityQueue.h unit_tests/unit_test_util.h unit_tests/sp_main_aux_unit_test.cpp)
 set(SPCONFIG_TESTER_SOURCE_FILES unit_tests/sp_config_unit_test.c
-unit_tests/../SPConfig.h unit_tests/../SPLogger.h
+unit_tests/../SPConfig.c unit_tests/../SPLogger.c unit_tests/../SPPoint.c
 unit_tests/unit_test_util.h )
 add_executable(SoftwareProject ${SOURCE_FILES})
 add_executable(SPConfigTester ${SPCONFIG_TESTER_SOURCE_FILES})

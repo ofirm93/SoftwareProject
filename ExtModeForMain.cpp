@@ -8,22 +8,14 @@
 
 //maybe static char*
 #include "ExtModeForMain.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-
-
 
 #define MAX_STRING_LENGTH 1024
-#define FILE_PATH_PATTERN "%s%s%d%s"
-
 
 #define MAX_ERR_MSG_LENGTH 1024
 
 #define ERR_MSG_INVALID_ARG "Error : One of the arguments supplied to the method is invalid."
 #define ERR_MSG_INVALID_ARG_IN_METHOD "Error : One of the arguments supplied to the method %s is invalid."
 #define ERR_MSG_CANNOT_ALLOCATE_MEM "Error : Couldn't allocate needed memory."
-#define MEM_ALC_ERR_MSG "An error occurred - allocation failure"
 #define ERR_MSG_GET_IMG_PATH "spConfigGetImagePath()"
 #define ERR_MSG_INDEX_OUT_OF_RANGE "Error : The index %d of a best candidate is out of range"
 #define ERR_MSG_GENERAL "General error. Unexpectedly, the program reached to a code where it shouldn't supposed to."
@@ -334,6 +326,7 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
 		free(numOfFeatures);
 		free(numOfFeatArray);
 		free(featValArray);
+        return NULL;
 	}
 	int k = 0;
 	for(int i=0; i<spNumOfImages; i++){
@@ -347,8 +340,8 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
 	free(featValArray);
 	free(numOfFeatures);
 	free(numOfFeatArray);
-	for(int k=0; k<spNumOfImages; k++){
-		free(gallery[k]);
+	for(int l=0; l<spNumOfImages; l++){
+		free(gallery[l]);
 	}
 	free(gallery); //NOT destroy - we need the points.
 	return allImageFeatures;
