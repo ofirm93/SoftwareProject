@@ -13,9 +13,6 @@
 #include "SPConfig.h"
 #include "SPBPriorityQueue.h"
 
-//SPKDArray - pointer so remember to free
-
-//TODO delete after we set system var
 
 typedef struct sp_kd_tree_t SPKDTree;
 
@@ -133,15 +130,6 @@ int spKDTreeNodeGetPointIndex(KDTreeNode* node);
  *
  */
 
-//double spKDTreeNodeGetPointVal(KDTreeNode* node); //todo delte if not needed
-
-/**
- * frees all memory associated with node.
- * @param
- * node - the node to free the memory of.
- *
- *
- */
 void spDestroyKDTreeNode(KDTreeNode* node);
 
 
