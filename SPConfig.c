@@ -401,6 +401,7 @@ bool spTryUpdateConfiguration(SPConfig config, char firstArg[1024], char secondA
 		return spHandleIntegerProperty(&(config->PCADimension), NULL, secondArg, msg, filename, lineNum, 10, 28, true);
 	}
 	else if(strcmp(firstArg, "spPCAFilename") == 0){
+		free(config->PCAFilename);
 		return spHandleStringProperty(&(config->PCAFilename), NULL, secondArg, msg, filename, lineNum);
 	}
 	else if(strcmp(firstArg, "spNumOfFeatures") == 0){

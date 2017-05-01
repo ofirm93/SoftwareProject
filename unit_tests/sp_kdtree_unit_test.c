@@ -130,6 +130,7 @@ int main(){
 		return -1;
 	}
 	RUN_TEST( testKDTreeInitAndSearch );
+	spLoggerDestroy();
 	return 0;
 
 }

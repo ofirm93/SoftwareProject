@@ -50,7 +50,7 @@ SP_LOGGER_MSG spLoggerPrintError(const char* msg, const char* file,
 		return SP_LOGGER_UNDIFINED;}
 	if (msg == NULL || file == NULL || function == NULL || line < 0) { //Invalid arg, maybe line <=0
 		return SP_LOGGER_INVAlID_ARGUMENT;}
-	if (logger->isStdOut == true){ // possibly not needed, but else theres no use for the bool. Maybe runs faster?
+	if (logger->isStdOut == true){
 		verifier = printf("---ERROR---\n- file: %s\n- function: %s\n- line: %d\n- message: %s\n",
 		file,function,line,msg); }
 	if (logger->isStdOut == false){
@@ -73,7 +73,7 @@ SP_LOGGER_MSG spLoggerPrintWarning(const char* msg, const char* file,
 		return SP_LOGGER_INVAlID_ARGUMENT;}
 	if (logger->level == SP_LOGGER_ERROR_LEVEL){
 		return SP_LOGGER_SUCCESS;}
-	if (logger->isStdOut == true){ // possibly not needed, but else theres no use for the bool. Maybe runs faster?
+	if (logger->isStdOut == true){
 		verifier = printf("---WARNING---\n- file: %s\n- function: %s\n- line: %d\n- message: %s\n",
 		file,function,line,msg); }
 	if (logger->isStdOut == false){
@@ -95,7 +95,7 @@ SP_LOGGER_MSG spLoggerPrintInfo(const char* msg){
 	if (logger->level != SP_LOGGER_DEBUG_INFO_WARNING_ERROR_LEVEL &&
 		logger->level != SP_LOGGER_INFO_WARNING_ERROR_LEVEL){
 		return SP_LOGGER_SUCCESS;}
-	if (logger->isStdOut == true){ // possibly not needed, but else theres no use for the bool. Maybe runs faster?
+	if (logger->isStdOut == true){
 		verifier = printf("---INFO---\n- message: %s\n",
 		msg);}
 	if (logger->isStdOut == false){
@@ -114,11 +114,11 @@ SP_LOGGER_MSG spLoggerPrintDebug(const char* msg, const char* file,
 	int verifier = 0;
 	if (logger== NULL){ // Was not defined yet
 		return SP_LOGGER_UNDIFINED;}
-	if (msg == NULL || file == NULL || function == NULL || line < 0) { //Invalid arg, maybe line <=0
+	if (msg == NULL || file == NULL || function == NULL || line < 0) {
 		return SP_LOGGER_INVAlID_ARGUMENT;}
 	if (logger->level != SP_LOGGER_DEBUG_INFO_WARNING_ERROR_LEVEL){
 		return SP_LOGGER_SUCCESS;}
-	if (logger->isStdOut == true){ // possibly not needed, but else theres no use for the bool. Maybe runs faster?
+	if (logger->isStdOut == true){
 		verifier = printf("---DEBUG---\n- file: %s\n- function: %s\n- line: %d\n- message: %s\n",
 		file,function,line,msg); }
 	if (logger->isStdOut == false){
@@ -138,9 +138,9 @@ SP_LOGGER_MSG spLoggerPrintMsg(const char* msg){
 		return SP_LOGGER_UNDIFINED;}
 	if (msg == NULL){
 		return SP_LOGGER_INVAlID_ARGUMENT;}
-	if (logger->isStdOut == true){ // possibly not needed, but else theres no use for the bool. Maybe runs faster?
+	if (logger->isStdOut == true){
 		verifier = printf("---MSG---\n- message: %s\n",
-		msg); } // CHECK MSG
+		msg); }
 	if (logger->isStdOut == false){
 		verifier = fprintf(logger->outputChannel,"---MSG---\n- message: %s\n",
 		msg); }

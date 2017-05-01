@@ -53,10 +53,9 @@ KDTreeNode* spInitKDTreeNode(int dim, double val, KDTreeNode* left, KDTreeNode* 
 	{
 		spDestroyKDTreeNode(kdNode);
 		spLoggerPrintError("Error : Point shouldn't be NULL if it is a leaf.", __FILE__, __func__, __LINE__);
-		//printf("Point should not be NULL if it is a leaf"); TODO ofir says : delete if unnecessary
 		return NULL;
 	}
-	if( (left!= NULL || right!= NULL) && data!= NULL) // TODO write log
+	if( (left!= NULL || right!= NULL) && data!= NULL)
 	{
 		spDestroyKDTreeNode(kdNode);
 		spLoggerPrintError("Error : Point should be NULL if it isn't a leaf.", __FILE__, __func__, __LINE__);
@@ -355,7 +354,7 @@ void inOrderScanRootPoints (KDTreeNode* node){
 	inOrderScanRootPoints(node->left);
 
 	if( isLeaf(node)){
-		// TODO print log debug
+
 		char dbgMsg[MAX_ERR_MSG_LENGTH];
 		sprintf(dbgMsg,"(%f,%f,%f) , index : %d \n", spPointGetAxisCoor(node->data,0), spPointGetAxisCoor(node->data,1) ,
 				spPointGetAxisCoor(node->data,2), spPointGetIndex(node->data) );
@@ -373,7 +372,6 @@ void inOrderScanRootValues (KDTreeNode* node){
 	inOrderScanRootValues(node->left);
 
 	if( !isLeaf(node)){
-		// TODO print log debug
 		char dbgMsg[MAX_ERR_MSG_LENGTH];
 		sprintf(dbgMsg,"Splitting value: %f \n", node->val);
 		spLoggerPrintDebug(dbgMsg, __FILE__, __func__, __LINE__);
@@ -387,10 +385,8 @@ void inOrderScan(SPKDTree* tree){
 	if(!tree){
 		return;
 	}
-	// TODO print log debug
 	spLoggerPrintDebug("Points and their indexes by the scan: \n", __FILE__, __func__, __LINE__);
 	inOrderScanRootPoints(tree->root);
-	// TODO print log debug
 	spLoggerPrintDebug("Values of splitting: \n", __FILE__, __func__, __LINE__);
 	inOrderScanRootValues(tree->root);
 }

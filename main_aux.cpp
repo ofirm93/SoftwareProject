@@ -452,19 +452,6 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
     }
     for(int i=0; i<spNumOfImages; i++){
         char filePath [MAX_PATH_LENGTH];
-        /**
-        checker = sprintf(filePath, FILE_PATH_PATTERN, directory, imagePrefix, i, featSuffix); //check positive
-        if(checker < 0 ){
-            char errorMsg[MAX_ERR_MSG_LENGTH];
-            sprintf(errorMsg, ERR_MSG_INVALID_ARG_IN_METHOD, ERR_MSG_MTHD_GET_IMG_PATH_DATA);
-            spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
-            spDestroySPPoint2DimArray(gallery,numOfFeatArray,i);
-            free(numOfFeatures);
-            free(numOfFeatArray);
-            free(featValArray);
-            return NULL;
-        }
-        */
 
         SP_CONFIG_MSG msg = spConfigGetImagePathWithData(filePath, directory, imagePrefix, i, featSuffix);
         if(msg != SP_CONFIG_SUCCESS){
@@ -511,7 +498,7 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
         }
         for(int k = 0; k<*numOfFeatures;k++){
             for(int j=0; j<spPCADimension; j++){
-                checker = fscanf(file, "%lf,",&featValArray[j]); // check if something fucks up, other fscanf too
+                checker = fscanf(file, "%lf,",&featValArray[j]);
                 if(checker < 0){
                     char errorMsg[MAX_ERR_MSG_LENGTH];
                     sprintf(errorMsg, ERR_MSG_FAIL_SCAN_FILE, filePath);
