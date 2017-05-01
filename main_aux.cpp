@@ -5,7 +5,6 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include "SPImageProc.h"
 #include "main_aux.h"
 
 #define MAX_PATH_LENGTH 1024
