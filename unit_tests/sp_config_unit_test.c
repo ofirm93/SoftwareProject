@@ -7,14 +7,15 @@
 
 #include <stdlib.h>
 
-#define FAIL_TEST_FILENAME_FORMAT "./unit_tests/config_files/fail_test%d.config"
+#define FAIL_TEST_FILENAME_FORMAT "../unit_tests/config_files/fail_test%d.config"
+#define MAX_PATH_LENGTH 1024
 
 /**
  * A test for a good configuration extraction.
  * @return true if successful otherwise false
  */
 bool spTestGoodConfigFile(){
-    char filename[] = "./unit_tests/config_files/good_config.config";
+    char filename[] = "../unit_tests/config_files/good_config.config";
     SPConfig expectedConfig = spConfigConstructor("./unit_tests/RotatedEx3plusProj", "imag", ".png", 17, 20, "pca.yml", 100, true, 5, MAX_SPREAD, 1, false, 3, "stdout");
     SP_CONFIG_MSG msg;
     SPConfig config = spConfigCreate(filename, &msg);
@@ -35,7 +36,7 @@ bool spTestGoodConfigFile(){
  * @return true if successful otherwise false
  */
 bool spTestBadConfig(){
-    char filename[] = "./unit_tests/config_files/fail_test%d.config";
+    char filename[MAX_PATH_LENGTH];
     for (int i = 1; i <= 22; ++i) {
         int checker = sprintf(filename, FAIL_TEST_FILENAME_FORMAT, i);
         if(checker < 0){
