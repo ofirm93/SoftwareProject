@@ -85,7 +85,7 @@ void spMinimalGUI(SPConfig config, char* queryPath, int* indexArray, int size) {
     sp::ImageProc s = sp::ImageProc(config);
     char errorMsg[MAX_ERR_MSG_LENGTH];
     for (int i = 0; i < size; ++i) {
-        char path[1024];
+        char path[MAX_PATH_LENGTH];
         SP_CONFIG_MSG msg = spConfigGetImagePath(path, config, indexArray[i]);
         switch (msg){
             case SP_CONFIG_INVALID_ARGUMENT:
