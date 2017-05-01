@@ -21,15 +21,21 @@ bool spTestGoodConfigFile(){
     SPConfig config = spConfigCreate(filename, &msg);
     if(msg == SP_CONFIG_SUCCESS){
         if(!spIsConfigEqual(config, expectedConfig)){
+            spConfigDestroy(expectedConfig);
+            spConfigDestroy(config);
             spLoggerPrintDebug("Debug : The configuration file built was different from the expected one.", __FILE__, __func__, __LINE__);
             return false;
         }
     }
     else{
         spLoggerPrintDebug("Debug : Failed building the good configuration.", __FILE__, __func__, __LINE__);
+        spConfigDestroy(expectedConfig);
         return false;
     }
+    spConfigDestroy(expectedConfig);
+    spConfigDestroy(config);
     return true;
+
 }
 /**
  * A fail test for configuration extraction.
