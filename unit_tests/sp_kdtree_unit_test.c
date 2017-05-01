@@ -1,3 +1,4 @@
+
 //
 // * sp_kdtree_unit_test.c
 // *
@@ -105,7 +106,7 @@ bool testKDTreeInitAndSearch(){
     	char dbgMsg[MAX_DBG_MSG_LENGTH];
     	spBPQueuePeek(kClosestSpread,element );
     	index2 = element ->index;
-      	sprintf(dbgMsg,"Closest index of number %d of Incremental,Spread : %d , %d \n",i +1,index1, index2);
+      	sprintf(dbgMsg,"Closest index number %d of Incremental,Spread : %d , %d \n",i +1,index1, index2);
     	spLoggerPrintDebug(dbgMsg,__FILE__,__func__,__LINE__);
     	ASSERT_TRUE(spBPQueueMinValue(kClosest) == spBPQueueMinValue(kClosestSpread));
     	ASSERT_TRUE(index1 == index2);
@@ -132,3 +133,4 @@ int main(){
 	return 0;
 
 }
+
