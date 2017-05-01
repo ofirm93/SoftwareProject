@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "SPKDArray.h"
 #include "SPBPriorityQueue.h"
+#include <stdio.h>
 
 struct sp_kd_array_t{
     SPPoint** pointsArray;
@@ -114,12 +115,6 @@ SPKDArray spInitSPKDArray(SPPoint** pointsArr, int arrSize){
     return array;
 }
 
-/**
- * TODO write documentation
- * @param kdArr
- * @param coor
- * @return
- */
 SPKDArray* spSplitSPKDArray(SPKDArray kdArr, int coor){
     if(!kdArr || coor < 0 || coor >= kdArr->dimension){
         return NULL;
@@ -208,8 +203,6 @@ int spGetSPKDArraySize(SPKDArray kdArr){
     return kdArr->numOfPoints;
 }
 
-// TODO Delete the next method - its for testing only
-#include <stdio.h>
 char* spPrintKDArrayDetails(SPKDArray kdArr){
     if(kdArr){
         int size = kdArr->numOfPoints;
@@ -246,6 +239,3 @@ char* spPrintKDArrayDetails(SPKDArray kdArr){
     }
     return "Debug : The argument kdArr is NULL.";
 }
-
-// TODO Delete the next method - its for testing only
-#include <stdio.h>

@@ -56,8 +56,6 @@ SPPoint* spGetSPKDArrayPoint(SPKDArray kdArr, int index);
  */
 int spGetSPKDArraySize(SPKDArray kdArr);
 
-
-// TODO Delete the next method - its for testing only
 /**
  * This method returns a summary about the given array or an error text if it is not valid.
  * @param kdArr - the KD-Array
