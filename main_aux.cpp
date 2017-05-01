@@ -5,7 +5,6 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include "SPImageProc.h"
 #include "main_aux.h"
 
 #define MAX_PATH_LENGTH 1024
@@ -273,7 +272,7 @@ void spDestroySPPoint2DimArray(SPPoint*** gallery, int* numOfFeatArray, int size
     free(gallery);
 }
 
-//wont need the variables after we have system variables TODO Ofir says : if you don't need it delete it
+
 SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffix,
                             int spNumOfImages, sp::ImageProc spIp, int* totalNumOfFeatures, int spPCADimension){
     if(!directory || !imagePrefix || !imageSuffix || !totalNumOfFeatures){
@@ -304,7 +303,6 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
     for(int i=0; i<spNumOfImages;i++){
         //getting the paths
         char imgPath[MAX_PATH_LENGTH];
-//		checker = sprintf(imgPath, FILE_PATH_PATTERN, directory, imagePrefix, i, imageSuffix); //check positive TODO Ofir says : if you don't need it delete it
         SP_CONFIG_MSG msg = spConfigGetImagePathWithData(imgPath, directory, imagePrefix, i, imageSuffix);
         if(msg != SP_CONFIG_SUCCESS){
 
@@ -317,14 +315,7 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
             return NULL;
         }
 
-/*		if(checker < ( strlen(directory) + strlen(imagePrefix) + strlen(imageSuffix) + sizeof(i)) ){
-			printf("Failed to read all the string, read only a part!\n");
-			return NULL; TODO Ofir says : if you don't need it delete it
-		}*/
         char filePath [MAX_PATH_LENGTH];
-
-//		checker = sprintf(filePath, FILE_PATH_PATTERN, directory, imagePrefix, i, featSuffix); //check positive
-//		if(checker < 0){ TODO Ofir says : if you don't need it delete it
         msg = spConfigGetImagePathWithData(filePath, directory, imagePrefix, i, featSuffix);
         if(msg != SP_CONFIG_SUCCESS){
 
@@ -336,11 +327,7 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
             free(numOfFeatArray);
             return NULL;
         }
-        /* TODO Ofir says : if you don't need it delete it
-        if(checker < ( strlen(directory) + strlen(imagePrefix) + strlen(featSuffix) + sizeof(i)) ){
-            printf("Failed to read all the string, read only a part!\n");
-            return NULL;
-        }*/
+
         const char * destPtr = filePath;
         const char writeMode = 'w';
         FILE* file = fopen(destPtr, &writeMode);
@@ -387,11 +374,6 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
             free(numOfFeatArray);
             return NULL;
         }
-        /* TODO Ofir says : if you don't need it delete it
-        if(checker < sizeof(*numOfFeatures) + 1 ){
-            printf("Failed to print all the string, printed only a part!\n");
-            return NULL;
-        }*/
 
 
         for (int k=0; k<*numOfFeatures;k++){
@@ -428,7 +410,7 @@ SPPoint** ExtractionModeAct(char* directory, char* imagePrefix, char* imageSuffi
     *totalNumOfFeatures = totalNumOfFeat;
     free(numOfFeatures);
     free(numOfFeatArray);
-    free(gallery);// TODO NOT destroy - we need the points!
+    free(gallery);//NOT destroy - we need the points!
     return allImageFeatures;
 }
 
@@ -448,8 +430,9 @@ SPPoint** NonExtractionModeAct(char* directory, char* imagePrefix,
     int* numOfFeatArray = (int*) malloc(sizeof(int) * spNumOfImages);
     if(!numOfFeatArray){
         spLoggerPrintError(ERR_MSG_CANNOT_ALLOCATE_MEM, __FILE__, __func__, __LINE__);
-        free(gallery); // TODO bar? : why didn't use 		spDestroySPPoint2DimArray(gallery,numOfFeatArray,spNumOfImages);
+        free(gallery);
         return NULL;
+
     }
     int totalNumOfFeat = 0;
     //null check
