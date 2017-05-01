@@ -7,7 +7,7 @@
 
 #include <stdlib.h>
 
-#define FAIL_TEST_FILENAME_FORMAT "./unit_tests/config_files/fail_test%d.config"
+#define FAIL_TEST_FILENAME_FORMAT "../unit_tests/config_files/fail_test%d.config"
 #define MAX_PATH_LENGTH 1024
 
 /**
@@ -22,16 +22,11 @@ bool spTestGoodConfigFile(){
     if(msg == SP_CONFIG_SUCCESS){
         if(!spIsConfigEqual(config, expectedConfig)){
             spLoggerPrintDebug("Debug : The configuration file built was different from the expected one.", __FILE__, __func__, __LINE__);
-            spConfigDestroy(config);
-            free(expectedConfig);
             return false;
         }
     }
     else{
         spLoggerPrintDebug("Debug : Failed building the good configuration.", __FILE__, __func__, __LINE__);
-
-         spConfigDestroy(config);
-         free(expectedConfig);
         return false;
     }
     spConfigDestroy(config);

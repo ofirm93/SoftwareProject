@@ -54,6 +54,7 @@ SPConfig spDefaultConfigConstructor(){
 	return config;
 }
 
+
 // TODO Delete the next method - its for testing only
 SPConfig spConfigConstructor(char *imagesDirectory,
                        char *imagesPrefix,
@@ -649,7 +650,7 @@ SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config){
     if (pcaPath == NULL || config == NULL) {
         return SP_CONFIG_INVALID_ARGUMENT;
     }
-    sprintf(pcaPath, "%s/%s",config->imagesDirectory, config->PCAFilename);
+    sprintf(pcaPath, "%s%s",config->imagesDirectory, config->PCAFilename);
     return SP_CONFIG_SUCCESS;
 }
 
