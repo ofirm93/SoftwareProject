@@ -1,6 +1,6 @@
 CC = gcc
 OBJS = sp_config_unit_test.o SPConfig.o SPLogger.o
-EXEC = sp_config_unit_test.o
+EXEC = sp_config_unit_test
 TESTS_DIR = ./unit_tests
 COMP_FLAG = -std=c99 -Wall -Wextra \
 -Werror -pedantic-errors
