@@ -319,6 +319,7 @@ int main(int argc, const char* argv[]) {
                 spDestroySPPointArray(features, totalNumOfFeatures);
                 spLoggerDestroy();
                 spConfigDestroy(config);
+                free(queryStr);
                 return 9;
             }
             free(KNN);
