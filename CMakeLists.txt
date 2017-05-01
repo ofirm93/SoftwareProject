@@ -27,11 +27,11 @@ set(SPKDARRAY_TESTER_SOURCE_FILES SPLogger.c SPBPriorityQueue.c SPKDArray.c unit
 #        KNearestSearch.c SPPoint.c SPKDTree.c unit_tests/sp_main_aux_unit_test.c main_aux.cpp SPBPriorityQueue.c)
 #unit_tests/unit_test_util.h  SPLogger.c SPConfig.c main_aux.cpp  SPPoint.c SPKDTree.c
 set(MAIN_AUX_TESTER_SOURCE_FILES unit_tests/sp_main_aux_unit_test.cpp
-unit_tests/../main_aux.h unit_tests/../SPKDTree.h
-unit_tests/../SPKDArray.h unit_tests/../SPPoint.h
-unit_tests/../SPConfig.h unit_tests/../SPLogger.h
-unit_tests/../SPBPriorityQueue.h unit_tests/unit_test_util.h
-unit_tests/../SPLogger.h)
+unit_tests/../main_aux.cpp unit_tests/../SPKDTree.c
+unit_tests/../SPKDArray.c unit_tests/../SPPoint.c
+unit_tests/../SPConfig.c unit_tests/../SPLogger.c
+unit_tests/../SPBPriorityQueue.c unit_tests/unit_test_util.h
+unit_tests/../SPLogger.c unit_tests/../SPImageProc.cpp KNearestSearch.c)
 
 #        SPConfig.h SPLogger.h main_aux.h SPKDTree.h SPKDArray.h SPPoint.h SPConfig.h SPBPriorityQueue.h unit_tests/unit_test_util.h unit_tests/sp_main_aux_unit_test.cpp)
 set(SPCONFIG_TESTER_SOURCE_FILES unit_tests/sp_config_unit_test.c
