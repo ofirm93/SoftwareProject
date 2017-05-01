@@ -512,7 +512,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 	}
 	FILE *inputFile = fopen(filename, READ_MODE);
 	if (inputFile == NULL) {
-		free(config);
+        spConfigDestroy(config);
 		*msg = SP_CONFIG_CANNOT_OPEN_FILE;
 		return NULL;
 	}
@@ -528,7 +528,6 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 				if (!spTryUpdateConfiguration(config, firstArg, secondArg, &isDirectoryMissing, &isPrefixMissing,
 											  &isSuffixMissing, &isImageNumMissing, msg, filename, lineNum)) {
                     spConfigDestroy(config);
-					free(config);
                     return NULL;
 				}
 			}
@@ -536,7 +535,6 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
             *msg = SP_CONFIG_INVALID_STRING; // TODO check with Moab if this is the right message for this error
 			spPrintInvalidLineError(filename, lineNum);
             spConfigDestroy(config);
-			free(config);
             return NULL;
         }
 	}
@@ -545,22 +543,26 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 	if (isDirectoryMissing) {
 		*msg = SP_CONFIG_MISSING_DIR;
         spPrintUndefinedValueError(filename, lineNum, "spImagesDirectory");
-		return NULL;
+        spConfigDestroy(config);
+        return NULL;
 	}
 	if (isPrefixMissing) {
 		*msg = SP_CONFIG_MISSING_PREFIX;
         spPrintUndefinedValueError(filename, lineNum, "spImagesPrefix");
-		return NULL;
+        spConfigDestroy(config);
+        return NULL;
 	}
 	if (isSuffixMissing) {
 		*msg = SP_CONFIG_MISSING_SUFFIX;
         spPrintUndefinedValueError(filename, lineNum, "spImagesSuffix");
-		return NULL;
+        spConfigDestroy(config);
+        return NULL;
 	}
 	if (isImageNumMissing) {
 		*msg = SP_CONFIG_MISSING_NUM_IMAGES;
         spPrintUndefinedValueError(filename, lineNum, "spNumOfImages");
-		return NULL;
+        spConfigDestroy(config);
+        return NULL;
 	}
 	*msg = SP_CONFIG_SUCCESS;
 	return config;
@@ -635,7 +637,7 @@ SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config){
     if (pcaPath == NULL || config == NULL) {
         return SP_CONFIG_INVALID_ARGUMENT;
     }
-    sprintf(pcaPath, "%s%s",config->imagesDirectory, config->PCAFilename);
+    sprintf(pcaPath, "%s/%s",config->imagesDirectory, config->PCAFilename);
     return SP_CONFIG_SUCCESS;
 }
 

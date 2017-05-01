@@ -67,29 +67,29 @@ int main(int argc, const char* argv[]) {
     }
     else{
         printf(ERR_MSG_INVALID_COMM_LINE_ARG);
-        return 0;
+        return 1;
     }
     switch (configMsg){
         case SP_CONFIG_INVALID_ARGUMENT :
             printf(ERR_MSG_CONFIG_INVALID_ARGUMENT);
             free(config);
-            return 0;
+            return 1;
         case SP_CONFIG_MISSING_DIR:
             printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_MISSING_DIR);
             free(config);
-            return 0;
+            return 1;
         case SP_CONFIG_MISSING_PREFIX:
             printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_MISSING_PREFIX);
             free(config);
-            return 0;
+            return 1;
         case SP_CONFIG_MISSING_SUFFIX:
             printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_MISSING_SUFFIX);
             free(config);
-            return 0;
+            return 1;
         case SP_CONFIG_MISSING_NUM_IMAGES:
             printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_MISSING_NUM_IMAGES);
             free(config);
-            return 0;
+            return 1;
         case SP_CONFIG_CANNOT_OPEN_FILE :
             if(isDefaultConfig){
                 printf(ERR_MSG_CANNOT_OPEN_DEFAULT_CONF_FILE);
@@ -98,25 +98,25 @@ int main(int argc, const char* argv[]) {
                 printf(ERR_MSG_CANNOT_OPEN_CONF_FILE, argv[2]);
             }
             free(config);
-            return 0;
+            return 1;
         case SP_CONFIG_ALLOC_FAIL:
             printf("%s%s", ERR_MSG_ALLOC_FAIL, ERR_MSG_CREATE_CONF);
             free(config);
-            return 0;
+            return 1;
         case SP_CONFIG_INVALID_INTEGER:
             printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_INVALID_INTEGER);
             free(config);
-            return 0;
+            return 1;
         case SP_CONFIG_INVALID_STRING:
             printf("%s%s",ERR_MSG_READ_CONF_FILE, ERR_MSG_INVALID_STRING);
             free(config);
-            return 0;
+            return 1;
         case SP_CONFIG_SUCCESS:
             break;
         default:
             printf(ERR_MSG_GENERAL);
             free(config);
-            return 0;
+            return 1;
     }
     char* loggerFilename = spConfigGetLoggerFilename(config, &configMsg);
     if(configMsg == SP_CONFIG_INVALID_ARGUMENT){
