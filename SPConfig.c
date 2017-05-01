@@ -37,6 +37,11 @@ SPConfig spDefaultConfigConstructor(){
         free(config);
         return NULL;
     }
+    config->imagesDirectory = NULL;
+    config->imagesPrefix = NULL;
+    config->imagesSuffix = NULL;
+    config->numOfImages = -1;
+
     snprintf(config->PCAFilename, strlen(DEFAULT_PCA_FILENAME) + 1, "%s", DEFAULT_PCA_FILENAME);
 	config->numOfFeatures = 100;
 	config->extractionMode = true;
@@ -89,7 +94,13 @@ SPConfig spConfigConstructor(char *imagesDirectory,
 
 // TODO Delete the next method - its for testing only
 bool spIsStringsEqual(char *paramName, char *str, char *strExp){
-    if(strcmp(str,strExp) != 0){
+    if(strcmp(paramName,"loggerFilename") == 0 && strcmp(strExp, "stdout") == 0){
+        if(str){
+            printf("[Ofir_Test] The parameter %s in the created config is %s while the expected is %s", paramName,str, strExp);
+            return false;
+        }
+    }
+    else if(strcmp(str,strExp) != 0){
         printf("[Ofir_Test] The parameter %s in the created config is %s while the expected is %s", paramName,str, strExp);
         return false;
     }
@@ -637,7 +648,7 @@ SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config){
     if (pcaPath == NULL || config == NULL) {
         return SP_CONFIG_INVALID_ARGUMENT;
     }
-    sprintf(pcaPath, "%s/%s",config->imagesDirectory, config->PCAFilename);
+    sprintf(pcaPath, "%s%s",config->imagesDirectory, config->PCAFilename);
     return SP_CONFIG_SUCCESS;
 }
 
