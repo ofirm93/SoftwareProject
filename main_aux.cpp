@@ -138,14 +138,12 @@ int* spGetBestKMatches(SPKDTree *kdTree, char *queryPath, SPConfig config, int n
         spLoggerPrintError(errorMsg, __FILE__, __func__, __LINE__);
         return NULL;
     }
-    // TODO from this point free queryFeat
     int* imageCounter =(int*) malloc(numOfImages * sizeof(int));
     if(!imageCounter){
         spLoggerPrintError(ERR_MSG_CANNOT_ALLOCATE_MEM, __FILE__, __func__, __LINE__);
         spDestroySPPointArray(queryFeat, numOfQueryFeat);
         return NULL;
     }
-    // TODO from this point free imageCounter before return
     for (int i = 0; i < numOfImages; ++i) {
         imageCounter[i] = 0;
     }
@@ -231,7 +229,6 @@ int* spGetBestKMatches(SPKDTree *kdTree, char *queryPath, SPConfig config, int n
         free(imageCounter);
         return NULL;
     }
-    // TODO from this point free sortingArr before return
     for (int i = 0; i < numOfImages; ++i) {
         sortingArr[i].index = i;
         sortingArr[i].value = imageCounter[i];

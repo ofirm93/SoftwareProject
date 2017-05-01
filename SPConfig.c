@@ -54,7 +54,6 @@ SPConfig spDefaultConfigConstructor(){
 	return config;
 }
 
-// TODO Delete the next method - its for testing only
 SPConfig spConfigConstructor(char *imagesDirectory,
                        char *imagesPrefix,
                        char *imagesSuffix,
@@ -92,7 +91,6 @@ SPConfig spConfigConstructor(char *imagesDirectory,
     return config;
 }
 
-// TODO Delete the next method - its for testing only
 bool spIsStringsEqual(char *paramName, char *str, char *strExp){
     if(strcmp(paramName,"loggerFilename") == 0 && strcmp(strExp, "stdout") == 0){
         if(str){
@@ -107,7 +105,6 @@ bool spIsStringsEqual(char *paramName, char *str, char *strExp){
     return true;
 }
 
-// TODO Delete the next method - its for testing only
 bool spIsNumbersEqual(char *paramName, int num, int numExp){
     if(num != numExp){
         printf("Error : The parameter %s in the created config is %d while the expected is %d", paramName,num, numExp);
@@ -116,7 +113,6 @@ bool spIsNumbersEqual(char *paramName, int num, int numExp){
     return true;
 }
 
-// TODO Delete the next method - its for testing only
 bool spIsConfigEqual(SPConfig config, SPConfig configExp) {
     if(!config || !configExp){
         printf("Error : Null pointer error in  spIsConfigEqual()");
@@ -180,9 +176,7 @@ bool spTurnIntoWord(char* str){
 		char temp[MAX_LINE_LENGTH];
 		strcpy(temp, str);
 		snprintf(str, n + 1, "%s", temp); // copy the first word
-
-//        strncpy(str, str, n);	// copy the first word TODO delete if works
-        return true;
+		return true;
     }
     while (i < length && (str[i] == ' ' || str[i] == '\n' || str[i] == '\r')){	// pass any spaces
         i++;
@@ -191,7 +185,6 @@ bool spTurnIntoWord(char* str){
         char temp[MAX_LINE_LENGTH];
 		strcpy(temp, str);
 		snprintf(str, n + 1, "%s", temp); // copy the first word
-//        strncpy(str, str, n);	// copy the first word TODO delete if works
         return true;
     }
     return false;	// if string didn't end than it's incorrect
@@ -445,12 +438,10 @@ bool spIsLineParsable(char* line, char* firstStr, char* secondStr){
 	}
 	if (i >= length){	// if line ended than it's empty and correct
         snprintf(firstStr, 1, "%s", "");
-//		strncpy(firstStr, "", 1); TODO delete if works
 		return true;
 	}
 	if (line[i] == '#'){	// if the first actual character is '#' than this line is comment and ignore it
         snprintf(firstStr, 1, "%s", "");
-//		strncpy(firstStr, "", 1); TODO delete if works
 		return true;
 	}
 	size_t index = i;	// this line must be a configuration for a property and follow its order
@@ -463,7 +454,6 @@ bool spIsLineParsable(char* line, char* firstStr, char* secondStr){
 		return false;
 	}
     snprintf(firstStr, n + 1, "%s", line + index);  // copy first word
-//	strncpy(firstStr, line + index, n);	// copy first word TODO delete if works
 	if (line[i] == ' '){	// if there are spaces right after the first word
 		while (i < length && line[i] == ' '){	// pass any spaces
 			i++;
@@ -483,7 +473,6 @@ bool spIsLineParsable(char* line, char* firstStr, char* secondStr){
 		return false;
 	}
     snprintf(secondStr, length - i + 1, "%s", line + i);  // // copy the second word. assert length > i
-//    strncpy(secondStr, line + i, length - i - 1);	// copy the second word. assert length > i TODO delete if works
     return true;
 
 }
@@ -544,7 +533,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 				}
 			}
 		} else { // line is not parsable
-            *msg = SP_CONFIG_INVALID_STRING; // TODO check with Moab if this is the right message for this error
+            *msg = SP_CONFIG_INVALID_STRING;
 			spPrintInvalidLineError(filename, lineNum);
             spConfigDestroy(config);
             return NULL;

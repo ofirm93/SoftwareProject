@@ -17,7 +17,7 @@ find_package( OpenCV REQUIRED )
 #    message( "OpenCV not found, woot" )
 #endif( OpenCV_FOUND )
 
-set(SOURCE_FILES SPPoint.c SPLogger.c SPKDTree.c SPImageProc.cpp SPBPriorityQueue.c KNearestSearch.c ExtModeForMain.cpp
+set(SOURCE_FILES SPPoint.c SPLogger.c SPKDTree.c SPImageProc.cpp SPBPriorityQueue.c KNearestSearch.c
         main.cpp SPConfig.c SPKDArray.c main_aux.cpp)
 #set(TESTER_FILES unit_tests/sp_config_unit_test.c unit_tests/sp_kd_array_unit_test.c unit_tests/sp_main_aux_unit_test.c
 #        unit_tests/sp_logger_unit_test.c )

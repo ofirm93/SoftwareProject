@@ -36,14 +36,14 @@ typedef struct sp_config_t* SPConfig;
  * @return
  * a default SPConfig
  */
-SPConfig spDefaultConfigConstructor(); // TODO Delete this line - its for testing only
+SPConfig spDefaultConfigConstructor();
 
 /**
  * A constructor for SPConfig based on the parameters given.
  * @return
  * a SPConfig with the given values
  */
-SPConfig spConfigConstructor(char *imagesDirectory, // TODO Delete this method - its for testing only
+SPConfig spConfigConstructor(char *imagesDirectory,
                              char *imagesPrefix,
                              char *imagesSuffix,
                              int numOfImages,
@@ -66,7 +66,7 @@ SPConfig spConfigConstructor(char *imagesDirectory, // TODO Delete this method -
  * true 	- if the two configurations are valid and the same.
  * false 	- otherwise
  */
-bool spIsConfigEqual(SPConfig config, SPConfig configExp); // TODO Delete this line - its for testing only
+bool spIsConfigEqual(SPConfig config, SPConfig configExp);
 
 /**
  * Creates a new system configuration struct. The configuration struct
@@ -288,10 +288,6 @@ SP_CONFIG_MSG spConfigGetLoggerLevel(const SPConfig config, int* loggerLevel);
  */
 void spConfigDestroy(SPConfig config);
 
-/**
-* TODO documentation
-*  Basically returns numOfSimmilarImages on success
-*/
 /**
  * A Getter method for the NumberOfSimilarImages.
  * @param config - the configuration to extract from.
