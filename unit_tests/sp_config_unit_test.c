@@ -6,7 +6,6 @@
 #include "unit_test_util.h"
 
 #include <stdlib.h>
-#include <string.h>
 
 #define FAIL_TEST_FILENAME_FORMAT "./unit_tests/config_files/fail_test%d.config"
 
@@ -45,15 +44,13 @@ bool spTestBadConfig(){
         }
         SP_CONFIG_MSG msg;
         SPConfig config = spConfigCreate(filename, &msg);
-        if(msg != SP_CONFIG_SUCCESS){
-            return true;
-        }
-        else{
+        if(msg == SP_CONFIG_SUCCESS){
             spLoggerPrintDebug("Debug : The bad config didn't failed to be built.", __FILE__, __func__, __LINE__);
             return false;
         }
-        return true;
+        spConfigDestroy(config);
     }
+    return true;
 }
 
 
