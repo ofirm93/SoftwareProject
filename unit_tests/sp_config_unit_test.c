@@ -7,7 +7,7 @@
 
 #include <stdlib.h>
 
-#define FAIL_TEST_FILENAME_FORMAT "../unit_tests/config_files/fail_test%d.config"
+#define FAIL_TEST_FILENAME_FORMAT "./unit_tests/config_files/fail_test%d.config"
 #define MAX_PATH_LENGTH 1024
 
 /**
@@ -15,8 +15,8 @@
  * @return true if successful otherwise false
  */
 bool spTestGoodConfigFile(){
-    char filename[] = "../unit_tests/config_files/good_config_for_testing.config";
-    SPConfig expectedConfig = spConfigConstructor("../unit_tests/RotatedEx3plusProj", "imag", ".png", 17, 20, "pca.yml", 100, true, 5, MAX_SPREAD, 1, false, 3, "stdout");
+    char filename[] = "./unit_tests/config_files/good_config.config";
+    SPConfig expectedConfig = spConfigConstructor("./unit_tests/RotatedEx3plusProj", "imag", ".png", 17, 20, "pca.yml", 100, true, 5, MAX_SPREAD, 1, false, 3, "stdout");
     SP_CONFIG_MSG msg;
     SPConfig config = spConfigCreate(filename, &msg);
     if(msg == SP_CONFIG_SUCCESS){
@@ -27,8 +27,11 @@ bool spTestGoodConfigFile(){
     }
     else{
         spLoggerPrintDebug("Debug : Failed building the good configuration.", __FILE__, __func__, __LINE__);
+        free(expectedConfig);
         return false;
     }
+    free(expectedConfig); // Not destroy - On purpose !!!
+    spConfigDestroy(config);
     return true;
 }
 /**

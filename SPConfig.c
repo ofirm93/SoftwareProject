@@ -648,7 +648,7 @@ SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config){
     if (pcaPath == NULL || config == NULL) {
         return SP_CONFIG_INVALID_ARGUMENT;
     }
-    sprintf(pcaPath, "%s%s",config->imagesDirectory, config->PCAFilename);
+    sprintf(pcaPath, "%s/%s",config->imagesDirectory, config->PCAFilename);
     return SP_CONFIG_SUCCESS;
 }
 
